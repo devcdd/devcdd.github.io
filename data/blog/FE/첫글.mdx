@@ -1,0 +1,278 @@
+---
+title: 사내 컨벤션 정하기
+date: '2024-07-02'
+tags: ['typescript', 'nextJS', 'reactJS']
+draft: false
+summary: 회사에서 컨벤션을 새롭게 정의하는 날이 와서 작성해봤습니다.
+---
+
+## 서론
+
+평소에는 평어체로 글을 작성했는데, 여기 기술 블로그에는 그래도 경어체로 작성하는 것이 맞을 것 같아서 그렇게 작성하고 있습니다. 아무래도 블로그를 보시는 분들 중에서 저보다 높으신 분들도 많을테니까요.
+
+아무튼 이번에는 사내에서 새롭게 컨벤션을 정의하게 되었습니다. 기존에 컨벤션이 맞지 않아 코드 가독성이 심히 떨어졌었고, 특히나 이번에는 새로운 소프트웨어 출시를 위해 코드를 급속도로 작성하다보니 상태가 좋지 않았습니다. 사실 저희 회사도 그렇고, 기능 개발을 우선시 하는 것이 대부분의 스타트업 특성이라 걱정이 많았는데, 다행히도 선임 개발자 분이 먼저 컨벤션 관련 회의를 제안해주셨습니다.
+
+저는 사이드 프로젝트로 `nextJS`와 `typescript`를 상대적으로 더 선호해왔기도 했고, 이번 프로젝트에서 제 코드 기여도가 높아서 그런지 컨벤션 회의를 주도적으로 진행할 수 있는 권한을 받았습니다. 레거시 위주의 프로젝트에서 이번에 기술스택이 완전히 환골탈태 되는 중인데, 그래서인지 회사에서 아주 다양한 경험을 하게 되는군요.
+
+## 어떤 것 위주로 컨벤션을 정해야 할까?
+
+컨벤션 차이가 심한 부분부터 우선적으로 컨벤션을 정하고 싶다는 생각이 들더군요. 그래서 미리 정할 컨벤션들을 간략히 목록화 해봤습니다.
+
+- 변수 네이밍 컨벤션
+- 함수 네이밍 컨벤션
+- 타입 컨벤션
+- API 호출 함수 관련 컨벤션
+- 타입 내부 VS 외부 관리
+- props 받는 방식
+- 화살표 함수 사용 여부
+- 디자인 시스템 도입
+
+### 변수 네이밍 컨벤션
+
+백엔드와 프론트엔드, 그리고 레거시 프로젝트들의 컨벤션을 모두 다르게 사용해왔기에 컨벤션이 굉장히 꼬여있는 상황입니다. i-One을 기점으로 이를 바로잡으려고 합니다.
+
+```ts
+// 복수형 컨벤션
+const pageList // 고정
+const instanceList
+
+// 파일명 컨벤션
+// component
+ThumbnailGrid.tsx
+
+// directory 이름: 소문자, 디렉토리 명은 무조건 단수형
+- hook
+- component
+
+// non-component
+useInput.tsx // 무조건 카멜케이스
+```
+
+### 함수 네이밍 컨벤션
+
+```ts
+const convertFileToBlob = (file) => { // 함수의 로직보다는 존재 목적을 중점으로 네이밍
+  const blob = blob(file);
+  return blob;
+}
+
+// handle vs on
+<button onClick={handleButtonClick} />
+<button onClick={onButtonClick} />
+// handle: 이벤트가 발생했을 때 해당 이벤트를 처리하는 함수
+// on: 이벤트 리스너의 역할을 하는 함수
+// 웬만한 케이스들은 다 handle을 쓰면 될 것 같음, 최하단의 리스너 처리 목적 함수만 on 네이밍을 사용
+
+// Button.tsx (on 예시)
+const Button = (props: {onClick: () => void}) => {
+  return <button onClick={props.onClick} />
+}
+// Header.tsx (handle 예시)
+const Header = () => {
+	const handleButtonClick = () => {
+	}
+	// logics
+	return <Button onClick={handleButtonClick} />
+}
+```
+
+### 타입 관련 컨벤션
+
+```ts
+// interface인 경우 앞에 "I"를, type인 경우 앞에 "T"를 붙이는 방식으로 사용 예정
+// 타입스크립트의 공식 컨벤션에 위배된다는 말이 있어 변경될 여지도 있음
+// 우선 1차적으로 사용하고, 문제 생기면 바꾸는걸로
+
+// ** 중요 **
+// 해당 컨벤션은 단일 객체에만 이용할 예정입니다.
+// props나 api response type에 대한 정의는 해당되지 않습니다.
+
+interface ICar {
+
+}
+
+type TCar {
+
+}
+
+// interface Patient {
+//
+// } // 컴포넌트와 네이밍이 겹치는 문제가 발생해서 반려
+
+interface ResGetPatientList // 1차 채택
+interface GetPatientListAPIResponse
+
+enum ModalName { // 파스칼 케이스를 일반적으로 많이 이용한다고 합니다
+  Export_File = "EXPORT_FILE" // 주로 올 대문자를 사용한다고 합니다
+} // 고정
+```
+
+### API 호출 함수
+
+```ts
+// 1차적으로는 함수의 목적이 드러나도록 네이밍을 작성
+// "RestAPI + 데이터" 네이밍
+
+const getPatientList = () => {
+
+} // RestAPI: get + 데이터: studyList
+
+// 사용 예시
+export const getPatientList = async (params: Options) => {
+  const response = await Get<ResGetStudyList>("/api/dcmstudy", { ...params })
+}
+```
+
+그리고 보다 편하게 사용하기 위해 `wrapper.ts` 파일도 만들었습니다.
+
+```ts
+// wrapper.ts (복붙하여 사용하시면 됩니다)
+
+import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
+
+const axiosInstance = axios.create({
+  headers: {},
+});
+
+axiosInstance.interceptors.request.use(
+  config => {
+    config.baseURL =
+      process.env.NODE_ENV === "production"
+        ? window.location.origin + "/backend"
+        : "url/backend"; // 개발 환경에서의 URL
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  },
+);
+
+export const Get = async <T>(
+  url: string,
+  config?: AxiosRequestConfig,
+): Promise<AxiosResponse<T>> => {
+  return await axiosInstance.get(url, config);
+};
+
+interface ContentTypeOptions {
+  contentType?: string;
+}
+
+export const Post = async <T>(
+  url: string,
+  data?: Record<string, any> | string,
+  options?: ContentTypeOptions,
+): Promise<AxiosResponse<T>> => {
+  const config: AxiosRequestConfig = {};
+  if (options?.contentType) {
+    config.headers = { "content-type": options.contentType };
+  } else {
+    config.headers = { "content-type": "application/json" };
+  }
+  return await axiosInstance.post(url, data, config);
+};
+
+export const Put = async <T>(
+  url: string,
+  data?: Record<string, any> | string,
+  options?: ContentTypeOptions,
+): Promise<AxiosResponse> => {
+	const config: AxiosRequestConfig = {};
+  if (options?.contentType) {
+    config.headers = { "content-type": options.contentType };
+  } else {
+    config.headers = { "content-type": "application/json" };
+  }
+  return await axiosInstance.put(url, data);
+};
+
+export const Delete = async <T>(
+  url: string,
+  data?: Record<string, any> | string,
+): Promise<AxiosResponse> => {
+  return await axiosInstance.delete(url, {
+    data: data,
+  });
+};
+```
+
+### 타입 외부 관리
+
+하나의 파일로 모든 타입들을 관리하기에는 너무 복잡해질 것 같아 파일을 나누는 것이 좋을까 고민해보기는 했습니다. 우선 특정 컴포넌트에서만 사용되는 타입들은 컴포넌트 네이밍을 활용하여 `.d.ts` 파일을 만들어야 하나 생각했는데, 회의 결과 일단 보류하기로 결정했습니다.
+
+```ts
+// props에 대한 interface는 같은 파일에다가 선언
+export interface ExportModalProps {
+  fileKey: number;
+}
+
+const ExportModal = (props: ExportModalProps) => { }
+
+// request.ts
+const getPatientList = (vgroupKey: number) => {
+  return Get<ResGetPatientList>("/api/patient", { ... })
+}
+
+// request.d.ts
+export interface ResGetPatientList {
+  patient_name: string;
+  // other lists
+} // 결국에는 보류하기로 결정
+```
+
+### 컴포넌트가 props 받는 방식
+
+지금껏 리액트 컨벤션이 구조분해 할당이었어서 말씀드리기 조심스러운 부분이었는데, 의외로 흔쾌히 이 방식에 동의해주셨습니다. 아래와 같은 방식을 쓰면 코드를 볼 때 `props`로 받아서 온 변수인지 쉽게 확인 가능하고, 변수 네이밍이 겹칠 필요도 없습니다.
+
+```ts
+interface ExportModalProps {
+  userKey: number;
+}
+
+const ExportModal = (props: ExportModalProps) => {
+  return <>{props.userKey}</>
+} // 채택, 구조 분해 할당 사용 X
+```
+
+### 화살표 함수 사용 여부
+
+이거는 그냥 화살표 함수로 통일하기로 했습니다.
+
+### 디자인 시스템
+
+컴포넌트를 모듈화해서 공통적으로 사용하는 것이 유지보수도 간편하고 커스터마이징이 편리합니다. 현재 사내에서는 버튼, 모달 등과 같은 컴포넌트들을 공통으로 관리합니다. 외부 라이브러리를 아직 사용하고 계신 분들을 위해 공지용으로 넣었습니다.
+
+```
+// 사용 예시에 관한 정보는 추후에 업데이트 예정
+Button.tsx
+IconButton.tsx
+IRMModal.tsx
+```
+
+### Zustand 상태 관리 컨벤션
+
+스니펫을 만들어둬서 팀원분들에게 공유드렸습니다. 아래와 같이 `set` 함수를 외부로 빼게 된다면 직접 선언할 필요 없이 `IDE`가 찾아주기 때문에 사용이 편하더군요. 그리고 추후 복잡한 로직을 위해 `immer`도 넣어줬습니다.
+
+```ts
+// useSearchConditionStore.ts
+// use + 데이터 + Store
+import { create } from 'zustand'
+import { immer } from 'zustand/middleware/immer'
+
+interface UseSearchConditionType {
+  searchCondition: SearchCondition
+}
+
+export const useSearchConditionStore = create<UseSearchConditionType>()(
+  immer((set) => ({
+    searchCondition: {},
+  }))
+)
+
+export const setSearchCondition = (searchCondition: SearchCondition) => {
+  useSearchConditionStore.setState((state) => {
+    state.searchCondition = searchCondition
+    return state
+  }) // immer를 쓰는 이유: 리액트의 고질적인 문제인 객체 복사를 신경쓰지 않아도 됨
+}
+```
