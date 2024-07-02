@@ -11,9 +11,9 @@
       <atom:link href="https://example.com/feed.xml" rel="self" type="application/rss+xml"/>
       
   <item>
-    <guid>https://example.com/blog/FE/첫글</guid>
+    <guid>https://example.com/blog/FE/사내 컨벤션 정하기</guid>
     <title>사내 컨벤션 정하기</title>
-    <link>https://example.com/blog/FE/첫글</link>
+    <link>https://example.com/blog/FE/사내 컨벤션 정하기</link>
     <description>회사에서 컨벤션을 새롭게 정의하는 날이 와서 작성해봤습니다.</description>
     <pubDate>Tue, 02 Jul 2024 00:00:00 GMT</pubDate>
     <author>undefined (CDD)</author>
