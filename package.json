@@ -2,14 +2,16 @@
   "name": "CDD DEVLOG",
   "version": "2.2.0",
   "private": true,
+  "homepage": "https://devcdd.github.io/",
   "scripts": {
     "start": "next dev",
     "dev": "cross-env INIT_CWD=$PWD next dev",
-    "build": "cross-env INIT_CWD=$PWD next build && cross-env NODE_OPTIONS='--experimental-json-modules' node ./scripts/postbuild.mjs",
+    "build": "cross-env INIT_CWD=$PWD next build && cross-env NODE_OPTIONS='--experimental-json-modules' node ./scripts/postbuild.mjs && next export",
     "serve": "next start",
     "analyze": "cross-env ANALYZE=true next build",
     "lint": "next lint --fix --dir pages --dir app --dir components --dir lib --dir layouts --dir scripts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "deploy": "touch out/.nojekyll && gh-pages -d out --dotfiles"
   },
   "dependencies": {
     "@headlessui/react": "1.7.19",
@@ -19,6 +21,7 @@
     "autoprefixer": "^10.4.13",
     "contentlayer2": "0.4.6",
     "esbuild": "0.20.2",
+    "gh-pages": "^6.1.1",
     "github-slugger": "^2.0.0",
     "gray-matter": "^4.0.2",
     "hast-util-from-html-isomorphic": "^2.0.0",
