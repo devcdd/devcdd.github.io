@@ -66,12 +66,13 @@ module.exports = () => {
       dirs: ['app', 'components', 'layouts', 'scripts'],
     },
     images: {
-      remotePatterns: [
-        {
-          protocol: 'https',
-          hostname: 'picsum.photos',
-        },
-      ],
+      // remotePatterns: [
+      //   {
+      //     protocol: 'https',
+      //     hostname: 'picsum.photos',
+      //   },
+      // ],
+      unoptimized: true,
     },
     async headers() {
       return [
@@ -89,6 +90,6 @@ module.exports = () => {
 
       return config
     },
-    output: "export"
+    output: process.env.NODE_ENV === 'production' ? 'export' : null,
   })
 }
