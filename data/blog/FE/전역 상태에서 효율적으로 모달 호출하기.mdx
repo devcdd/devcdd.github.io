@@ -1,0 +1,355 @@
+---
+title: 전역 상태에서 효율적으로 모달 호출하기
+date: '2024-07-04'
+tags: ['typescript', 'nextJS', 'reactJS']
+draft: false
+summary: 어떻게 해야 효율적으로 많은 모달들을 관리할 수 있을까요?
+---
+
+## 서론
+
+<div className={'my-[-40px] flex justify-center'}>
+  <img src="/static/images/posts/instagram_modal.png" alt="modal" width="600" />
+</div>
+
+간단히 설명드리자면, 모달이란 웹사이트 화면에서 특정 트리거 버튼을 클릭하였을 때 팝업 형태로 나오는 화면을 의미하죠. 특수한 목적을 가진 웹사이트라면 모달의 존재가 필수적인 것 같습니다. 물론 저희 회사 프로젝트도 마찬가지로 상당히 많은 모달들을 보유하고 있습니다.
+오늘은 이 많은 모달들을 불러오는 방식을 어떻게 개선했는지에 대해 이야기해볼까 합니다.
+
+<TOCInline toc={props.toc} exclude="서론" />
+
+### 일반적으로 모달을 불러오는 방식
+
+`reactJS`를 사용하고 있다면 흔히 볼 수 있는 모달 호출 방식이 있습니다.
+
+```tsx
+import { useState } from 'react'
+
+const Page = () => {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <div>
+      <button onClick={() => setIsOpen(true)}>모달 열기</button>
+      {isOpen && <Modal />}
+    </div>
+  )
+}
+```
+
+`isOpen`이라는 상태값을 만들어서 `true`가 되었을 때만 모달을 렌더링하는 방식입니다. 아주 간단하고 쉬운 방법이지만 만약 모달이 많아지게 된다면 다음과 같은 단점이 생깁니다.
+
+```tsx
+const Page = () => {
+  const [isAModalOpen, setIsAModalOpen] = useState(false) // A Modal
+  const [isBModalOpen, setIsBModalOpen] = useState(false) // B Modal
+  const [isCModalOpen, setIsCModalOpen] = useState(false) // C Modal
+
+  return (
+    <div>
+      <button onClick={() => setIsAModalOpen(true)}>A 모달 열기</button>
+      {isAModalOpen && <AModal />}
+      <button onClick={() => setIsBModalOpen(true)}>B 모달 열기</button>
+      {isBModalOpen && <BModal />}
+      <button onClick={() => setIsCModalOpen(true)}>C 모달 열기</button>
+      {isCModalOpen && <CModal />}
+    </div>
+  )
+}
+```
+
+각 모달들마다 `state`를 만들어서 선언을 해줘야 하죠. 저희 프로젝트 같은 경우 모달의 개수가 총 10개가 넘는데, 그러면 똑같은 코드를 10번 정도 작성하게 되는 상황이 발생합니다. 여기서 추가적으로 여러 컴포넌트에서 같은 모달을 불러오는 경우는 어떨까요?
+
+```tsx
+const PageA = () => {
+  const [isAModalOpen, setIsAModalOpen] = useState(false); // A Modal
+  const [isBModalOpen, setIsBModalOpen] = useState(false); // B Modal
+  const [isCModalOpen, setIsCModalOpen] = useState(false); // C Modal
+...
+}
+
+const PageB = () => {
+  const [isAModalOpen, setIsAModalOpen] = useState(false); // A Modal
+  const [isBModalOpen, setIsBModalOpen] = useState(false); // B Modal
+  const [isCModalOpen, setIsCModalOpen] = useState(false); // C Modal
+...
+```
+
+어우, 보기만 해도 흉측하군요. 불과 최근까지만 해도 이러한 구성으로 코드가 이루어져 있었습니다. 물론 커스텀훅을 만들어서 조금 더 효율적으로 개선할수도 있겠지만, 그건 어디까지나 차안일 뿐 모달의 개수만큼 상태값을 가져야 한다는 것은 변치 않습니다. 커스텀훅은 `state`를 다루는 로직이기 때문이니까요.
+
+## 그래서 어떻게 개선했는데?
+
+같은 모달들이 다른 곳들에서 호출되는 경우가 일상다반사, 모달이 늘어나면 늘어날수록 쌓이는 중복 코드. 이 모든 것을 해결하기 위해서는 전역에서 하나의 `state`로 모든 모달을 총괄하는 무언가를 만들어야겠다라는 생각이 들더군요. 어차피 한 번에 열릴 수 있는 모달의 개수는 1개니까 말입니다.
+그리고 이 `state`에 곧바로 접근할 수 있도록 훅을 만들어 하위 컴포넌트들에게 제공을 해야겠죠. 이러한 가설을 세우면서 작업을 시작했습니다.
+
+### Reducer
+
+뜬금없이 `Reducer`를 만들게 된 이유는 파라미터로 어떤 모달을 띄울지 받았을 때 곧바로 모달을 리턴해주는 식으로 구현할 생각이었기 때문입니다. 모달 타입을 `enum`으로 확실히 선언해주고, 호출 함수를 `export` 해준다면 조금 더 효율적으로 모달을 불러올 수 있겠죠?
+
+```tsx
+export enum ModalType {
+  A_MODAL = "A_MODAL",
+  B_MODAL = "B_MODAL",
+  ...
+}
+
+interface ModalState {
+  modalType: ModalType | null;
+  modalProps: any;
+} // 아직까지 modalProps의 타입을 any로 해둬서 이후에 리팩토링 해야 할 필요가 있음
+
+type ModalAction =
+  | { type: "OPEN_MODAL"; modalType: ModalType; modalProps?: Record<string, unknown> }
+  | { type: "CLOSE_MODAL" }; // 액션 관련 타입, Props의 타입을 그대로 둬야할지 고민
+
+const initialState: ModalState = {
+  modalType: null,
+  modalProps: {},
+};
+
+const ModalReducer = (state: ModalState, action: ModalAction): ModalState => {
+  switch (action.type) {
+    case "OPEN_MODAL":
+      return {
+        modalType: action.modalType,
+        modalProps: action.modalProps,
+      };
+    case "CLOSE_MODAL":
+      return initialState;
+    default:
+      return state;
+  }
+};
+```
+
+### Context API
+
+`Reducer`를 만들었으니 이제 이를 `Context API`로 감싸서 하위 컴포넌트들에게 전달하는 코드를 만들어야 합니다. 여기서 `Context API`를 사용하면 `Provider`를 통해 상태값을 하위 컴포넌트들에게 전달할 수 있습니다.
+
+```tsx
+const ModalContext = createContext<{
+  state: ModalState
+  openModal: <T extends ModalType>(modalType: T, modalProps?: ModalProps[T]) => void
+  closeModal: () => void
+}>({
+  state: initialState,
+  openModal: () => {},
+  closeModal: () => {},
+})
+```
+
+모달 호출 함수가 있으면, 모달 종료 함수도 있어야 하기에 `openModal`과 `closeModal`을 만들어주었습니다. `openModal` 함수는 두가지의 파라미터를 받게 할건데 첫 번째는 어떤 모달을 호출할 것인지, 두 번째는 어떤 `props`를 전달할 것인지를 의미합니다.
+대충 사용 예시를 생각해보면 아래와 같을겁니다. 아까 무한 중복되는 `useState` 뭉치들보다 훨씬 깔끔하죠?
+
+```ts
+openModal(ModalType.A_MODAL, { data: data, callback: updatePage() })
+```
+
+### Provider
+
+이렇게 `context`를 만들었다면 이것들을 전달해줄 수 있는 `Provider`를 만들어줘야 합니다.
+
+```tsx
+export const ModalProvider = (props: { children: React.ReactNode }) => {
+  const [state, dispatch] = useReducer(ModalReducer, initialState)
+
+  const openModal = (modalType: ModalType, modalProps?: Record<string, unknown>) => {
+    dispatch({ type: 'OPEN_MODAL', modalType, modalProps })
+  }
+
+  const closeModal = () => {
+    dispatch({ type: 'CLOSE_MODAL' })
+  }
+
+  return (
+    <ModalContext.Provider value={{ state, openModal, closeModal }}>
+      {props.children}
+      {state.modalType && <ModalContainer />}
+    </ModalContext.Provider>
+  )
+}
+
+export const useModal = () => useContext(ModalContext)
+```
+
+`Reducer`를 사용했기 때문에 생김새는 `Redux` 구조와 비슷하게 만들어줬습니다. `useReducer` 함수를 사용하여 아까 만들었던 `Reducer`를 첫 번째 파라미터로, 초기값 `initialState`는 두 번째 파라미터로 넣어주었습니다.
+아까 `Context`로 만들었던 `openModal`과 `closeModal` 함수에는 각각 해당되는 파라미터들을 이용해 `dispatch` 함수를 호출해줬습니다. 이러한 형태로 `Provider`를 이용해서 전달하게 된다면 `props.children`에 해당되는 하위 컴포넌트들은 모두 편하게 `dispatch`를 할 수 있게 됩니다.
+최하단에서는 `useModal`을 내보내주면서 훅처럼 사용할 수 있도록 구현했습니다. 최종적으로 이 `Reducer`를 호출하는 코드는 다음과 같을겁니다.
+
+```tsx
+const { openModal, closeModal } = useModal() // Looks Good !
+```
+
+### 그래서 모달은 어디서 렌더하나요?
+
+잘 보면 `ModalProvider` 컴포넌트 안에 `ModalContainer`라는 컴포넌트가 있습니다. 이제는 모달을 직접적으로 렌더하는 `Container` 컴포넌트를 다뤄보겠습니다.
+
+```tsx
+// ModalContainer.tsx
+
+const ModalContainer = () => {
+  const { state, closeModal } = useModal();
+  const { modalType, modalProps } = state;
+
+  let modalContent;
+
+  switch (modalType) {
+    case ModalType.A:
+      modalContent = <AModal open={true} onCancel={closeModal} />;
+      break;
+    case ModalType.B:
+      modalContent = <BModal open={true} onCancel={closeModal} />;
+      break;
+    case ModalType.C:
+      modalContent = <CModal open={true} onCancel={closeModal} />;
+      break;
+    ...
+  }
+
+  return <>{modalContent}</>;
+};
+
+export default ModalContainer;
+```
+
+`state`에서 `modalType`과 `modalProps`를 가져오고, `switch`문을 통해 어떤 모달을 렌더할지를 결정합니다. 하위의 어떤 컴포넌트가 `useModal`을 이용해서 `openModal`을 호출하게 되면 해당되는 `type`의 모달이 렌더링 되는 원리입니다.
+
+### 실제 사용 예시
+
+```tsx
+const Page = () => {
+  const { openModal, closeModal } = useModal();
+  const { data } = getData();
+
+  return (
+    <div>
+      <button onClick={() => openModal(ModalType.A, { data: data }})>A 모달 열기</button>
+      <button onClick={() => openModal(ModalType.B, { data: data }})>B 모달 열기</button>
+      <button onClick={() => openModal(ModalType.C, { data: data }})>C 모달 열기</button>
+    </div>
+  );
+}
+```
+
+처음 짰던 코드보다 훨씬 간결해진 것을 확인할 수 있습니다. 두 번째 인자로 받는 `props`의 타입을 사전에 명확히 설정해준다면 더욱 안정적인 코드가 되겠죠? 사실 아까 `Context`를 만들 때 `ModalProps` 타입에 대한 정의를 빠른 설명을 위해 일부러 넣지 않았는데, 다음과 같이 구성했습니다.
+
+```tsx
+type ModalProps = {
+  [ModalType.A]: {
+    data: string;
+    callback: () => void;
+  };
+  [ModalType.B]: {
+    data: string;
+  };
+  [ModalType.C]: {
+    data: string;
+  };
+  ...
+};
+```
+
+### 최종 코드
+
+이제 진짜 다 왔네요, 구현하는데도 힘들었는데 설명하는데도 꽤나 공수가 많이 드는 것 같습니다. 아직 `props`로 넘겨주는 타입의 정의가 미흡한 것 같아 추가적인 리팩토링의 필요성이 느껴지긴 하지만, 여러 컴포넌트들의 코드들이 개선되니 속이 뻥 뚫리네요 !!
+
+```tsx
+// ModalProvider.tsx
+
+import { createContext, useContext, useReducer } from "react";
+
+export enum ModalType {
+  A = "A",
+  B = "B",
+  C = "C",
+  ...
+}
+
+interface ModalState {
+  modalType: ModalType | null;
+  modalProps: any;
+}
+
+type ModalAction =
+  | { type: "OPEN_MODAL"; modalType: ModalType; modalProps?: Record<string, unknown> }
+  | { type: "CLOSE_MODAL" };
+
+const initialState: ModalState = {
+  modalType: null,
+  modalProps: {},
+};
+
+const ModalReducer = (state: ModalState, action: ModalAction): ModalState => {
+  switch (action.type) {
+    case "OPEN_MODAL":
+      return {
+        modalType: action.modalType,
+        modalProps: action.modalProps,
+      };
+    case "CLOSE_MODAL":
+      return initialState;
+    default:
+      return state;
+  }
+};
+
+const ModalContext = createContext<{
+  state: ModalState;
+  openModal: <T extends ModalType>(modalType: T, modalProps?: ModalProps[T]) => void;
+  closeModal: () => void;
+}>({
+  state: initialState,
+  openModal: () => {},
+  closeModal: () => {},
+});
+
+export const ModalProvider = (props: { children: React.ReactNode }) => {
+  const [state, dispatch] = useReducer(ModalReducer, initialState);
+
+  const openModal = (modalType: ModalType, modalProps?: Record<string, unknown>) => {
+    dispatch({ type: "OPEN_MODAL", modalType, modalProps });
+  };
+
+  const closeModal = () => {
+    dispatch({ type: "CLOSE_MODAL" });
+  };
+
+  return (
+    <ModalContext.Provider value={{ state, openModal, closeModal }}>
+      {props.children}
+      {state.modalType && <ModalContainer />}
+    </ModalContext.Provider>
+  );
+};
+
+export const useModal = () => useContext(ModalContext);
+```
+
+```tsx
+// ModalContainer.tsx
+
+import { useModal } from "./ModalProvider";
+
+const ModalContainer = () => {
+  const { state, closeModal } = useModal();
+  const { modalType, modalProps } = state;
+
+  let modalContent;
+
+  switch (modalType) {
+    case ModalType.A:
+      modalContent = <AModal open={true} onCancel={closeModal} />;
+      break;
+    case ModalType.B:
+      modalContent = <BModal open={true} onCancel={closeModal} />;
+      break;
+    case ModalType.C:
+      modalContent = <CModal open={true} onCancel={closeModal} />;
+      break;
+    ...
+  }
+
+  return <>{modalContent}</>;
+};
+
+export default ModalContainer;
+```

@@ -67,6 +67,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${space_grotesk.variable} scroll-smooth`}
       suppressHydrationWarning
     >
+      <script
+        src="https://giscus.app/client.js"
+        data-repo="devcdd/devcdd.github.io"
+        data-repo-id="R_kgDOMQ309g"
+        data-category="General"
+        data-category-id="DIC_kwDOMQ309s4Cgh__"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="ko"
+        crossOrigin="anonymous"
+        async
+      ></script>
       <link rel="apple-touch-icon" sizes="76x76" href="/static/favicons/apple-touch-icon.png" />
       <link rel="icon" type="image/png" sizes="32x32" href="/static/favicons/cdd-32x32.png" />
       <link rel="icon" type="image/png" sizes="16x16" href="/static/favicons/cdd-16x16.png" />
