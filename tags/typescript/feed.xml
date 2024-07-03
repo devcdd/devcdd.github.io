@@ -20,5 +20,15 @@
     <category>typescript</category><category>nextJS</category><category>reactJS</category>
   </item>
 
+  <item>
+    <guid>https://example.com/blog/FE/전역 상태에서 효율적으로 모달 호출하기</guid>
+    <title>전역 상태에서 효율적으로 모달 호출하기</title>
+    <link>https://example.com/blog/FE/전역 상태에서 효율적으로 모달 호출하기</link>
+    <description>어떻게 해야 효율적으로 많은 모달들을 관리할 수 있을까요?</description>
+    <pubDate>Thu, 04 Jul 2024 00:00:00 GMT</pubDate>
+    <author>undefined (CDD)</author>
+    <category>typescript</category><category>nextJS</category><category>reactJS</category>
+  </item>
+
     </channel>
   </rss>
