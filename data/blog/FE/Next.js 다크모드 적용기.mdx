@@ -1,0 +1,183 @@
+---
+title: Next.js 다크모드 - tailwind, antd, ag-grid
+date: '2024-07-12'
+tags: ['typescript', 'nextJS', 'reactJS', 'next-themes']
+draft: false
+summary: 사내 프로젝트에서 다크모드를 도입하게 되어 관련해서 적어봤습니다.
+---
+
+## 서론
+
+요즘 사이트들은 대부분 다크모드를 지원하죠, 최신 웹기술에 있어서 거의 필수적인 기술인 것 같습니다. 다만 저는 사실 `라이트/다크모드` 토글링을 아직까지도 제대로 구현 해본 적이 없었습니다. 그저 `localStorage` 혹은 `context`를 사용해서 관리하는 방법이 있다는 이론적인 지식만 있는 상태였죠. 감사하게도 구현을 완전히 제가 맡게 되어서 미약하지만 1차적 개발을 완료해서 글을 쓰게 되었습니다.
+
+<TOCInline toc={props.toc} exclude="서론" />
+
+## 현 프로젝트 상황
+
+현 프로젝트에서는 꽤 다양한 외부 라이브러리들을 사용하고 있습니다. 개인적인 바램으로는 거의 모든 컴포넌트들을 다 직접 만들고 싶었지만 주어진 시간이 충분하지 않았던 마이그레이션이었기에 부분적으로 `Antd`와 `Ag-Grid`, `Shadcn`라는 UI 라이브러리들을 사용하고 있습니다. 전체적인 CSS는 `tailwindcss`를 사용하고 있고요.
+
+`headless ui` 같은 경우는 `tailwind`만 신경을 쓰면 돼서 크게 상관이 없지만 다른 라이브러리들은 별개의 `css` 파일이 존재합니다. 그래서 생각보다 오버라이딩 과정이 까다로운데, 스타일링을 위해 `!important` 문법을 사용하거나 `styled`를 통해 렌더링 이후에 스타일링을 바꾸는 방법도 혼용해서 사용하고 있습니다. 그래서인지 각 라이브러리들마다 다크모드를 적용하는 방식도 달라지더라고요.
+
+## 프로젝트 구조
+
+또 하나 특이한 게 저희는 `root`라는 껍데기 프로젝트가 있고, 각 `page`들은 별개의 프로젝트 상태로 존재합니다. 서로 다른 프로젝트인데 어떻게 같이 쓰냐고요? 빌드 할 때 `index.tsx`가 렌더링 하는 페이지를 내보내기 한 후, 패키지화해서 루트에서 설치해서 쓰는 방식입니다. 사실 이러한 구조 때문에 곧바로 최종 빌드 이후의 디자인 결과가 종종 달라지는 경우도 발생하더군요. 여기에는 여러가지 원인이 있었는데,
+건드리면 안되는 레거시 프로젝트들의 `css` 파일이 `text-color` 같은 속성을 강제로 오버라이딩 하는 경우도 있고, 이외에도 여러 이슈들이 있었습니다.
+
+### tailwindcss
+
+`tailwindcss`의 `darkmode`는 그 무엇보다 간단합니다. 최상단에 있는 `class` 속성을 `inherit` 받는데, 만약 `body` 클래스 명이 `dark`로 선언되어 있다면 `dark`일 때의 클래스 명을 보여줄수가 있는 것이죠. 코드를 보면 더욱 직관적일겁니다.
+
+```tsx
+<body className={"dark"}>
+  <section className={"bg-white dark:bg-gray"}>
+    {children}
+  </section>
+</body>
+```
+
+뭐, 저렇게만 한다고 바로 작동되는 건 아니고, `tailwind.config.ts`에 들어가서 다크모드가 `class`를 보도록 설정해줘야 합니다. 간단하죠?
+
+```ts
+// tailwind.config.ts
+
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  darkMode: ["class"], // 새롭게 넣은 세팅
+  content: [],
+  ...
+}
+```
+
+## 나머지 UI 라이브러리에 대한 다크모드 적용
+### useLocalStorage
+
+1차적으로는 `일단 돌아가게 하자`가 우선이었기 때문에 가장 간단한 방법으로 `localStorage`를 사용했습니다. `usehooks-ts`에서 제공하고 있는 `useLocalStorage` 휵을 사용한다면 `localStorage`를 상태 개념으로 사용하는 것이기 때문에 곧바로 리렌더링을 발생시킬 수 있죠.
+
+### Ag-Grid
+
+저렇게 사용했을 때 가장 간단하게 구현할 수 있는 것이 `Ag-Grid`더군요. 자체적으로 테마를 지원하기 때문에 이를 활용해서 구현을 해줬습니다.
+
+```ts
+const GridContainer = () => {
+  const [theme] = useLocalStorage("theme", "dark");
+
+  return (
+    <section className={`${theme === "dark" ? "ag-theme-quartz-dark" : "ag-theme-quartz"}`}
+      <AgGridReact />
+    </section>
+  );
+}
+```
+
+물론 `*-auto-dark`도 지원하긴 하는데, 그건 `prefered-color-scheme`을 가져오는 구조라 자체적으로 토글링 해야 하는 저희 프로젝트에는 맞지 않더군요. 추가적인 방법이 있다면 수정 예정입니다, 불필요한 `State`들은 최대한 줄이는 것이 좋으니까요. 추가적으로 `ag`에서 만들어놓은 `dark` 테마가 저희 `ui`와 맞지 않아 약간의 커스텀이 필요했습니다.
+
+```css
+.ag-theme-quartz-dark {
+  --ag-foreground-color: white;
+  --ag-background-color: transparent !important;
+  --ag-header-foreground-color: white;
+  --ag-header-background-color: transparent !important;
+  --ag-odd-row-background-color: transparent !important;
+  --ag-header-column-resize-handle-color: transparent !important;
+}
+```
+
+배경색을 투명하게 해줘서 그냥 원하는 배경을 지정할 수 있도록 커스텀해줬습니다.
+
+### Ant-Design
+
+정말 다행히도 `Antd`는 `ConfigProvider`라는 것을 지원합니다.
+
+```tsx
+import {ConfigProvider, theme as antdTheme} from "antd";
+
+const Page = ({children}: React.ReactNode) => {
+  const [theme] = useLocalStorage("theme", "dark");
+
+  return
+    <ConfigProvider
+      theme={{algorithm: theme === "dark" ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm}
+      // antd에서 제공하는 theme
+    >
+      {children}
+    </ConfigProvider>
+}
+```
+
+그리고 저희가 추구하는 디자인과도 잘 맞는 것 같아 별다른 커스텀 없이 우선은 그대로 사용하기로 했습니다.
+
+## Hydration, localStorage Undefined Error
+
+사실 `NextJs`에서 로컬스토리지를 사용하는 로직은 `CSR`, 즉 클라이언트에서 렌더링이 이루어질 때 이행되어야 합니다. 서버단에서는 브라우저 `api`에 직접적으로 접근할수가 없어 `window` 객체 자체가 `undefined`가 나올 것이기 때문이죠. 좋은 방법은 아니겠지만 `localStorage`를 `set` 하거나 `localStorage` 값을 곧바로 렌더링에 반영하기 위해서는 편법을 사용해야 합니다.
+
+```tsx
+const LocalStorageDisplay = () => {
+  const [value] = useLocalStorage("value", "");
+  const [isMounted, setIsMounted] = useState(null);
+
+  useEffect(() => {
+  	setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
+  // App Router에서 "use client"를 사용하면 이 방식을 안써도 되는지 확인해봐야겠네요,
+  // 저희는 page Router를 사용하고 있어서 말이죠.
+
+  return <div>{value}</div>
+}
+```
+
+우선 이러한 방식들을 이용해서 구현을 하니 겉으로는 잘 동작하더군요. 다만 `useLocalStorage`보다 더 좋은 로직이 있을까 싶어서 추가적으로 더 서칭을 해봤는데, `next-themes`라는게 존재하더군요.
+
+## Next-Themes
+
+사용방법은 간단합니다. `useThemes()`라는 훅을 제공하고, `ThemeProvider` 또한 제공해서 적절히 커스텀 해서 사용하면 됩니다.
+
+```tsx
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  return (
+    <NextThemesProvider attribute="class" defaultTheme="light">
+      {children}
+    </NextThemesProvider>
+  );
+}
+```
+
+저렇게 `Provider`를 구성하고, 프로젝트의 최상단에 묶어주면 `useThemes`를 사용할 준비가 끝난겁니다. 어떻게 보면 `tanstack query`에서 사용되는 `QueryClientProvider`와 비슷한 느낌이죠.
+
+```tsx
+// ToggleSwitch.tsx
+
+const ToggleSwitch = () => {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  const handleToggle = () => {
+    if (ioneTheme === "light") {
+      setTheme("dark");
+      return;
+    }
+
+    setTheme("light");
+  };
+
+  if (!mounted) return null;
+
+  return <Toggle onToggle={handleToggle} />
+}
+```
+
+어찌됐든 `next-themes`에서 사용되는 `theme`도 `localStorage`를 사용하는 로직이라 렌더링 타이밍을 늦춰주지 않으면 종종 에러가 생기더군요. 조금 더 좋은 방법이 떠오르거나 알게 된다면 게시글을 하나 더 작성해보도록 하겠습니다.
