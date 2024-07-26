@@ -1,0 +1,58 @@
+---
+title: 컴포넌트 강제로 리렌더링 시키기
+date: '2024-07-26'
+tags: ['typescript', 'nextJS', 'reactJS']
+draft: false
+summary: 컴포넌트를 강제로 리렌더 시켜야 하는 상황은 언제일까요? 그럴 땐 어떻게 대처하면 될까요?
+---
+
+## 서론
+
+어떻게 보면 정말 간단한 주제이지만 순간적으로 어떻게 구현해야 할 지 고민이 되었던 문제인지라 한 번 작성 작성해 보게 되었습니다. 주제를 보면 `음..? 그냥 상태가 변화할 때마다 re-render 되니까 어려울 게 있나?`라는 생각이 들 수도 있는데요.
+사내 프로젝트 진행 중에 타 프로젝트를 `iframe`으로 연동해야 할 상황이 있었습니다. 근데 이게 구조가 엄청 특이해서 이런 고민을 하게 되었네요.
+
+## Workflow
+
+- 저희 팀에서 타 팀 프로젝트 iframe 호출
+- 타 팀 프로젝트 내에서 값 받아오고 어떻게 저떻게 해서 Submit 수행
+- iframe 내 웹뷰에 반영해주기 위해 리렌더
+
+이러한 구조를 가지고 있는데, 이게 막 `Submit` 작업을 수행할 모달들은 저희 팀에서 `import`를 하고 있고,
+여기서 `Submit`이 발생하면 강제로 `iframe`을 다시 그려줘야 하는 그런 상황이었습니다. 상의를 해서 타 팀에서 `callback` 함수를 받기 위한 `props`를 주셨고, 이를 받았을 때 특정한 값을 바꿔주면서 리렌더를 발생시키려고 계획했습니다.
+
+```tsx
+return (
+  <>
+    <OtherTeamWebview></OtherTeamWebview>
+    <OtherTeamModal onAfterModalClose={handleReloadIframe}></OtherTeamModal>
+  </>
+)
+```
+
+뭐, 대충 이런 생각을 가지고 있었던 것이죠. 근데 생각해보니 `OtherTeamWebview` 자체를 완전히 리렌더 시키기 위해서는 상태값만으로는 충분하지 않더라고요. `iframe` 구조 상 `src`를 직접 건드려줘야 하는데, 또 `iframe`을 직접적으로 호출하는 부분은 `OtherTeamWebView` 내부에 있는 코드라서 저희가 건드릴수는 없었습니다.
+
+### Solution
+
+방법을 고민하다가 컴포넌트에 특정 키값을 줘서 콜백을 받을 때마다 렌덤하게 키값을 바꿔주도록 했습니다.
+
+```tsx
+import React from 'react';
+
+const Component = () => {
+  const globalKey = useGlobalKeyStore(state => state.globalKey)
+
+  const handleReloadIframe = () => {
+    setGlobalKey(Date.now())
+  }
+
+  return (
+    <>
+      <OtherTeamWebview></OtherTeamWebview>
+      <OtherTeamModal onAfterModalClose={handleReloadIframe}></OtherTeamModal>
+    </>
+  )
+}
+```
+
+전에 동료 개발자로부터 `key` 값이 바뀌면 컴포넌트가 강제로 리렌더링 된다는 말을 들었던 적이 있습니다. 그래서 `map` 함수를 쓸 때 함부러 `key`에 `index`를 넣지 말라는 말을 했었거든요.
+오히려 이를 활용해서 이슈를 간단하게 해결할 수 있었네요.

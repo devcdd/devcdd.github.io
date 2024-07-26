@@ -1,7 +1,7 @@
 ---
-title: Next.js 다크모드 - tailwind, antd, ag-grid
+title: 사내 프로젝트 다크모드 적용기
 date: '2024-07-12'
-tags: ['typescript', 'nextJS', 'reactJS', 'next-themes']
+tags: ['typescript', 'nextJS', 'reactJS', 'next-themes', 'ag-grid', 'tailwindcss', 'ant-design']
 draft: false
 summary: 사내 프로젝트에서 다크모드를 도입하게 되어 관련해서 적어봤습니다.
 ---
@@ -37,9 +37,7 @@ summary: 사내 프로젝트에서 다크모드를 도입하게 되어 관련해
 
 뭐, 저렇게만 한다고 바로 작동되는 건 아니고, `tailwind.config.ts`에 들어가서 다크모드가 `class`를 보도록 설정해줘야 합니다. 간단하죠?
 
-```ts
-// tailwind.config.ts
-
+```ts:tailwind.config.ts
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -136,7 +134,7 @@ const LocalStorageDisplay = () => {
 
 사용방법은 간단합니다. `useThemes()`라는 훅을 제공하고, `ThemeProvider` 또한 제공해서 적절히 커스텀 해서 사용하면 됩니다.
 
-```tsx
+```tsx:ThemeProvider.tsx
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
@@ -158,9 +156,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
 저렇게 `Provider`를 구성하고, 프로젝트의 최상단에 묶어주면 `useThemes`를 사용할 준비가 끝난겁니다. 어떻게 보면 `tanstack query`에서 사용되는 `QueryClientProvider`와 비슷한 느낌이죠.
 
-```tsx
-// ToggleSwitch.tsx
-
+```tsx:ToggleSwitch.tsx
 const ToggleSwitch = () => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);

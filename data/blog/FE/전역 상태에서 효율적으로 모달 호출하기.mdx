@@ -85,7 +85,7 @@ const PageB = () => {
 
 뜬금없이 `Reducer`를 만들게 된 이유는 파라미터로 어떤 모달을 띄울지 받았을 때 곧바로 모달을 리턴해주는 식으로 구현할 생각이었기 때문입니다. 모달 타입을 `enum`으로 확실히 선언해주고, 호출 함수를 `export` 해준다면 조금 더 효율적으로 모달을 불러올 수 있겠죠?
 
-```tsx
+```tsx:ModalProvider.tsx
 export enum ModalType {
   A_MODAL = "A_MODAL",
   B_MODAL = "B_MODAL",
@@ -148,7 +148,7 @@ openModal(ModalType.A_MODAL, { data: data, callback: updatePage() })
 
 이렇게 `context`를 만들었다면 이것들을 전달해줄 수 있는 `Provider`를 만들어줘야 합니다.
 
-```tsx
+```tsx:ModalProvider.tsx
 export const ModalProvider = (props: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(ModalReducer, initialState)
 
@@ -183,9 +183,7 @@ const { openModal, closeModal } = useModal() // Looks Good !
 
 잘 보면 `ModalProvider` 컴포넌트 안에 `ModalContainer`라는 컴포넌트가 있습니다. 이제는 모달을 직접적으로 렌더하는 `Container` 컴포넌트를 다뤄보겠습니다.
 
-```tsx
-// ModalContainer.tsx
-
+```tsx:ModalContainer.tsx
 const ModalContainer = () => {
   const { state, closeModal } = useModal();
   const { modalType, modalProps } = state;
@@ -252,9 +250,7 @@ type ModalProps = {
 
 이제 진짜 다 왔네요, 구현하는데도 힘들었는데 설명하는데도 꽤나 공수가 많이 드는 것 같습니다. 아직 `props`로 넘겨주는 타입의 정의가 미흡한 것 같아 추가적인 리팩토링의 필요성이 느껴지긴 하지만, 여러 컴포넌트들의 코드들이 개선되니 속이 뻥 뚫리네요 !!
 
-```tsx
-// ModalProvider.tsx
-
+```tsx:ModalProvider.tsx
 import { createContext, useContext, useReducer } from "react";
 
 export enum ModalType {
@@ -324,9 +320,7 @@ export const ModalProvider = (props: { children: React.ReactNode }) => {
 export const useModal = () => useContext(ModalContext);
 ```
 
-```tsx
-// ModalContainer.tsx
-
+```tsx:ModalContainer.tsx
 import { useModal } from "./ModalProvider";
 
 const ModalContainer = () => {
