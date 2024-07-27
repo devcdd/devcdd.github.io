@@ -2,19 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://example.com/</loc>
-<lastmod>2024-07-03</lastmod>
+<lastmod>2024-07-27</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog</loc>
-<lastmod>2024-07-03</lastmod>
+<lastmod>2024-07-27</lastmod>
 </url>
 <url>
 <loc>https://example.com/projects</loc>
-<lastmod>2024-07-03</lastmod>
+<lastmod>2024-07-27</lastmod>
 </url>
 <url>
 <loc>https://example.com/tags</loc>
-<lastmod>2024-07-03</lastmod>
+<lastmod>2024-07-27</lastmod>
+</url>
+<url>
+<loc>https://example.com/blog/FE/CSS 병합 이슈 해결기</loc>
+<lastmod>2024-07-26T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://example.com/blog/FE/Next.js 다크모드 적용기</loc>
+<lastmod>2024-07-12T00:00:00.000Z</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog/FE/사내 컨벤션 정하기</loc>
@@ -23,6 +31,10 @@
 <url>
 <loc>https://example.com/blog/FE/전역 상태에서 효율적으로 모달 호출하기</loc>
 <lastmod>2024-07-04T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://example.com/blog/FE/컴포넌트 강제로 리렌더링 시키기</loc>
+<lastmod>2024-07-26T00:00:00.000Z</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog/retrospect/나태지옥을 탈출해보자</loc>
