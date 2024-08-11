@@ -1,0 +1,64 @@
+
+  <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+      <title>디디의 개발일지</title>
+      <link>https://example.com/blog</link>
+      <description>개발, 회고</description>
+      <language>ko-kr</language>
+      <managingEditor>undefined (CDD)</managingEditor>
+      <webMaster>undefined (CDD)</webMaster>
+      <lastBuildDate>Fri, 26 Jul 2024 00:00:00 GMT</lastBuildDate>
+      <atom:link href="https://example.com/tags/typescript/feed.xml" rel="self" type="application/rss+xml"/>
+      
+  <item>
+    <guid>https://example.com/blog/FE/CSS 병합 이슈 해결기</guid>
+    <title>CSS 병합 이슈 해결기</title>
+    <link>https://example.com/blog/FE/CSS 병합 이슈 해결기</link>
+    <description>특이한 프로젝트 구조 때문에 `tailwindcss`가 중복 생성되어 개발자 도구 콘솔 마저 죽어버리는 상황, 어떻게 해결했을까요?</description>
+    <pubDate>Fri, 26 Jul 2024 00:00:00 GMT</pubDate>
+    <author>undefined (CDD)</author>
+    <category>typescript</category><category>nextJS</category><category>reactJS</category><category>tailwindcss</category>
+  </item>
+
+  <item>
+    <guid>https://example.com/blog/FE/Next.js 다크모드 적용기</guid>
+    <title>사내 프로젝트 다크모드 적용기</title>
+    <link>https://example.com/blog/FE/Next.js 다크모드 적용기</link>
+    <description>사내 프로젝트에서 다크모드를 도입하게 되어 관련해서 적어봤습니다.</description>
+    <pubDate>Fri, 12 Jul 2024 00:00:00 GMT</pubDate>
+    <author>undefined (CDD)</author>
+    <category>typescript</category><category>nextJS</category><category>reactJS</category><category>next-themes</category><category>ag-grid</category><category>tailwindcss</category><category>ant-design</category>
+  </item>
+
+  <item>
+    <guid>https://example.com/blog/FE/사내 컨벤션 정하기</guid>
+    <title>사내 컨벤션 정하기</title>
+    <link>https://example.com/blog/FE/사내 컨벤션 정하기</link>
+    <description>회사에서 컨벤션을 새롭게 정의하는 날이 와서 작성해봤습니다.</description>
+    <pubDate>Tue, 02 Jul 2024 00:00:00 GMT</pubDate>
+    <author>undefined (CDD)</author>
+    <category>typescript</category><category>nextJS</category><category>reactJS</category>
+  </item>
+
+  <item>
+    <guid>https://example.com/blog/FE/전역 상태에서 효율적으로 모달 호출하기</guid>
+    <title>전역 상태에서 효율적으로 모달 호출하기</title>
+    <link>https://example.com/blog/FE/전역 상태에서 효율적으로 모달 호출하기</link>
+    <description>어떻게 해야 효율적으로 많은 모달들을 관리할 수 있을까요?</description>
+    <pubDate>Thu, 04 Jul 2024 00:00:00 GMT</pubDate>
+    <author>undefined (CDD)</author>
+    <category>typescript</category><category>nextJS</category><category>reactJS</category>
+  </item>
+
+  <item>
+    <guid>https://example.com/blog/FE/컴포넌트 강제로 리렌더링 시키기</guid>
+    <title>컴포넌트 강제로 리렌더링 시키기</title>
+    <link>https://example.com/blog/FE/컴포넌트 강제로 리렌더링 시키기</link>
+    <description>컴포넌트를 강제로 리렌더 시켜야 하는 상황은 언제일까요? 그럴 땐 어떻게 대처하면 될까요?</description>
+    <pubDate>Fri, 26 Jul 2024 00:00:00 GMT</pubDate>
+    <author>undefined (CDD)</author>
+    <category>typescript</category><category>nextJS</category><category>reactJS</category>
+  </item>
+
+    </channel>
+  </rss>

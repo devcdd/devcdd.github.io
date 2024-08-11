@@ -2,19 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://example.com/</loc>
-<lastmod>2024-07-27</lastmod>
+<lastmod>2024-08-11</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog</loc>
-<lastmod>2024-07-27</lastmod>
+<lastmod>2024-08-11</lastmod>
 </url>
 <url>
 <loc>https://example.com/projects</loc>
-<lastmod>2024-07-27</lastmod>
+<lastmod>2024-08-11</lastmod>
 </url>
 <url>
 <loc>https://example.com/tags</loc>
-<lastmod>2024-07-27</lastmod>
+<lastmod>2024-08-11</lastmod>
+</url>
+<url>
+<loc>https://example.com/blog/BE/Nest 공식문서 탐방기</loc>
+<lastmod>2024-08-10T00:00:00.000Z</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog/FE/CSS 병합 이슈 해결기</loc>
