@@ -17,6 +17,10 @@
 <lastmod>2024-08-12</lastmod>
 </url>
 <url>
+<loc>https://example.com/blog/BE/Nest 공식문서 탐방기</loc>
+<lastmod>2024-08-10T00:00:00.000Z</lastmod>
+</url>
+<url>
 <loc>https://example.com/blog/FE/CSS 병합 이슈 해결기</loc>
 <lastmod>2024-07-26T00:00:00.000Z</lastmod>
 </url>
@@ -47,9 +51,5 @@
 <url>
 <loc>https://example.com/blog/retrospect/첫글</loc>
 <lastmod>2024-06-17T00:00:00.000Z</lastmod>
-</url>
-<url>
-<loc>https://example.com/blog/BE/Nest 공식문서 탐방기</loc>
-<lastmod>2024-08-10T00:00:00.000Z</lastmod>
 </url>
 </urlset>
