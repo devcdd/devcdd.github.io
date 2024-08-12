@@ -17,7 +17,11 @@
 <lastmod>2024-08-12</lastmod>
 </url>
 <url>
-<loc>https://example.com/blog/retrospect/도파민 디톡스</loc>
+<loc>https://example.com/blog/BE/Nest 공식문서 탐방기</loc>
+<lastmod>2024-08-10T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://example.com/blog/retrospect/도파민을 디톡스 해보자</loc>
 <lastmod>2024-08-13T00:00:00.000Z</lastmod>
 </url>
 <url>
@@ -47,9 +51,5 @@
 <url>
 <loc>https://example.com/blog/FE/컴포넌트 강제로 리렌더링 시키기</loc>
 <lastmod>2024-07-26T00:00:00.000Z</lastmod>
-</url>
-<url>
-<loc>https://example.com/blog/BE/Nest 공식문서 탐방기</loc>
-<lastmod>2024-08-10T00:00:00.000Z</lastmod>
 </url>
 </urlset>
