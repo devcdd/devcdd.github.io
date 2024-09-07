@@ -30,5 +30,15 @@
     <category>typescript</category><category>nextJS</category><category>reactJS</category><category>next-themes</category><category>ag-grid</category><category>tailwindcss</category><category>ant-design</category>
   </item>
 
+  <item>
+    <guid>https://example.com/blog/FE/컴포넌트 동적 생성기</guid>
+    <title>컴포넌트 동적 생성기</title>
+    <link>https://example.com/blog/FE/컴포넌트 동적 생성기</link>
+    <description>.tsx 파일 자체를 동적으로 생성해야 한다면 어떻게 해야 할까요? 사내의 특이한 프로젝트 환경 때문에 도전하게 된 경험을 공유해보려고 합니다.</description>
+    <pubDate>Mon, 02 Sep 2024 00:00:00 GMT</pubDate>
+    <author>undefined (CDD)</author>
+    <category>typescript</category><category>nextJS</category><category>reactJS</category><category>tailwindcss</category>
+  </item>
+
     </channel>
   </rss>

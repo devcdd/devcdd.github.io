@@ -20,5 +20,15 @@
     <category>typescript</category><category>nextJS</category><category>reactJS</category><category>next-themes</category><category>ag-grid</category><category>tailwindcss</category><category>ant-design</category>
   </item>
 
+  <item>
+    <guid>https://example.com/blog/FE/useInfiniteQuery 도입기 (feat. ag-grid)</guid>
+    <title>useInfiniteQuery 도입기 (feat. ag-grid)</title>
+    <link>https://example.com/blog/FE/useInfiniteQuery 도입기 (feat. ag-grid)</link>
+    <description>useQuery 기반 사내 프로젝트에서 useInfiniteQuery를 새롭게 도입하게 된 계기, 그리고 어떤식으로 Optimistic Update를 적용했는지에 대해 작성해보려고 합니다.</description>
+    <pubDate>Sat, 07 Sep 2024 00:00:00 GMT</pubDate>
+    <author>undefined (CDD)</author>
+    <category>typescript</category><category>nextJS</category><category>reactJS</category><category>react-query</category><category>useInfiniteQuery</category><category>ag-grid</category>
+  </item>
+
     </channel>
   </rss>
