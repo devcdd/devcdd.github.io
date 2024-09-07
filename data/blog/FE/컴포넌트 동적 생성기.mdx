@@ -1,0 +1,223 @@
+---
+title: 컴포넌트 동적 생성기
+date: '2024-09-02'
+tags: ['typescript', 'nextJS', 'reactJS', 'tailwindcss']
+draft: false
+summary: .tsx 파일 자체를 동적으로 생성해야 하는 상황이 왔는데요, 어떤식으로 진행했는지 작성해봤습니다.
+---
+
+## 서론
+
+### 현 프로젝트 구조
+
+```
+project-root/
+  ├── node_modules/
+  │   ├── @company/
+  │   │   ├── page1/
+  │   │   ├── page2/
+  │   │   ├── page3/
+  │   │
+
+```
+
+페이지 단위로 빌드되어 프로젝트로 들어가는 구조인 상황에서 저희는 `page routing`을 사용하고 있습니다. 간단히 `page routing`에 대해서 설명해보자면,
+프로젝트 루트에 존재하는 `pages` 디렉토리 내부에 `.tsx` 파일을 생성하면 해당 파일들의 네이밍이 곧 라우팅이 되는 방식입니다. 아래를 참고하시면 좋을 것 같습니다.
+
+```bash
+project-root/
+    ├── pages/
+    │   ├── index.tsx - localhost:3000/
+    │   ├── about.tsx - localhost:3000/about
+    │   ├── contact.tsx - localhost:3000/contact
+    │   ├── ...
+    │
+```
+
+그래서 정상적인 라우팅을 위해서는 모듈을 설치한 이후에 직접 `.tsx` 파일을 생성해야 하는 상황이었습니다. 기존에는 `Patient List` 페이지를 설치한다고 하면,
+직접 `PatientList.tsx` 파일을 만든 후에 코드를 작성해주는 식으로 진행했었는데요, 이를 좀 자동화 하는 것이 좋을 것 같아 방법을 고민해봤습니다.
+
+## 실행시킬 스크립트 만들기
+
+빌드나 컴파일하는 타이밍에 컴포넌트를 동적으로 생성하는 것이 좋을 것 같아 이를 구현해보기로 했는데, 가장 직관적인 `js` 내 `fs` 모듈을 사용해보기로 했습니다.
+
+### Package.json 읽어오기
+
+```javascript
+const fs = require("fs");
+const path = require("path");
+
+function generatePages() {
+  const packageJsonPath = path.resolve(__dirname, "../package.json");
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+
+  const dependencies = packageJson.dependencies || {};
+  const Packages = Object.keys(dependencies)
+    .filter((pkg) => pkg.startsWith("@company/"))
+    .filter((pkg) => !pkg.includes("helper"))
+    .filter((pkg) => !pkg.includes("api"));
+
+  // other logics ...
+}
+```
+
+네이밍 구조 상 앞에 `@company`가 붙어있는 패키지들이 저희가 직접 제작한 패키지들이고, 거기에 `helper`나 `api`가 포함되어 있지 않은 패키지들이 페이지들을 의미하기에
+위와 같이 필터링 로직을 걸어놨습니다.
+
+### 삭제 / 유지할 파일 구분하기
+
+```javascript
+const pagesDir = path.resolve(__dirname, "../pages/");
+  if (!fs.existsSync(pagesDir)) {
+    fs.mkdirSync(pagesDir, { recursive: true });
+  }
+
+// 삭제할 파일 목록을 정의합니다.
+const filesToKeep = [
+    "_app.tsx",
+    "_document.tsx",
+    "index.tsx",
+    "registration.tsx",
+    "login.tsx",
+    "setting.tsx",
+];
+
+// pages 디렉토리 안의 모든 파일을 가져옵니다.
+const filesInDir = fs.readdirSync(pagesDir);
+
+// 삭제할 파일을 필터링하고 삭제합니다.
+filesInDir
+.filter((file) => !filesToKeep.includes(file))
+.forEach((file) => {
+  fs.unlinkSync(path.join(pagesDir, file));
+  console.log(`Deleted: ${file}`);
+});
+```
+
+`filesToKeep`에 해당되는 컴포넌트들은 패키지가 아닌 루트 종속성 컴포넌트들이기에 삭제 목록에서 제외시켜 줍니다. 그리고 나머지 기존 파일들을 삭제해주는 방식입니다.
+약간 기존의 캐시를 지우는 느낌이랄까요? 종종 특정 패키지를 삭제할 때 해당 컴포넌트도 추가로 삭제시켜주어야 하는 상황이 발생해서 이렇게 구현했습니다.
+
+### 파일 생성하기
+
+```javascript
+ const pascalize = (str) =>
+    str
+      .replace(/-+/g, " ") // 대시를 공백으로 대체
+      .replace(
+        /(\w)(\w*)/g,
+        (g0, g1, g2) => g1.toUpperCase() + g2.toLowerCase(),
+      )
+      .replace(/\s+/g, ""); // 공백을 제거하여 단어를 결합
+
+  Packages
+    .filter((pkg) => !pkg.includes("system")) // system 필터링 X
+    .filter((pkg) => !pkg.includes("api")) // api 필터링 X
+    .forEach((pkg) => {
+      const componentName = pkg.split("/")[1];
+      const pageContent = `
+import Page from "${pkg}";
+import type { ReactElement } from "react";
+import Layout from "@/component/layout";
+
+export default function ${pascalize(componentName)}() {
+  return <Page />;
+}
+
+${pascalize(componentName)}.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
+      `;
+
+      const pagePath = path.join(pagesDir, `${componentName}.tsx`);
+      fs.writeFileSync(pagePath, pageContent, "utf-8");
+    });
+```
+
+저희는 패키지 이름 자체를 라우팅으로 쓸거라 컴포넌트 네이밍에는 별다른 로직을 추가하지 않았고, 컨벤션에 따라 컴포넌트 자체는 파스칼 케이스를 따라야 하기 때문에
+위와 같이 `pascalize` 해줬습니다. 이 스크립트의 이름은 `generate-pages.js`라고 지어줬고, `package.json`에는 아래와 같이 명령어를 추가해줬습니다.
+
+```json:package.json
+{
+  "scripts": {
+      "prebuild": "node ./scripts/generate-pages.js && yarn merge-css && yarn purge-css",
+  }
+}
+```
+
+이제는 패키지를 설치하기만 하면 알아서 컴포넌트가 동적으로 생성되니 걱정이 없어졌습니다. 마지막으로 `js` 파일을 기재하고 작성을 끝내도록 하겠습니다.
+
+```javascript:generate-pages.js
+const fs = require("fs");
+const path = require("path");
+
+function generatePages() {
+  const packageJsonPath = path.resolve(__dirname, "../package.json");
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+
+  const dependencies = packageJson.dependencies || {};
+  const Packages = Object.keys(dependencies)
+    .filter((pkg) => pkg.startsWith("@company/"))
+    .filter((pkg) => !pkg.includes("helper"))
+    .filter((pkg) => !pkg.includes("api"));
+
+  const pagesDir = path.resolve(__dirname, "../pages/");
+  if (!fs.existsSync(pagesDir)) {
+    fs.mkdirSync(pagesDir, { recursive: true });
+  }
+
+  // 삭제할 파일 목록을 정의합니다.
+  const filesToKeep = [
+    "_app.tsx",
+    "_document.tsx",
+    "index.tsx",
+    "registration.tsx",
+    "login.tsx",
+    "setting.tsx",
+  ];
+
+  // pages 디렉토리 안의 모든 파일을 가져옵니다.
+  const filesInDir = fs.readdirSync(pagesDir);
+
+  // 삭제할 파일을 필터링하고 삭제합니다.
+  filesInDir
+    .filter((file) => !filesToKeep.includes(file))
+    .forEach((file) => {
+      fs.unlinkSync(path.join(pagesDir, file));
+      console.log(`Deleted: ${file}`);
+    });
+
+  const pascalize = (str) =>
+    str
+      .replace(/-+/g, " ") // 대시를 공백으로 대체
+      .replace(
+        /(\w)(\w*)/g,
+        (g0, g1, g2) => g1.toUpperCase() + g2.toLowerCase(),
+      )
+      .replace(/\s+/g, ""); // 공백을 제거하여 단어를 결합
+
+  Packages
+    .filter((pkg) => !pkg.includes("system")) // system 필터링 X
+    .filter((pkg) => !pkg.includes("api")) // api 필터링 X
+    .forEach((pkg) => {
+      const componentName = pkg.split("/")[1];
+      const pageContent = `
+import Page from "${pkg}";
+import type { ReactElement } from "react";
+import Layout from "@/component/layout";
+
+export default function ${pascalize(componentName)}() {
+  return <Page />;
+}
+
+${pascalize(componentName)}.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
+      `;
+      const pagePath = path.join(pagesDir, `${componentName}.tsx`);
+      fs.writeFileSync(pagePath, pageContent, "utf-8");
+    });
+}
+
+generatePages();
+console.log("Pages updated successfully, and unnecessary files were deleted.");
+```
