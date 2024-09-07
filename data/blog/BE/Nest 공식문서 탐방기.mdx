@@ -1,0 +1,261 @@
+---
+title: Nest 공식문서 1차 탐방기
+date: '2024-08-10'
+tags: ['typescript', 'nestJS', 'backend']
+draft: false
+summary: 사이드 프로젝트를 진행하려 하니 백엔드를 구하기도 뭐하고, 사내에서도 프론트 용 백엔드가 필요한 상황이어서 가볍게 시작해보기로 했습니다.
+---
+
+## 서론
+
+현재 `N빵치자`라는 사이드 프로젝트를 진행 중인데, 간단히 요약하자면 조금 더 유동적인 정산을 도와줄 수 있도록 하기 위한 목적을 가진 프로젝트입니다.
+최종적인 목적은 결과 페이지를 `카카오톡 공유하기`와 같은 방식으로 넘겨주고, 바로바로 자신의 정산 정보를 확인할 수 있도록 하게 하고 싶은데, 백엔드 없이 쿼리스트링만으로
+데이터를 가지고 있는 것은 무리일 것 같아 `그냥 직접 백엔드를 만들자`라는 생각을 하게 되었습니다. 뭐, 회사에서도 프론트팀 전용 백엔드가 필요한 상황이라 고민이 많았는데,
+도전해보고 괜찮으면 사내 백엔드도 도전 해볼만 할 것 같습니다. 이 참에 풀스택 개발자가 되어버리는거죠..!
+
+나름 공식문서를 읽어가면서 진행하는거라 내용에 대한 정확도는 제법 보장할 수 있을 것 같고, `Nest`를 처음 접하는 입장에서 작성하는 방식이라 이해하기는 쉬운 글이 될 것
+같습니다. 그러면 함께 시작해보시죠!
+
+### First Step
+
+```bash
+$ npm i -g @nestjs/cli
+$ nest new nest-study
+```
+
+우선 프로젝트를 만드는 것이 우선이겠죠, 위와 같은 방식으로 `nest-study`라는 프로젝트를 만들었습니다. 뭐, 구성은 크게 복잡한 것 같지는 않고, `src` 디렉토리 내를 먼저
+살펴보려고 합니다.
+
+```
+src
+├── app.controller.spec.ts
+├── app.controller.ts
+├── app.module.ts
+├── app.service.ts
+└── main.ts
+```
+
+| 파일명 | 설명 |
+| --- | --- |
+| app.controller.spec.ts | 테스팅 하는 컨트롤러라고 합니다. |
+| app.controller.ts | 싱글 라우팅을 위한 컨트롤러라고 하네요. |
+| app.module.ts | 루트 모듈입니다. |
+| app.service.ts | `app`의 서비스입니다. |
+| main.ts | 앱의 진입점입니다. |
+
+어떻게 보면 `express`와 비슷한 구조를 가지고 있는 것 같은데, 동작 원리를 이해하기 위해서는 조금 더 깊게 들어가봐야 할 것 같습니다.
+
+```typescript:src/main.ts
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  await app.listen(3000); // 3000포트를 사용한다는 의미겠죠?
+}
+bootstrap();
+```
+
+앱의 진입점인 `main.ts`의 코드입니다. 위와 같은 코드가 돌면서 서버가 실행이 되나 보네요. `NestFactory`라는 것이 `nestjs`의 핵심인가 봅니다.
+좀 더 자세한 내용은 어느정도 코드를 만져보고 더 알아보도록 하겠습니다. 그래서 `yarn start`를 시켜보면 아래와 같은 로그들과 함께 서버가 실행되는 것을 확인할 수 있습니다.
+
+```bash:Terminal
+[Nest] 56205  - 08/10/2024, 11:26:37 PM     LOG [NestFactory] Starting Nest application...
+[Nest] 56205  - 08/10/2024, 11:26:37 PM     LOG [InstanceLoader] AppModule dependencies initialized +6ms
+[Nest] 56205  - 08/10/2024, 11:26:37 PM     LOG [RoutesResolver] AppController {/}: +2ms
+[Nest] 56205  - 08/10/2024, 11:26:37 PM     LOG [RouterExplorer] Mapped {/, GET} route +1ms
+[Nest] 56205  - 08/10/2024, 11:26:37 PM     LOG [NestApplication] Nest application successfully started +1ms
+```
+
+`Postman`으로 `localhost:3000`에 `request`를 던져보니 `Hello World!`라는 문구가 응답으로 오네요. 이것을 보면 어디선가 저 문구를 반환하는 `controller`가
+있다는 것을 알수가 있습니다. 찾아보니 범인은 `app.controller.ts`였네요.
+
+```typescript:src/app.controller.ts
+import { Controller, Get } from '@nestjs/common';
+import { AppService } from './app.service';
+
+@Controller()
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+
+  @Get()
+  getHello(): string {
+    return this.appService.getHello();
+  }
+}
+```
+
+최근에는 거의 프론트만 하다보니 `class, constructor, private, @Controller` 등 다소 생소한 코드들이 보이기는 하는데, 의미론적으로는 대충 이해가 되는 듯 합니다.
+`AppService`라는 객체로 `AppController`를 생성하고, 내부에 `@Get`을 통해 `Get` 요청을 받을 수 있도록 만들어놓은 것 같습니다. 뭐, 정확하진 않더라도 느낌만 잡아보는거죠.
+
+### Controller
+
+<div className={'my-[-40px] flex justify-center gap-2'}>
+  <img src="/static/images/posts/nest-controller.png" alt="modal" />
+</div>
+
+문서를 좀 더 읽어보니 위와 같은 그림이 나오면서 설명이 나와있네요. 간략하게 요약하자면 `Controller`는 클라이언트로부터 들어온 요청을 받아 처리하고, 응답을 반환하는
+역할을 담당한다고 합니다. 이 친구 아주 중요한 역할이었네요, 그래서 아까 `Hello World!`를 반환하는 친구도 파일명에 `controller.ts`가 붙어있었던 것 같습니다.
+
+`Nest`에서는 클래스와 데코레이터를 사용한다고 합니다. 데코레이터는 클래스, 메서드, 속성에 메타데이터를 부여하는데, 이를 통해 `Nest`가 요청을 라우팅 맵(요청을 해당 컨트롤러에 연결하는 맵)을
+할 수 있도록 도와준다고 합니다. 아까 코드에서 `@Controller`와 `@Get`이 그런 역할을 하는 것이었군요. 공식 문서를 보니 예시코드가 하나 더 나와있습니다.
+
+```typescript:cats.controller.ts
+import { Controller, Get } from '@nestjs/common';
+
+@Controller('cats')
+export class CatsController {
+  @Get()
+  findAll(): string {
+    return 'This action returns all cats';
+  }
+}
+```
+
+이제 느낌이 오네요, `Get` 요청이 들어온다면 `findAll` 메서드를 실행하고, `findAll` 메서드는 `This action returns all cats`이라는 `string` 값을 반환하겠네요.
+
+어, 그런데 `@Controller` 데코레이터 뒤에 `'cats'`라는 것이 붙어있습니다. 이건 엔드포인트를 의미하는데요, 결국에는 `GET /cats`로 요청이 들어왔을 때 `findAll` 메서드를
+실행하는 방식으로 동작하게 되는 것 같습니다. 메서드 네이밍은 `Nest` 내에서 특별한 처리를 하지 않는다고 하네요, 적당히 마음대로 지으면 되는 것 같습니다.
+
+### Request Object
+
+자, 그러면 프론트엔드 입장에서 요청을 던졌다고 쳤을 때 아무 파라미터도 없는 경우도 물론 있겠지만, 대부분은 `payload`나 `request header`와 같은 방식으로
+백엔드가 요청을 처리한다는 정도는 알고 있을겁니다. 그럼 이런 요청은 어떤식으로 처리해야 할까요? 공식문서에 예제 코드가 또 나와있네요.
+
+```typescript:cats.controller.ts
+import { Controller, Get, Req } from '@nestjs/common';
+import { Request } from 'express';
+
+@Controller('cats')
+export class CatsController {
+  @Get()
+  findAll(@Req() request: Request): string {
+    return 'This action returns all cats';
+  }
+}
+```
+
+`typescript`를 사용하고 있는 입장이라 조금 더 이해하기가 쉽네요. `express`의 `Request`가 타입으로 사용되네요. 여기서의 `Request` 객체는
+HTTP 요청을 나타내며, 요청 쿼리 문자열, 파라미터, HTTP 헤더, 본문과 같은 속성을 가지고 있다고 합니다. 그리고 공식문서를 조금 더 내려보니
+아래와 같은 데코레이터 목록이 있어서 들고 왔습니다.
+
+| 데코레이터 | 참조 |
+| --- | --- |
+| `@Request()`, `@Req()`   | `req`                       |
+| `@Response(), @Res()*` | `res`                       |
+| `@Next()`               | `next`                      |
+| `@Session()`            | `req.session`               |
+| `@Param(key?: string)`  | `req.params / req.params[key]` |
+| `@Body(key?: string)`   | `req.body / req.body[key]`   |
+| `@Query(key?: string)`  | `req.query / req.query[key]` |
+| `@Headers(name?: string)` | `req.headers / req.headers[name]` |
+| `@Ip()`                 | `req.ip`                    |
+| `@HostParam()`          | `req.hosts`                 |
+
+여기서 약간 뇌정지가 왔네요. 저게 무슨 의미를 가지고 있는지도 정확히 모르겠고, 코드 작성 없이 문서만 주구장창 읽고 있으니 뭔가 확실한 느낌이 안옵니다.
+
+### 아, 직접 한 번 만들어보자!
+
+여기까지 읽어보니 직접 코드를 짜보고 싶어졌습니다. 컨트롤러를 하나 만들건데, 공식문서를 보니 `CLI`를 통해 컨트롤러를 생성하는 방식이 있다고 하는군요.
+
+```bash:Terminal
+$ nest g controller cats
+```
+
+위의 명령어를 실행시키니 아래와 같은 파일들이 생성되었습니다.
+
+```bash
+src
+├── cats
+│   ├── cats.controller.spec.ts
+│   └── cats.controller.ts
+```
+
+이제 한 번 봤다고, 이해가 좀 되네요. `cats`라는 디렉토리 안에 테스팅 파일하고, 컨트롤러가 하나 생성되었습니다.
+
+```typescript:cats.controller.ts
+import { Controller } from '@nestjs/common';
+
+@Controller('cats')
+export class CatsController {}
+```
+
+아무런 코드가 없어서 좀 당황스러운데요, 그냥 한 번 작성해봅시다.
+
+```typescript:cats.controller.ts
+import { Controller, Get, Req } from '@nestjs/common';
+import { Request } from 'express';
+
+@Controller('cats')
+export class CatsController {
+  @Get()
+  findAll(@Req() request: Request): string {
+    console.log(request); // 어떻게 생겨먹은 놈인지 확인하려고 찍어봤습니다.
+    return 'cats';
+  }
+}
+```
+
+`Postman`으로 `localhost:3000/cats`에 요청을 쏘니, `cats`라는 응답이 오는 것을 확인할 수 있습니다. 그리고 콘솔을 찍어봤는데, `Request` 객체가 잘 찍힙니다.
+너무 길어서 간략하게만 첨부하겠습니다.
+
+```bash:Terminal
+IncomingMessage {
+  _events: { ... },
+  _readableState: ReadableState { ... },
+  _maxListeners: undefined,
+  socket: <ref *1> Socket { ...
+    _events: { ... },
+    _readableState: ReadableState { ... },
+    _writableState: WritableState { ... },
+```
+
+어우, 간단한 요청 하나에도 이렇게 많은 정보들이 포함되서 날라가네요. 극히 일부분만 가져온건데, 실제로는 스크롤을 여러 번 내려야 할만큼 방대한 양입니다.
+그러면 데코레이터를 좀 더 다양하게 쓰려면 어떻게 해야 할까요?
+
+```ts
+    findAll(
+    @Req() request: Request,        // Express의 Request 객체
+    @Ip() ip: string,               // 요청을 보낸 사용자의 IP 주소
+    @Headers('user-agent') userAgent: string // 요청 헤더의 'user-agent' 값
+  ): string {
+```
+
+이런 느낌으로 사용된다고 하네요. 아까 데코레이터 목록을 보면 각 데코레이터마다 참조값들이 있는데, 이를 통해 요청을 받을 때 필요한 정보들을 보다 가시성 있게 받아올 수 있는 듯 합니다.
+거의 다 `req` 객체로부터 참조를 끌어오는 것 같아서 사실 `@Req()`만으로도 적당한 구현 정도는 충분할 것 같네요.
+
+### 여기서 끝내기는 좀 아쉽지 않나?
+
+1차 탐방기가 좀 길어진 것 같은데, 여기서 끝내기에는 아쉬운 점이 있죠. 프론트엔드 입장으로써 `Get` 요청을 보낼 때 함께 보내는 쿼리 파라미터들을 처리해보고 싶다는 생각이
+드는군요. ~~저만 그런가요..?~~ 그래서 마지막으로 어떻게 쿼리 파라미터를 받아서 처리하는지만 간단하게 구현해보고 마치려고 합니다.
+
+총 두 가지의 방법이 있는 것 같습니다, **명시적으로 키값을 가져와서 값을 읽는 방법**과 그냥 **파라미터 객체 자체를 읽어오는 방법**. 테스트를 위해 요청은 아래와 같이 던지겠습니다.
+
+```bash:Terminal
+GET localhost:3000/cats?key=1234&name=cdd
+```
+
+그리고 받는 쪽은 찾아보니 `@Query` 데코레이터를 사용하면 된다고 합니다. 그럼 약간 코드를 수정해보겠습니다.
+
+```typescript:cats.controller.ts
+  @Get()
+  get(
+    @Query() query: Record<string, string>,
+    @Query('key') key: string,
+  ): string {
+    console.log('cats.controller.ts:10 - query = ', query);
+    console.log('cats.controller.ts:10 - key = ', key);
+    return 'get response';
+  }
+```
+
+로그에 찍힌 결과를 보니, 아래와 같은 결과가 나오는군요.
+
+```bash:Terminal
+cats.controller.ts:10 - query =  { key: '1234', name: 'cdd' }
+cats.controller.ts:10 - key =  1234
+```
+
+`query` 객체에는 모든 쿼리 파라미터가 담겨있고, `key`에는 `key`라는 이름의 쿼리 파라미터의 값이 담겨있는 것을 확인할 수 있습니다. 간단히 보자면 `@Query` 데코레이터
+속에는 모든 쿼리 파라미터가 담긴 객체가 들어가서 저런 방식으로 받아올 수 있고, `@Query('key')`는 특정 `key`의 `value` 값을 받아올 수 있네요.
+한 번에 너무 많이 가면 금방 의욕을 잃어버릴 것 같아서 오늘은 여기까지만 알아보고, 다음에는 좀 더 깊게 들어가보도록 하겠습니다.
