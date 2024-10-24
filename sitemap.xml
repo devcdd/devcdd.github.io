@@ -2,19 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://example.com/</loc>
-<lastmod>2024-09-19</lastmod>
+<lastmod>2024-10-24</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog</loc>
-<lastmod>2024-09-19</lastmod>
+<lastmod>2024-10-24</lastmod>
 </url>
 <url>
 <loc>https://example.com/projects</loc>
-<lastmod>2024-09-19</lastmod>
+<lastmod>2024-10-24</lastmod>
 </url>
 <url>
 <loc>https://example.com/tags</loc>
-<lastmod>2024-09-19</lastmod>
+<lastmod>2024-10-24</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog/BE/Nest 공식문서 탐방기</loc>
@@ -39,6 +39,10 @@
 <url>
 <loc>https://example.com/blog/FE/사내 컨벤션 정하기</loc>
 <lastmod>2024-07-02T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://example.com/blog/FE/재빌드 없이 env 변동사항 적용하기</loc>
+<lastmod>2024-10-24T00:00:00.000Z</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog/FE/전역 상태에서 효율적으로 모달 호출하기</loc>
