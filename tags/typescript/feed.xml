@@ -7,19 +7,9 @@
       <language>ko-kr</language>
       <managingEditor>undefined (CDD)</managingEditor>
       <webMaster>undefined (CDD)</webMaster>
-      <lastBuildDate>Sat, 10 Aug 2024 00:00:00 GMT</lastBuildDate>
+      <lastBuildDate>Fri, 26 Jul 2024 00:00:00 GMT</lastBuildDate>
       <atom:link href="https://example.com/tags/typescript/feed.xml" rel="self" type="application/rss+xml"/>
       
-  <item>
-    <guid>https://example.com/blog/BE/Nest 공식문서 탐방기</guid>
-    <title>Nest 공식문서 1차 탐방기</title>
-    <link>https://example.com/blog/BE/Nest 공식문서 탐방기</link>
-    <description>사이드 프로젝트를 진행하려 하니 백엔드를 구하기도 뭐하고, 사내에서도 프론트 용 백엔드가 필요한 상황이어서 가볍게 시작해보기로 했습니다.</description>
-    <pubDate>Sat, 10 Aug 2024 00:00:00 GMT</pubDate>
-    <author>undefined (CDD)</author>
-    <category>typescript</category><category>nestJS</category><category>backend</category>
-  </item>
-
   <item>
     <guid>https://example.com/blog/FE/CSS 병합 이슈 해결기</guid>
     <title>CSS 병합 이슈 해결기</title>
@@ -108,6 +98,16 @@
     <pubDate>Mon, 02 Sep 2024 00:00:00 GMT</pubDate>
     <author>undefined (CDD)</author>
     <category>typescript</category><category>nextJS</category><category>reactJS</category><category>tailwindcss</category>
+  </item>
+
+  <item>
+    <guid>https://example.com/blog/BE/Nest 공식문서 탐방기</guid>
+    <title>Nest 공식문서 1차 탐방기</title>
+    <link>https://example.com/blog/BE/Nest 공식문서 탐방기</link>
+    <description>사이드 프로젝트를 진행하려 하니 백엔드를 구하기도 뭐하고, 사내에서도 프론트 용 백엔드가 필요한 상황이어서 가볍게 시작해보기로 했습니다.</description>
+    <pubDate>Sat, 10 Aug 2024 00:00:00 GMT</pubDate>
+    <author>undefined (CDD)</author>
+    <category>typescript</category><category>nestJS</category><category>backend</category>
   </item>
 
     </channel>

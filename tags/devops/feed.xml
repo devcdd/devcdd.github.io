@@ -1,0 +1,24 @@
+
+  <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+      <title>디디의 개발일지</title>
+      <link>https://example.com/blog</link>
+      <description>개발, 회고</description>
+      <language>ko-kr</language>
+      <managingEditor>undefined (CDD)</managingEditor>
+      <webMaster>undefined (CDD)</webMaster>
+      <lastBuildDate>Fri, 25 Oct 2024 00:00:00 GMT</lastBuildDate>
+      <atom:link href="https://example.com/tags/devops/feed.xml" rel="self" type="application/rss+xml"/>
+      
+  <item>
+    <guid>https://example.com/blog/FE/NextJS 도커 적용기</guid>
+    <title>Next.js Docker 적용기</title>
+    <link>https://example.com/blog/FE/NextJS 도커 적용기</link>
+    <description>Next.js로 개발한 프로젝트를 도커 이미지로 만들게 되었는데, 이와 관련해서 작성해봤습니다.</description>
+    <pubDate>Fri, 25 Oct 2024 00:00:00 GMT</pubDate>
+    <author>undefined (CDD)</author>
+    <category>nextJS</category><category>devOps</category><category>docker</category>
+  </item>
+
+    </channel>
+  </rss>
