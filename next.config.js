@@ -90,7 +90,7 @@ module.exports = () => {
 
       return config
     },
-    // output: process.env.NODE_ENV === 'production' ? 'export' : null,
-    output: 'export',
+    output: process.env.NODE_ENV === 'production' ? 'export' : null,
+    // output: 'export',
   })
 }
