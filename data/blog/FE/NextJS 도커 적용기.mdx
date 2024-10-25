@@ -68,4 +68,117 @@ build/
 
 ### 생성 과정
 
-우선 도커를 사용하기로 결정했다면 어떻게 이미지로 만들지부터 생각을 해야합니다.
+우선 도커를 사용하기로 결정했다면 어떻게 이미지로 만들지부터 생각을 해야합니다. 이미지를 빌드하기 위해서는 일반적으로 `docker build` 명령어를 사용하는데, 그냥 무작정 빌드하면 되는 건 아니고 빌드를 위한 스크립트를 짜줘야 합니다. 여기에 활용되는 파일이 바로 `DockerFile`인데요, 예제가 [`Next` 공식예제](https://github.com/vercel/next.js/tree/canary/examples/with-docker)에 자세히 나와있더군요. 이를 참고하여 아래와 같이 작성을 해봤습니다, 단계마다 주석을 달아놓았으니 이해하시기 편할겁니다.
+
+```dockerfile:Dockerfile
+# node:18-alpine을 베이스로 사용합니다.
+FROM node:18-alpine AS base
+
+# 베이스는 node:18-alpine을 그대로 사용하고, deps라는 이름으로 복사합니다.
+FROM base AS deps
+
+# libc6-compat을 설치합니다, 이건 공식 예제에도 있던데 노드 관련 패키지라고 하는 것 같더군요.
+RUN apk add --no-cache libc6-compat
+# /app 경로로 이동합니다.
+WORKDIR /app
+
+# package.json, yarn.lock, package-lock.json을 복사합니다.
+COPY package.json yarn.lock* package-lock.json* ./
+
+# 이건 예제 명령어 그대로 작성한건데, 패키지 매니저에 따라 다르게 Install을 하는 것 같습니다.
+# 저희는 yarn을 사용하고 있기에 첫 번째 조건문이 실행되겠죠?
+RUN \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
+
+# 베이스는 node:18-alpine을 그대로 사용하고, builder라는 이름으로 복사합니다.
+FROM base AS builder
+
+# /app 경로로 이동합니다.
+WORKDIR /app
+
+# 아까 deps에서 설치한 node_modules를 복사하여 사용합니다.
+COPY --from=deps /app/node_modules ./node_modules
+
+# .dockerignore에 node_modules를 추가해놓았기 때문에 이중 복사가 되지 않습니다.
+COPY . .
+
+# yarn build를 실행합니다.
+RUN \
+  if [ -f yarn.lock ]; then yarn run build; \
+  elif [ -f package-lock.json ]; then npm run build; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
+
+# 베이스는 node:18-alpine을 그대로 사용하고, runner라는 이름으로 복사합니다.
+FROM base AS runner
+
+# nginx를 설치합니다, 왜 설치하는지는 아래에서 추가적으로 설명하도록 하겠습니다.
+RUN apk add --no-cache nginx
+# 로그 디렉토리를 따로 빼서 편하게 보기 위해 디렉토리를 생성합니다, 이후에는 볼륨 마운트를 걸어서 호스트에서도 확인할 수 있게 할 예정입니다.
+RUN mkdir -p /app/logs && \
+    chmod -R 755 /app/logs
+
+# /app 경로로 이동합니다.
+WORKDIR /app
+
+# 아래에 복사되는 파일들이 최종적으로 이미지에 들어가게 될 구성이라고 생각하시면 될 것 같습니다.
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/ione.nginx.conf /etc/nginx/http.d/default.conf
+# nginx 기본 include 설정이 /etc/nginx/http.d로 되어 있어서 그냥 해당 경로에 맞게 복사해줬습니다.
+
+# 80번 포트를 열어줍니다.
+EXPOSE 80
+
+# next와 nginx를 실행합니다.
+CMD ["sh", "-c", "node server.js & nginx -g 'daemon off;'"]
+```
+
+이렇게 `DockerFile`을 구성하고, `docker build -t [image_name] .` 명령어를 통해 이미지를 빌드하면 `image_name`이라는 이름으로 이미지가 생성됩니다. 이는 `docker images` 명령어를 통해 확인 하실 수 있습니다.
+```editorconfig:product.nginx.conf
+server {
+    listen 80;
+    server_name localhost;
+
+    error_log /app/logs/error.log;
+    access_log /app/logs/access.log;
+
+    location /static/ {
+        root /app/public;
+        access_log off;
+        log_not_found off;
+        expires max;
+    }
+
+    location /_next/static {
+        alias /app/.next/static/;
+        access_log off;
+        log_not_found off;
+        expires max;
+    }
+
+    location / {
+        proxy_pass http://localhost:3000; # Next.js 서버로 프록시
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+```yaml:docker-compose.yml
+services:
+  app:
+    image: ione
+    ports:
+      - "3000:80"
+    env_file:
+      - ./.env
+    container_name: ione
+```
