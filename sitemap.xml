@@ -17,10 +17,6 @@
 <lastmod>2024-11-17</lastmod>
 </url>
 <url>
-<loc>https://example.com/blog/BE/Nest 공식문서 탐방기</loc>
-<lastmod>2024-08-10T00:00:00.000Z</lastmod>
-</url>
-<url>
 <loc>https://example.com/blog/retrospect/DOPAMINE DETOX</loc>
 <lastmod>2024-08-13T00:00:00.000Z</lastmod>
 </url>
@@ -83,5 +79,9 @@
 <url>
 <loc>https://example.com/blog/FE/컴포넌트 동적 생성기</loc>
 <lastmod>2024-09-02T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://example.com/blog/BE/Nest 공식문서 탐방기</loc>
+<lastmod>2024-08-10T00:00:00.000Z</lastmod>
 </url>
 </urlset>
