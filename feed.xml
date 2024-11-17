@@ -7,9 +7,29 @@
       <language>ko-kr</language>
       <managingEditor>undefined (CDD)</managingEditor>
       <webMaster>undefined (CDD)</webMaster>
-      <lastBuildDate>Fri, 25 Oct 2024 00:00:00 GMT</lastBuildDate>
+      <lastBuildDate>Sun, 17 Nov 2024 00:00:00 GMT</lastBuildDate>
       <atom:link href="https://example.com/feed.xml" rel="self" type="application/rss+xml"/>
       
+  <item>
+    <guid>https://example.com/blog/FE/사이드 프로젝트를 시작해보자</guid>
+    <title>사이드 프로젝트를 시작해보자</title>
+    <link>https://example.com/blog/FE/사이드 프로젝트를 시작해보자</link>
+    <description>실력은 훨씬 좋아졌는데, 포트폴리오도 최신화 해야하지 않겠어?</description>
+    <pubDate>Sun, 17 Nov 2024 00:00:00 GMT</pubDate>
+    <author>undefined (CDD)</author>
+    <category>nextJS</category>
+  </item>
+
+  <item>
+    <guid>https://example.com/blog/FE/사내 프로젝트 패키징 후기</guid>
+    <title>사내 프로젝트 패키징 후기</title>
+    <link>https://example.com/blog/FE/사내 프로젝트 패키징 후기</link>
+    <description>사내 프로젝트의 패키징 작업을 완료해서 이와 관련된 후기에 대한 경험을 남겨보려고 합니다.</description>
+    <pubDate>Fri, 15 Nov 2024 00:00:00 GMT</pubDate>
+    <author>undefined (CDD)</author>
+    <category>nextJS</category><category>devOps</category><category>docker</category><category>debian</category>
+  </item>
+
   <item>
     <guid>https://example.com/blog/FE/NextJS 도커 적용기</guid>
     <title>Next.js Docker 적용기</title>

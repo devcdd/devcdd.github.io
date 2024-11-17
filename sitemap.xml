@@ -2,19 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://example.com/</loc>
-<lastmod>2024-10-25</lastmod>
+<lastmod>2024-11-17</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog</loc>
-<lastmod>2024-10-25</lastmod>
+<lastmod>2024-11-17</lastmod>
 </url>
 <url>
 <loc>https://example.com/projects</loc>
-<lastmod>2024-10-25</lastmod>
+<lastmod>2024-11-17</lastmod>
 </url>
 <url>
 <loc>https://example.com/tags</loc>
-<lastmod>2024-10-25</lastmod>
+<lastmod>2024-11-17</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog/BE/Nest 공식문서 탐방기</loc>
@@ -53,12 +53,20 @@
 <lastmod>2024-09-07T00:00:00.000Z</lastmod>
 </url>
 <url>
+<loc>https://example.com/blog/FE/사내 프로젝트 패키징 후기</loc>
+<lastmod>2024-11-15T00:00:00.000Z</lastmod>
+</url>
+<url>
 <loc>https://example.com/blog/FE/리액트 단에서 미디어 쿼리 구현하기</loc>
 <lastmod>2024-09-03T00:00:00.000Z</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog/FE/사내 컨벤션 정하기</loc>
 <lastmod>2024-07-02T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://example.com/blog/FE/사이드 프로젝트를 시작해보자</loc>
+<lastmod>2024-11-17T00:00:00.000Z</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog/FE/재빌드 없이 env 변동사항 적용하기</loc>
