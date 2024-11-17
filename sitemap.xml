@@ -17,6 +17,10 @@
 <lastmod>2024-11-17</lastmod>
 </url>
 <url>
+<loc>https://example.com/blog/BE/Nest 공식문서 탐방기</loc>
+<lastmod>2024-08-10T00:00:00.000Z</lastmod>
+</url>
+<url>
 <loc>https://example.com/blog/retrospect/DOPAMINE DETOX</loc>
 <lastmod>2024-08-13T00:00:00.000Z</lastmod>
 </url>
@@ -49,16 +53,16 @@
 <lastmod>2024-09-07T00:00:00.000Z</lastmod>
 </url>
 <url>
-<loc>https://example.com/blog/FE/사내 프로젝트 패키징 후기</loc>
-<lastmod>2024-11-15T00:00:00.000Z</lastmod>
-</url>
-<url>
 <loc>https://example.com/blog/FE/리액트 단에서 미디어 쿼리 구현하기</loc>
 <lastmod>2024-09-03T00:00:00.000Z</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog/FE/사내 컨벤션 정하기</loc>
 <lastmod>2024-07-02T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://example.com/blog/FE/사내 프로젝트 리뷰</loc>
+<lastmod>2024-11-15T00:00:00.000Z</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog/FE/사이드 프로젝트를 시작해보자</loc>
@@ -79,9 +83,5 @@
 <url>
 <loc>https://example.com/blog/FE/컴포넌트 동적 생성기</loc>
 <lastmod>2024-09-02T00:00:00.000Z</lastmod>
-</url>
-<url>
-<loc>https://example.com/blog/BE/Nest 공식문서 탐방기</loc>
-<lastmod>2024-08-10T00:00:00.000Z</lastmod>
 </url>
 </urlset>
