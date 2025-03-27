@@ -2,19 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://example.com/</loc>
-<lastmod>2024-12-26</lastmod>
+<lastmod>2025-03-27</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog</loc>
-<lastmod>2024-12-26</lastmod>
+<lastmod>2025-03-27</lastmod>
 </url>
 <url>
 <loc>https://example.com/projects</loc>
-<lastmod>2024-12-26</lastmod>
+<lastmod>2025-03-27</lastmod>
 </url>
 <url>
 <loc>https://example.com/tags</loc>
-<lastmod>2024-12-26</lastmod>
+<lastmod>2025-03-27</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog/BE/Nest 공식문서 탐방기</loc>
@@ -71,6 +71,10 @@
 <url>
 <loc>https://example.com/blog/retrospect/2024 회고</loc>
 <lastmod>2024-12-26T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://example.com/blog/retrospect/2025 1분기 회고</loc>
+<lastmod>2025-03-27T00:00:00.000Z</lastmod>
 </url>
 <url>
 <loc>https://example.com/blog/retrospect/DOPAMINE DETOX</loc>

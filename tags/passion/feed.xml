@@ -7,9 +7,29 @@
       <language>ko-kr</language>
       <managingEditor>undefined (CDD)</managingEditor>
       <webMaster>undefined (CDD)</webMaster>
-      <lastBuildDate>Wed, 03 Jul 2024 00:00:00 GMT</lastBuildDate>
+      <lastBuildDate>Thu, 26 Dec 2024 00:00:00 GMT</lastBuildDate>
       <atom:link href="https://example.com/tags/passion/feed.xml" rel="self" type="application/rss+xml"/>
       
+  <item>
+    <guid>https://example.com/blog/retrospect/2024 회고</guid>
+    <title>2024 회고</title>
+    <link>https://example.com/blog/retrospect/2024 회고</link>
+    <description>드디어 이 글을 적게되네요, 한 해를 되돌아보며 있었던 일들과 느낀바를 정리해보려고 합니다.</description>
+    <pubDate>Thu, 26 Dec 2024 00:00:00 GMT</pubDate>
+    <author>undefined (CDD)</author>
+    <category>passion</category>
+  </item>
+
+  <item>
+    <guid>https://example.com/blog/retrospect/2025 1분기 회고</guid>
+    <title>2025 1분기 회고</title>
+    <link>https://example.com/blog/retrospect/2025 1분기 회고</link>
+    <description>블로그에 글을 오랜만에 쓰는 것 같네요, 팀원들끼리 회고록을 공유하자는 이야기가 나와서 한 번 써보려고 합니다.</description>
+    <pubDate>Thu, 27 Mar 2025 00:00:00 GMT</pubDate>
+    <author>undefined (CDD)</author>
+    <category>passion</category>
+  </item>
+
   <item>
     <guid>https://example.com/blog/retrospect/나태지옥을 탈출해보자</guid>
     <title>나태지옥을 탈출해보자</title>
