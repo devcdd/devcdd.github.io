@@ -1,0 +1,148 @@
+---
+title: 나홀로 해커톤
+date: '2025-04-12'
+tags: ['reactNative', 'react', 'typescript']
+draft: false
+summary: 번아웃을 극복하기 위한 그의 도전
+---
+
+## 서론
+
+어느덧 4월이 되었고, 개발은 여전히 계속 하고 있지만 `AI`가 지나치게 고도화 됨에 따라 리액트 학습에 대한 번아웃이 좀 온 것 같습니다. 특히 최근에는 일렉트론 개발을 진행하게 되면서 생각보다 유저와 상호작용에 있어서 웹 개발은 무언가 한계가 있음을 많이 느끼기도 했습니다. 이참에 기분 전환이나 해볼겸 어플리케이션을 만들어보려고 합니다. 주제는 사실 예전에 웹으로 구현하려다 귀찮아서 말았던 게 있는데, 바로 정산 앱 입니다.
+
+사실 저는 `UI/UX`에 관심이 많고, 사람들이 좋아할만한 어플리케이션을 만들 수 있겠다는 근거 없는 자신감이 있었는데, 이 참에 한 번 도전해보는거죠. 뭐, 하나의 포트폴리오가 될수도 있고 말이죠. 기술은 `React Native`를 사용할 예정입니다. 우리에겐 `GPT`가 있으니 이를 활용하여 후다닥 만들어놓자구요.
+
+## 일단 어떤 앱을 만들건지에 대해 생각해보자 💡
+
+## Workflow 🏃🏻
+
+#### 1. 구성원들을 입력한다.
+
+정산이라 함은 최소 2명 이상의 사람들이 모였을 때를 의미하니 순차적인 워크플로우로 생각해봤을 때 모임 구성원들을 입력하는 것이 첫 번째 순서가 됩니다.
+
+#### 2. 정산 금액을 입력한다.
+
+자, 여기서 생각한 두가지 방식이 있습니다.
+
+- 항목 별 입력 방식 (여행, 모임 등)
+- N차 입력 방식 (술자리)
+
+사실 **N차 입력방식**이 단순해서 편하기야 하겠지만, 정확한 상세 내역을 담기에는 항목 별 방식이 더 좋아보이죠. 조금 더 단순화해서 방식을 **N차 입력방식**으로 통일하고, `정보추가 버튼`을 하나 만들어서 자세한 내용을 더 추가하도록 하죠. 조금 더 고도화 된 기능도 생각하고 있는데, 특정 이벤트에서는 누군가가 참여하지 않았을수도 있겠죠. 뭐, 예를 들어 2차 때 합류를 했거나 1차만 끝내고 바로 귀가하는 친구들이 있을수도 있으니까요.
+
+#### 3. 금액을 산출한다.
+
+금액을 산출하는 방식은 세 가지가 있습니다.
+
+- N빵
+- 완전 랜덤
+- 몰빵
+
+사실 일반적인 정산 앱들은 여러가지가 있겠지만, 이런 재미 요소가 있으면 더 좋을 것 같다는 생각이 들어서요. 이러한 기능들이 들어가면 비즈니스 로직이 조금은 복잡해질 수 있겠지만, 그래야 도전하는 맛이 있지 않을까요?
+
+#### 4. 이미지로 저장하여 친구들에게 공유한다.
+
+웹에서는 해본 기능이긴 한데, 이러한 정산정보를 친구들에게 전달해줄 수 있어야 하겠죠? 깔끔하고, 직관적인 UI를 통해 정산 내역을 `PDF` 혹은 `png`로 뽑아낼 수 있는 기능을 만들어 볼 예정입니다.
+
+## UI
+
+솔직히 여태껏 사용해 본 AI들 중에서는 v0가 가장 기초 도안을 잘 짜준다고 생각하여 활용해보려고 합니다. 위의 내용을 그대로 긁어서 UI를 짜달라고 합시다.
+
+<div className="my-[-40px] flex w-full justify-center">
+  <img src="/static/images/posts/ai-request.png" alt="modal" className="w-full" />
+</div>
+
+요즘은 `UI`를 이렇게 만들 수 있어서 정말 편한 것 같아요.
+
+<div className={'my-[-40px] flex justify-center gap-2'}>
+  <img src="/static/images/posts/ui-1.png" alt="modal" width={180} />
+  <img src="/static/images/posts/ui-2.png" alt="modal" width={180} />
+</div>
+
+아주 만족스러운 디자인은 아니지만, 대충 가닥이 잡히는 것 같네요. 특히 백그라운드 관련 코드는 제법 인상 깊은 것 같습니다.
+
+```css
+.bg-gradient-to-b {
+  background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
+}
+```
+
+### 그러면 이걸 피그마로 만들어 볼까요?
+
+`피그마는 좀 과한 거 아닐까?`라는 생각이 들수도 있는데, 요즘 사이드 프로젝트에서 피그마를 자주 만지다보니 느껴지는 것이 있습니다. 바로 `코드로 디자인을 하려고 하지 말자`인데요, 피그마로 디자인을 직접 완성지어 놓고 개발 단계에서는 그대로 옮기는 것이 사이드 프로젝트에서는 더욱 시간을 단축하게 해주더라고요.
+
+뭐, 그런 것도 있고 피그마 실력도 제법 좋아져서 금방 할 수 있을 것 같기도 합니다.
+
+<div className="my-[-40px] flex w-full justify-center">
+  <img src="/static/images/posts/figma-nbbang.png" alt="modal" className="w-full" />
+</div>
+
+생각보다 시간이 오래 걸렸습니다. 추가적으로 짜야 할 화면이 많이 남았는데, 개발이 늦어질 것 같아 우선 이 정도만 작업해두고 시작하려고 합니다. 아직 피그마는 `AI` 환경이 제대로 갖추어지지 않았더라고요ㅠ
+
+## 개발
+
+### 환경 세팅부터 🎬
+
+회사에서 시간이 남아 그냥 스켈레톤 프로젝트를 만들어봤었습니다. 과정은 아래와 같습니다.
+
+```bash
+# brew 패키지 설정 및 ruby setup
+brew update
+brew install rbenv ruby-build
+
+echo 'eval "$(rbenv init -)"' >> ~/.zshrc # 환경변수 등록
+source ~/.zshrc
+
+rbenv install -l
+rbenv install {version} # ruby 설치
+
+rbenv global 3.1.7 # ruby 버전 설정 (nvm use와 동일한 느낌)
+rbenv rehash
+
+exec $SHELL
+ruby -v
+
+# xcode 관련 라이브러리 설치
+xcode-select --install
+xcodebuild -runFirstLaunch
+sudo gem install cocoapods
+
+# 리액트 네이티브 프로젝트 생성
+npx @react-native-community/cli init test
+
+# 무언가 잘 진행이 안되서 아래와 같이 진행하니 뭐, 추가적으로 OS를 다운로드 받더군요
+open ios/test.xcworkspace
+cmd + b (ios 설치 예정)
+
+# 로컬 개발 환경 관련
+xcrun xctrace list devices # 현재 연결 가능한 디바이스 찾기
+```
+
+아이폰에서 개발자 모드를 활성화 시켜주고, `xcode`에 개발자 계정을 등록해주고, 앱을 빌드하여 디버깅 모드를 실행해보니 아래와 같은 결과가 나왔습니다.
+
+### 랜딩 페이지
+
+<div className="mt-[-20px] flex w-full flex-col items-center justify-center gap-4">
+  <img
+    src="/static/images/posts/iphone-nbbang-capture.png"
+    alt="modal"
+    width={300}
+    className={'mb-0'}
+  />
+  <span className={'text-sm text-gray-400'}>실제 구동되고 있는 앱의 캡쳐본</span>
+</div>
+
+우선 배포는 두 번째 목표 정도로 미뤄두고, 첫 번째 목표는 나 혼자라도 사용할 수 있는 앱을 만들어보는 것입니다. 피그마를 기반으로 `AI`에게 스타일링을 부탁했더니 `RN`에 익숙하지 않은 저도 쉽게 `UI`를 개발할 수 있겠더군요. 리팩토링은 후순위로 하고, `AI`를 최대한 활용해서 빠르게 개발을 해봅시다.
+
+### 인원추가 페이지
+
+<div className="mt-[-20px] flex w-full flex-col items-center justify-center gap-4">
+  <img
+    src="/static/images/posts/iphone-nbbang-user-add.png"
+    alt="modal"
+    width={300}
+    className={'mb-0'}
+  />
+  <span className={'text-sm text-gray-400'}>구성원 추가 페이지</span>
+</div>
+
+`UI`는 잘 만든 것 같은데, 뭔가 로직상 문제가 있는 것 같아 조금 다듬어줬습니다. 확실히 `TS` 문법이라 그런지 로직을 고치는데는 전혀 무리가 없는 것 같더군요. 사실 `PWA`로 비슷한 환경을 느낄 수 있었긴 한데, 그래도 호버링 스타일링 등 네이티브 한 느낌을 처음 내보니 신기하긴 하네요.
