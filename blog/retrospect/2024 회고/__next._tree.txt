@@ -1,5 +1,5 @@
 :HL["/_next/static/css/4e990cf79bdacf9b.css","style"]
-:HL["/_next/static/css/fc049dff0637ff80.css","style"]
+:HL["/_next/static/css/1bbe4d10dfc7437e.css","style"]
 :HL["/_next/static/css/117b8940b1fdc375.css","style"]
 :HL["/static/images/posts/toss-test-case.png","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"blog","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"c","key":"retrospect/2024%20%ED%9A%8C%EA%B3%A0","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"sVHHSxSWMzgCe54iW-Tlo"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"blog","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"c","key":"retrospect/2024%20%ED%9A%8C%EA%B3%A0","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"uWnKA6ryzH9PVW-6EatAs"}

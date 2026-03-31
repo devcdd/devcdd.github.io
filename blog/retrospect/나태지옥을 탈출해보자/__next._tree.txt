@@ -1,4 +1,4 @@
 :HL["/_next/static/css/4e990cf79bdacf9b.css","style"]
-:HL["/_next/static/css/fc049dff0637ff80.css","style"]
+:HL["/_next/static/css/1bbe4d10dfc7437e.css","style"]
 :HL["/_next/static/css/117b8940b1fdc375.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"blog","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"c","key":"retrospect/%EB%82%98%ED%83%9C%EC%A7%80%EC%98%A5%EC%9D%84%20%ED%83%88%EC%B6%9C%ED%95%B4%EB%B3%B4%EC%9E%90","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"sVHHSxSWMzgCe54iW-Tlo"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"blog","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"c","key":"retrospect/%EB%82%98%ED%83%9C%EC%A7%80%EC%98%A5%EC%9D%84%20%ED%83%88%EC%B6%9C%ED%95%B4%EB%B3%B4%EC%9E%90","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"uWnKA6ryzH9PVW-6EatAs"}
