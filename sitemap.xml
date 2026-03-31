@@ -1,95 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
-<loc>https://example.com/</loc>
-<lastmod>2025-03-27</lastmod>
+<loc>https://devcdd.github.io/</loc>
+<lastmod>2026-03-31</lastmod>
 </url>
 <url>
-<loc>https://example.com/blog</loc>
-<lastmod>2025-03-27</lastmod>
+<loc>https://devcdd.github.io/blog</loc>
+<lastmod>2026-03-31</lastmod>
 </url>
 <url>
-<loc>https://example.com/projects</loc>
-<lastmod>2025-03-27</lastmod>
+<loc>https://devcdd.github.io/projects</loc>
+<lastmod>2026-03-31</lastmod>
 </url>
 <url>
-<loc>https://example.com/tags</loc>
-<lastmod>2025-03-27</lastmod>
+<loc>https://devcdd.github.io/tags</loc>
+<lastmod>2026-03-31</lastmod>
 </url>
 <url>
-<loc>https://example.com/blog/BE/Nest 공식문서 탐방기</loc>
-<lastmod>2024-08-10T00:00:00.000Z</lastmod>
+<loc>https://devcdd.github.io/blog/frontend/나홀로 해커톤</loc>
+<lastmod>2025-04-12T00:00:00.000Z</lastmod>
 </url>
 <url>
-<loc>https://example.com/blog/FE/CSS 병합 이슈 해결기</loc>
-<lastmod>2024-07-26T00:00:00.000Z</lastmod>
-</url>
-<url>
-<loc>https://example.com/blog/FE/Next.js 다크모드 적용기</loc>
-<lastmod>2024-07-12T00:00:00.000Z</lastmod>
-</url>
-<url>
-<loc>https://example.com/blog/FE/NextJS 도커 적용기</loc>
-<lastmod>2024-10-25T00:00:00.000Z</lastmod>
-</url>
-<url>
-<loc>https://example.com/blog/FE/useInfiniteQuery 도입기 (feat. ag-grid)</loc>
-<lastmod>2024-09-07T00:00:00.000Z</lastmod>
-</url>
-<url>
-<loc>https://example.com/blog/FE/리액트 단에서 미디어 쿼리 구현하기</loc>
-<lastmod>2024-09-03T00:00:00.000Z</lastmod>
-</url>
-<url>
-<loc>https://example.com/blog/FE/사내 컨벤션 정하기</loc>
-<lastmod>2024-07-02T00:00:00.000Z</lastmod>
-</url>
-<url>
-<loc>https://example.com/blog/FE/사내 프로젝트 리뷰</loc>
-<lastmod>2024-11-15T00:00:00.000Z</lastmod>
-</url>
-<url>
-<loc>https://example.com/blog/FE/사이드 프로젝트를 시작해보자</loc>
-<lastmod>2024-11-17T00:00:00.000Z</lastmod>
-</url>
-<url>
-<loc>https://example.com/blog/FE/재빌드 없이 env 변동사항 적용하기</loc>
-<lastmod>2024-10-24T00:00:00.000Z</lastmod>
-</url>
-<url>
-<loc>https://example.com/blog/FE/전역 상태에서 효율적으로 모달 호출하기</loc>
-<lastmod>2024-07-04T00:00:00.000Z</lastmod>
-</url>
-<url>
-<loc>https://example.com/blog/FE/컴포넌트 강제로 리렌더링 시키기</loc>
-<lastmod>2024-07-26T00:00:00.000Z</lastmod>
-</url>
-<url>
-<loc>https://example.com/blog/FE/컴포넌트 동적 생성기</loc>
-<lastmod>2024-09-02T00:00:00.000Z</lastmod>
-</url>
-<url>
-<loc>https://example.com/blog/retrospect/2024 회고</loc>
+<loc>https://devcdd.github.io/blog/retrospect/2024 회고</loc>
 <lastmod>2024-12-26T00:00:00.000Z</lastmod>
 </url>
 <url>
-<loc>https://example.com/blog/retrospect/2025 1분기 회고</loc>
-<lastmod>2025-03-27T00:00:00.000Z</lastmod>
+<loc>https://devcdd.github.io/blog/frontend/사이드 프로젝트를 시작해보자</loc>
+<lastmod>2024-11-17T00:00:00.000Z</lastmod>
 </url>
 <url>
-<loc>https://example.com/blog/retrospect/DOPAMINE DETOX</loc>
-<lastmod>2024-08-13T00:00:00.000Z</lastmod>
+<loc>https://devcdd.github.io/blog/frontend/사내 프로젝트 리뷰</loc>
+<lastmod>2024-11-15T00:00:00.000Z</lastmod>
 </url>
 <url>
-<loc>https://example.com/blog/retrospect/나태지옥을 탈출해보자</loc>
-<lastmod>2024-07-03T00:00:00.000Z</lastmod>
+<loc>https://devcdd.github.io/blog/frontend/NextJS 도커 적용기</loc>
+<lastmod>2024-10-25T00:00:00.000Z</lastmod>
 </url>
 <url>
-<loc>https://example.com/blog/retrospect/여유로울 때 쓰는 회고</loc>
+<loc>https://devcdd.github.io/blog/frontend/재빌드 없이 env 변동사항 적용하기</loc>
+<lastmod>2024-10-24T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://devcdd.github.io/blog/retrospect/여유로울 때 쓰는 회고</loc>
 <lastmod>2024-09-19T00:00:00.000Z</lastmod>
 </url>
 <url>
-<loc>https://example.com/blog/retrospect/첫글</loc>
+<loc>https://devcdd.github.io/blog/frontend/useInfiniteQuery 도입기 (feat. ag-grid)</loc>
+<lastmod>2024-09-07T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://devcdd.github.io/blog/frontend/리액트 단에서 미디어 쿼리 구현하기</loc>
+<lastmod>2024-09-03T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://devcdd.github.io/blog/frontend/컴포넌트 동적 생성기</loc>
+<lastmod>2024-09-02T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://devcdd.github.io/blog/retrospect/DOPAMINE DETOX</loc>
+<lastmod>2024-08-13T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://devcdd.github.io/blog/backend/Nest 공식문서 탐방기</loc>
+<lastmod>2024-08-10T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://devcdd.github.io/blog/frontend/CSS 병합 이슈 해결기</loc>
+<lastmod>2024-07-26T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://devcdd.github.io/blog/frontend/컴포넌트 강제로 리렌더링 시키기</loc>
+<lastmod>2024-07-26T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://devcdd.github.io/blog/frontend/Next.js 다크모드 적용기</loc>
+<lastmod>2024-07-12T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://devcdd.github.io/blog/frontend/전역 상태에서 효율적으로 모달 호출하기</loc>
+<lastmod>2024-07-04T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://devcdd.github.io/blog/retrospect/나태지옥을 탈출해보자</loc>
+<lastmod>2024-07-03T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://devcdd.github.io/blog/frontend/사내 컨벤션 정하기</loc>
+<lastmod>2024-07-02T00:00:00.000Z</lastmod>
+</url>
+<url>
+<loc>https://devcdd.github.io/blog/retrospect/첫글</loc>
 <lastmod>2024-06-17T00:00:00.000Z</lastmod>
 </url>
 </urlset>
