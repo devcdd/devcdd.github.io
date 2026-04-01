@@ -1,12 +1,12 @@
 
   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
-      <title>CDD Archive</title>
+      <title>디디의 개발일지</title>
       <link>https://devcdd.github.io/blog</link>
-      <description>프론트엔드 개발 기록, 회고, 그리고 직접 만든 사이드 프로젝트를 정리하는 블로그</description>
+      <description>디디의 개발 경험, 회고, 그리고 사이드 프로젝트들을 정리하는 블로그</description>
       <language>ko-KR</language>
-      <managingEditor>developer.cdd@gmail.com (CDD)</managingEditor>
-      <webMaster>developer.cdd@gmail.com (CDD)</webMaster>
+      <managingEditor>developer.cdd@gmail.com (디디)</managingEditor>
+      <webMaster>developer.cdd@gmail.com (디디)</webMaster>
       <lastBuildDate>Mon, 17 Jun 2024 00:00:00 GMT</lastBuildDate>
       <atom:link href="https://devcdd.github.io/tags/hello/feed.xml" rel="self" type="application/rss+xml"/>
       
@@ -16,7 +16,7 @@
     <link>https://devcdd.github.io/blog/retrospect/첫글</link>
     <description>첫글이자 환영인사 컨셉으로 글을 써봤습니다, 이후에 블로그가 유명해진다면 성지순례가 될 것 같네요.</description>
     <pubDate>Mon, 17 Jun 2024 00:00:00 GMT</pubDate>
-    <author>developer.cdd@gmail.com (CDD)</author>
+    <author>developer.cdd@gmail.com (디디)</author>
     <category>hello</category>
   </item>
 

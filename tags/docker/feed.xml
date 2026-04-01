@@ -1,12 +1,12 @@
 
   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
-      <title>CDD Archive</title>
+      <title>디디의 개발일지</title>
       <link>https://devcdd.github.io/blog</link>
-      <description>프론트엔드 개발 기록, 회고, 그리고 직접 만든 사이드 프로젝트를 정리하는 블로그</description>
+      <description>디디의 개발 경험, 회고, 그리고 사이드 프로젝트들을 정리하는 블로그</description>
       <language>ko-KR</language>
-      <managingEditor>developer.cdd@gmail.com (CDD)</managingEditor>
-      <webMaster>developer.cdd@gmail.com (CDD)</webMaster>
+      <managingEditor>developer.cdd@gmail.com (디디)</managingEditor>
+      <webMaster>developer.cdd@gmail.com (디디)</webMaster>
       <lastBuildDate>Fri, 25 Oct 2024 00:00:00 GMT</lastBuildDate>
       <atom:link href="https://devcdd.github.io/tags/docker/feed.xml" rel="self" type="application/rss+xml"/>
       
@@ -16,7 +16,7 @@
     <link>https://devcdd.github.io/blog/frontend/NextJS 도커 적용기</link>
     <description>Next.js로 개발한 프로젝트를 도커 이미지로 만들게 되었는데, 이와 관련해서 작성해봤습니다.</description>
     <pubDate>Fri, 25 Oct 2024 00:00:00 GMT</pubDate>
-    <author>developer.cdd@gmail.com (CDD)</author>
+    <author>developer.cdd@gmail.com (디디)</author>
     <category>nextJS</category><category>devOps</category><category>docker</category>
   </item>
 
@@ -26,7 +26,7 @@
     <link>https://devcdd.github.io/blog/frontend/사내 프로젝트 리뷰</link>
     <description>사내 프로젝트의 패키징 작업을 완료해서 이와 관련된 후기에 대한 경험을 남겨보려고 합니다.</description>
     <pubDate>Fri, 15 Nov 2024 00:00:00 GMT</pubDate>
-    <author>developer.cdd@gmail.com (CDD)</author>
+    <author>developer.cdd@gmail.com (디디)</author>
     <category>nextJS</category><category>devOps</category><category>docker</category><category>debian</category>
   </item>
 
