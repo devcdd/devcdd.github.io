@@ -2,13 +2,13 @@
 const siteMetadata = {
   title: '디디의 개발일지',
   author: '디디',
-  headerTitle: '디디의 개발일지',
+  headerTitle: '9성급 개발자가 될거야!',
   description: '디디의 개발 경험, 회고, 그리고 사이드 프로젝트들을 정리하는 블로그',
   language: 'ko-KR',
   locale: 'ko-KR',
   theme: 'system', // system, dark or light
   siteUrl: 'https://devcdd.github.io',
-  siteRepo: 'https://github.com/devcdd/devlog',
+  siteRepo: 'https://github.com/devcdd/devcdd.github.io',
   siteLogo: '/static/images/logo.png',
   image: '/static/images/avatar.png',
   socialBanner: '/static/images/twitter-card.png',
