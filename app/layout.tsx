@@ -68,14 +68,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang={siteMetadata.language}
-      className="overflow-x-hidden scroll-smooth"
+      className="overflow-x-clip scroll-smooth"
       suppressHydrationWarning
     >
       <meta name="msapplication-TileColor" content="#183fcb" />
       <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2f4f8" />
       <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#060f1d" />
       <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
-      <body className="overflow-x-hidden bg-[color:var(--page-background)] font-sans text-[color:var(--page-foreground)] antialiased">
+      <body className="overflow-x-clip bg-[color:var(--page-background)] font-sans text-[color:var(--page-foreground)] antialiased">
         <ThemeProviders>
           <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} />
           <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>

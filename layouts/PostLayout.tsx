@@ -57,7 +57,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
           )}
         </header>
 
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem]">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
           <div className="order-1 min-w-0 pb-8 lg:border-r lg:border-[color:var(--border)] lg:pr-10">
             <div className="prose max-w-none dark:prose-invert">{children}</div>
 
