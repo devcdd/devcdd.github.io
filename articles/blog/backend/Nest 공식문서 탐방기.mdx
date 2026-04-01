@@ -35,13 +35,13 @@ src
 └── main.ts
 ```
 
-| 파일명 | 설명 |
-| --- | --- |
-| app.controller.spec.ts | 테스팅 하는 컨트롤러라고 합니다. |
-| app.controller.ts | 싱글 라우팅을 위한 컨트롤러라고 하네요. |
-| app.module.ts | 루트 모듈입니다. |
-| app.service.ts | `app`의 서비스입니다. |
-| main.ts | 앱의 진입점입니다. |
+| 파일명                 | 설명                                    |
+| ---------------------- | --------------------------------------- |
+| app.controller.spec.ts | 테스팅 하는 컨트롤러라고 합니다.        |
+| app.controller.ts      | 싱글 라우팅을 위한 컨트롤러라고 하네요. |
+| app.module.ts          | 루트 모듈입니다.                        |
+| app.service.ts         | `app`의 서비스입니다.                   |
+| main.ts                | 앱의 진입점입니다.                      |
 
 어떻게 보면 `express`와 비슷한 구조를 가지고 있는 것 같은데, 동작 원리를 이해하기 위해서는 조금 더 깊게 들어가봐야 할 것 같습니다.
 
@@ -91,7 +91,7 @@ export class AppController {
 ### Controller
 
 <div className={'my-[-40px] flex justify-center gap-2'}>
-  <img src="/static/images/posts/nest-controller.png" alt="modal" />
+  <Image src="nest-controller.png" alt="modal" />
 </div>
 
 문서를 좀 더 읽어보니 위와 같은 그림이 나오면서 설명이 나와있네요. 간략하게 요약하자면 `Controller`는 클라이언트로부터 들어온 요청을 받아 처리하고, 응답을 반환하는
@@ -139,18 +139,18 @@ export class CatsController {
 HTTP 요청을 나타내며, 요청 쿼리 문자열, 파라미터, HTTP 헤더, 본문과 같은 속성을 가지고 있다고 합니다. 그리고 공식문서를 조금 더 내려보니
 아래와 같은 데코레이터 목록이 있어서 들고 왔습니다.
 
-| 데코레이터 | 참조 |
-| --- | --- |
-| `@Request()`, `@Req()`   | `req`                       |
-| `@Response(), @Res()*` | `res`                       |
-| `@Next()`               | `next`                      |
-| `@Session()`            | `req.session`               |
-| `@Param(key?: string)`  | `req.params / req.params[key]` |
-| `@Body(key?: string)`   | `req.body / req.body[key]`   |
-| `@Query(key?: string)`  | `req.query / req.query[key]` |
+| 데코레이터                | 참조                              |
+| ------------------------- | --------------------------------- |
+| `@Request()`, `@Req()`    | `req`                             |
+| `@Response(), @Res()*`    | `res`                             |
+| `@Next()`                 | `next`                            |
+| `@Session()`              | `req.session`                     |
+| `@Param(key?: string)`    | `req.params / req.params[key]`    |
+| `@Body(key?: string)`     | `req.body / req.body[key]`        |
+| `@Query(key?: string)`    | `req.query / req.query[key]`      |
 | `@Headers(name?: string)` | `req.headers / req.headers[name]` |
-| `@Ip()`                 | `req.ip`                    |
-| `@HostParam()`          | `req.hosts`                 |
+| `@Ip()`                   | `req.ip`                          |
+| `@HostParam()`            | `req.hosts`                       |
 
 여기서 약간 뇌정지가 왔네요. 저게 무슨 의미를 가지고 있는지도 정확히 모르겠고, 코드 작성 없이 문서만 주구장창 읽고 있으니 뭔가 확실한 느낌이 안옵니다.
 

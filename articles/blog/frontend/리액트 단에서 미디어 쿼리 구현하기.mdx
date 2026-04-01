@@ -8,8 +8,8 @@ summary: 미디어 쿼리 비슷한 기능을 구현할 일이 있었는데, 어
 
 ## 서론
 
-<section className={"flex items-center justify-center"}>
-  <img src="/static/images/posts/media-query.gif" alt="Media Query Example" className={"w-full"} />
+<section className={'flex items-center justify-center'}>
+  <Image src="media-query.gif" alt="Media Query Example" className={'w-full'} />
 </section>
 
 `Media Query`란 해상도에 따라 UI를 다르게 보여주고 싶을 때 사용하는 기술입니다. 위의 움짤을 보시면 구글 로고가 가로폭에 따라 다르게
@@ -48,14 +48,14 @@ summary: 미디어 쿼리 비슷한 기능을 구현할 일이 있었는데, 어
 트래킹 할 수 있는 `state`도 선언해줍니다.
 
 ```tsx
-const sectionRef = useRef<HTMLDivElement>(null);
-const [sectionWidth, setSectionWidth] = useState(null);
+const sectionRef = useRef<HTMLDivElement>(null)
+const [sectionWidth, setSectionWidth] = useState(null)
 
 return (
   <section ref={sectionRef}>
     <Gallery />
   </section>
-);
+)
 ```
 
 ### 2. useEffect를 통한 ResizeObserver 등록
@@ -63,36 +63,36 @@ return (
 느낌 상 `intersectionObserver`와 비슷한 느낌이 드는데, 이러한 것들은 `useEffect`를 통해 등록해주는 식으로 사용합니다. 아래의 예시 코드를 보시죠.
 
 ```tsx
-  useEffect(() => {
-    const handleResize = () => {
-      if (sectionRef.current) {
-        setWidth(sectionRef.current.offsetWidth);
-        console.log("width = ", sectionRef.current.offsetWidth);
-      }
-    };
-
-    // 요소의 크기를 관찰하는 ResizeObserver 생성
-    const resizeObserver = new ResizeObserver(() => {
-      handleResize();
-    });
-
-    // 참조된 요소에 대해 ResizeObserver를 연결
+useEffect(() => {
+  const handleResize = () => {
     if (sectionRef.current) {
-      resizeObserver.observe(sectionRef.current);
+      setWidth(sectionRef.current.offsetWidth)
+      console.log('width = ', sectionRef.current.offsetWidth)
     }
+  }
 
-    // 컴포넌트가 언마운트되거나 리렌더링될 때 옵저버 해제
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
+  // 요소의 크기를 관찰하는 ResizeObserver 생성
+  const resizeObserver = new ResizeObserver(() => {
+    handleResize()
+  })
+
+  // 참조된 요소에 대해 ResizeObserver를 연결
+  if (sectionRef.current) {
+    resizeObserver.observe(sectionRef.current)
+  }
+
+  // 컴포넌트가 언마운트되거나 리렌더링될 때 옵저버 해제
+  return () => {
+    resizeObserver.disconnect()
+  }
+}, [])
 ```
 
 `Ref` 객체의 `offsetWidth`에 접근하면 해당 `Element`의 너비를 알 수 있는데, `ResizeObserver`를 통해 너비의 변경을 감지하고,
 트래킹 하기 위해 만든 `state`인 `sectionWidth`에 너비를 업데이트 해줍니다. 그리고 `handleResize` 함수에서 콘솔을 한 번 찍어봤는데요,
 
-<section className={"flex items-center justify-center my-[-50px]"}>
-  <img src="/static/images/posts/width.png" alt="width capture" className={"w-[500px]"} />
+<section className={'my-[-50px] flex items-center justify-center'}>
+  <Image src="width.png" alt="width capture" className={'w-[500px]'} />
 </section>
 
 역시 잘 나오는 것을 확인할 수 있었습니다. 뭐, 이후의 로직은 여러분들의 몫이죠. 저 같은 경우 특정 `width`보다 줄어들면 버튼을 더보기 메뉴로
@@ -101,18 +101,14 @@ return (
 ```ts
 const DropDownMenu = useMemo(() => {
   if (containerWidth < 600) {
-    return (
-      ["메뉴1", "메뉴2", "메뉴3", "메뉴4", "메뉴5"]
-    )
+    return ['메뉴1', '메뉴2', '메뉴3', '메뉴4', '메뉴5']
   }
-  return (
-    ["메뉴1", "메뉴2", "메뉴3"]
-  )
+  return ['메뉴1', '메뉴2', '메뉴3']
 }, [containerWidth])
 ```
 
 그렇게 구현하니 아래와 같이 잘 동작하는 것을 확인할 수 있었습니다.
 
-<section className={"flex items-center justify-center my-[-30px]"}>
-  <img src="/static/images/posts/media-query-result.gif" alt="Media Query Example" className={"w-full"} />
+<section className={'my-[-30px] flex items-center justify-center'}>
+  <Image src="media-query-result.gif" alt="Media Query Example" className={'w-full'} />
 </section>

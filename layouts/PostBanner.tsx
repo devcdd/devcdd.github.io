@@ -8,6 +8,7 @@ import Link from '@/components/Link'
 import MobileContentInset from '@/components/MobileContentInset'
 import siteMetadata from '@/articles/siteMetadata'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
+import { resolveDocumentImageList } from '@/content-images'
 
 interface LayoutProps {
   content: CoreContent<Blog>
@@ -17,9 +18,9 @@ interface LayoutProps {
 }
 
 export default function PostMinimal({ content, next, prev, children }: LayoutProps) {
-  const { slug, title, images } = content
+  const { slug, title, images, assetDir } = content
   const displayImage =
-    images && images.length > 0 ? images[0] : '/static/images/twitter-card.png'
+    resolveDocumentImageList(images, assetDir)[0] ?? '/static/images/twitter-card.png'
 
   return (
     <MobileContentInset>

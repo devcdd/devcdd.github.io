@@ -24,7 +24,7 @@ const Header = () => {
       <div aria-hidden className="mb-5 h-16 md:h-[72px]" />
       <header
         className="fixed inset-x-0 top-0 z-50 border-b border-[color:var(--border)] backdrop-blur-xl"
-        style={{ backgroundColor: 'rgb(var(--page-background-rgb) / 0.84)' }}
+        style={{ backgroundColor: 'rgb(var(--page-background-rgb) / 0.6)' }}
       >
         <div className="mx-auto w-full max-w-6xl px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4">

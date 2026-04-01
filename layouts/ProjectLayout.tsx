@@ -5,6 +5,7 @@ import MobileContentInset from '@/components/MobileContentInset'
 import Image from '@/components/Image'
 import Link from '@/components/Link'
 import siteMetadata from '@/articles/siteMetadata'
+import { resolveDocumentImageList } from '@/content-images'
 
 const editUrl = (path: string) => `${siteMetadata.siteRepo}/blob/main/articles/${path}`
 
@@ -16,8 +17,8 @@ interface LayoutProps {
 }
 
 export default function ProjectLayout({ content, children, next, prev }: LayoutProps) {
-  const { title, summary, images, tags, href, repo, filePath } = content
-  const heroImage = Array.isArray(images) ? images[0] : undefined
+  const { title, summary, images, tags, href, repo, filePath, assetDir } = content
+  const heroImage = resolveDocumentImageList(images, assetDir)[0]
   const sourceHref = repo ?? editUrl(filePath)
   const sourceLabel = repo ? 'GitHub에서 보기' : '문서 원본 보기'
 

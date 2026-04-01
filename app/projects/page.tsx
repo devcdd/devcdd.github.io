@@ -2,6 +2,7 @@ import Card from '@/components/Card'
 import MobileContentInset from '@/components/MobileContentInset'
 import { allProjects } from 'contentlayer/generated'
 import { genPageMetadata } from 'app/seo'
+import { resolveDocumentImageList } from '@/content-images'
 
 export const metadata = genPageMetadata({ title: 'Projects' })
 
@@ -39,7 +40,7 @@ export default function Projects() {
               key={project.path}
               title={project.title}
               description={project.summary}
-              imgSrc={Array.isArray(project.images) ? project.images[0] : undefined}
+              imgSrc={resolveDocumentImageList(project.images, project.assetDir)[0]}
               href={`/${project.path}`}
               externalHref={project.href}
               self={project.self}

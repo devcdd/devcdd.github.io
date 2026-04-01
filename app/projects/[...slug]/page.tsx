@@ -4,10 +4,11 @@ import { MDXLayoutRenderer } from 'pliny/mdx-components.js'
 import { coreContent } from 'pliny/utils/contentlayer.js'
 import { allProjects } from 'contentlayer/generated'
 import type { Project } from 'contentlayer/generated'
-import { components } from '@/components/MDXComponents'
+import { getMDXComponents } from '@/components/MDXComponents'
 import ProjectLayout from '@/layouts/ProjectLayout'
 import siteMetadata from '@/articles/siteMetadata'
 import JsonLd from '@/components/JsonLd'
+import { resolveDocumentImageList } from '@/content-images'
 
 const sortProjects = (projects: typeof allProjects) =>
   [...projects]
@@ -33,10 +34,8 @@ export async function generateMetadata({
     return
   }
 
-  const imageList =
-    project.images && Array.isArray(project.images) && project.images.length > 0
-      ? project.images
-      : [siteMetadata.socialBanner]
+  const imageList = resolveDocumentImageList(project.images, project.assetDir)
+  const metadataImageList = imageList.length > 0 ? imageList : [siteMetadata.socialBanner]
 
   return {
     title: project.title,
@@ -48,7 +47,7 @@ export async function generateMetadata({
       locale: 'ko_KR',
       type: 'article',
       url: './',
-      images: imageList.map((img) => ({
+      images: metadataImageList.map((img) => ({
         url: img?.includes('http') ? img : `${siteMetadata.siteUrl}${img}`,
       })),
     },
@@ -56,7 +55,7 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title: project.title,
       description: project.summary,
-      images: imageList,
+      images: metadataImageList,
     },
   }
 }
@@ -80,14 +79,22 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   const prev = sortedProjects[projectIndex + 1]
   const next = sortedProjects[projectIndex - 1]
   const project = allProjects.find((entry) => entry.slug === slug) as Project
-  const mainContent = coreContent(project)
+  const mainContent = {
+    ...coreContent(project),
+    assetDir: project.assetDir,
+    images: resolveDocumentImageList(project.images, project.assetDir),
+  }
   const serializedJsonLd = JSON.stringify(project.structuredData).replace(/</g, '\\u003c')
 
   return (
     <>
       <JsonLd id={`project-jsonld-${slug}`} json={serializedJsonLd} />
       <ProjectLayout content={mainContent} next={next} prev={prev}>
-        <MDXLayoutRenderer code={project.body.code} components={components} toc={project.toc} />
+        <MDXLayoutRenderer
+          code={project.body.code}
+          components={getMDXComponents(project.assetDir)}
+          toc={project.toc}
+        />
       </ProjectLayout>
     </>
   )

@@ -57,8 +57,8 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
           )}
         </header>
 
-        <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_18rem]">
-          <div className="order-1 min-w-0 pb-8 xl:border-r xl:border-[color:var(--border)] xl:pr-10">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem]">
+          <div className="order-1 min-w-0 pb-8 lg:border-r lg:border-[color:var(--border)] lg:pr-10">
             <div className="prose max-w-none dark:prose-invert">{children}</div>
 
             <div className="mt-10 flex flex-wrap items-center gap-4 border-t border-[color:var(--border)] pt-6 text-sm font-semibold">
@@ -77,7 +77,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
             </div>
           </div>
 
-          <aside className="order-2 space-y-8 border-t border-[color:var(--border)] pt-8 xl:sticky xl:top-24 xl:h-fit xl:self-start xl:border-t-0 xl:pt-0">
+          <aside className="order-2 space-y-8 border-t border-[color:var(--border)] pt-8 lg:sticky lg:top-24 lg:h-fit lg:self-start lg:border-t-0 lg:pt-0">
             <div className="border-b border-[color:var(--border)] pb-6">
               <p className="eyebrow">Written By</p>
               <ul className="mt-5 space-y-5">
@@ -95,7 +95,9 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                     <div className="min-w-0">
                       <p className="font-semibold text-[color:var(--copy-strong)]">{author.name}</p>
                       {author.occupation && (
-                        <p className="text-sm text-[color:var(--copy-muted)]">{author.occupation}</p>
+                        <p className="text-sm text-[color:var(--copy-muted)]">
+                          {author.occupation}
+                        </p>
                       )}
                       {author.github && (
                         <Link

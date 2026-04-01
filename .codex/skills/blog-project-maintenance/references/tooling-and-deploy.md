@@ -7,6 +7,7 @@
 - This repo is `private`, so `pnpm publish` is not the deployment path
 
 Deployment flow:
+
 - `pnpm build`
 - `pnpm deploy`
 
@@ -25,6 +26,7 @@ Deployment flow:
 Implemented in `scripts/blog.mjs`.
 
 Top-level actions:
+
 - `Post`
 - `Paste`
 
@@ -39,6 +41,7 @@ Top-level actions:
 - create MDX from template
 
 Templates:
+
 - `templates/blog.mdx.tpl`
 - `templates/project.mdx.tpl`
 
@@ -52,17 +55,26 @@ Templates:
 ## Clipboard Image Saver
 
 Files:
+
 - `scripts/blog.mjs`
 - `scripts/save-clipboard-image.swift`
 
 Behavior:
-- saves into `public/static/images/posts/...` or `public/static/images/projects/...`
+
+- saves into `public/static/images/posts/<category>/<slug>/...` or `public/static/images/projects/<slug>/...`
 - reads image data from macOS clipboard via `NSPasteboard`
+- prints an MDX `<Image />` snippet with a document-relative `src`
+
+Migration:
+
+- run `pnpm image:migrate` to move legacy `/static/images/posts/...` or `/static/images/projects/...` references into document-scoped folders and rewrite MDX to relative paths
 
 Current constraint:
+
 - clipboard paste is macOS-only
 
 It should work on another Mac if:
+
 - the repo is present
 - `pnpm install` has been run
 - `swift` is available
@@ -71,11 +83,13 @@ It should work on another Mac if:
 ## Static Export Constraints
 
 From `next.config.js`:
+
 - production uses `output: 'export'`
 - images are `unoptimized`
 - trailing slash is enabled
 
 Implications:
+
 - avoid features that require a server runtime
 - verify route generation and contentlayer output with `pnpm build`
 - be careful when adding libraries that assume Node/Edge runtime during requests
@@ -83,10 +97,12 @@ Implications:
 ## Validation Rules
 
 Run at least:
+
 - `pnpm lint` for ordinary edits
 - `pnpm build` for route/content/schema/static-export changes
 
 Changes that should trigger a full build:
+
 - `contentlayer.config.ts`
 - routes in `app/`
 - project/blog document schema

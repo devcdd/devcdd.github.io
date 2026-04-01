@@ -11,6 +11,7 @@
     "analyze": "cross-env ANALYZE=true next build --webpack",
     "blog": "node scripts/blog.mjs",
     "image:paste": "node scripts/blog.mjs paste",
+    "image:migrate": "node scripts/migrate-content-images.mjs",
     "lint": "eslint --fix app components layouts scripts articles",
     "typecheck": "next typegen && tsc --noEmit",
     "prepare": "husky",

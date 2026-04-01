@@ -21,8 +21,15 @@ import rehypeKatex from 'rehype-katex'
 import rehypeCitation from 'rehype-citation'
 import rehypePrismPlus from 'rehype-prism-plus'
 import rehypePresetMinify from 'rehype-preset-minify'
+import { visit } from 'unist-util-visit'
 import siteMetadata from './articles/siteMetadata'
 import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer.js'
+import {
+  getDocumentAssetDir,
+  requireDocumentAssetDir,
+  resolveContentImagePath,
+  resolveDocumentImageList,
+} from './content-images'
 
 const root = process.cwd()
 const isProduction = process.env.NODE_ENV === 'production'
@@ -98,6 +105,38 @@ function createSearchIndex(allBlogs) {
   }
 }
 
+function getContentAssetDirFromFile(file) {
+  const sourcePath =
+    (typeof file.path === 'string' && file.path) ||
+    (Array.isArray(file.history) && typeof file.history[0] === 'string' ? file.history[0] : '')
+
+  return getDocumentAssetDir(sourcePath)
+}
+
+function rehypeResolveContentImages() {
+  return (tree, file) => {
+    const assetDir = getContentAssetDirFromFile(file)
+
+    if (!assetDir) {
+      return
+    }
+
+    visit(tree, (node) => {
+      if (
+        node.type !== 'element' ||
+        node.tagName !== 'img' ||
+        !node.properties ||
+        typeof node.properties.src !== 'string'
+      ) {
+        return
+      }
+
+      node.properties.src =
+        resolveContentImagePath(node.properties.src, assetDir) ?? node.properties.src
+    })
+  }
+}
+
 export const Blog = defineDocumentType(() => ({
   name: 'Blog',
   filePathPattern: 'blog/**/*.mdx',
@@ -117,18 +156,29 @@ export const Blog = defineDocumentType(() => ({
   },
   computedFields: {
     ...computedFields,
+    assetDir: {
+      type: 'string',
+      resolve: (doc) => requireDocumentAssetDir(doc._raw.sourceFilePath),
+    },
     structuredData: {
       type: 'json',
-      resolve: (doc) => ({
-        '@context': 'https://schema.org',
-        '@type': 'BlogPosting',
-        headline: doc.title,
-        datePublished: doc.date,
-        dateModified: doc.lastmod || doc.date,
-        description: doc.summary,
-        image: doc.images ? doc.images[0] : siteMetadata.socialBanner,
-        url: `${siteMetadata.siteUrl}/${doc._raw.flattenedPath}`,
-      }),
+      resolve: (doc) => {
+        const images = resolveDocumentImageList(
+          doc.images,
+          requireDocumentAssetDir(doc._raw.sourceFilePath)
+        )
+
+        return {
+          '@context': 'https://schema.org',
+          '@type': 'BlogPosting',
+          headline: doc.title,
+          datePublished: doc.date,
+          dateModified: doc.lastmod || doc.date,
+          description: doc.summary,
+          image: images[0] ?? siteMetadata.socialBanner,
+          url: `${siteMetadata.siteUrl}/${doc._raw.flattenedPath}`,
+        }
+      },
     },
   },
 }))
@@ -168,16 +218,27 @@ export const Project = defineDocumentType(() => ({
   },
   computedFields: {
     ...projectComputedFields,
+    assetDir: {
+      type: 'string',
+      resolve: (doc) => requireDocumentAssetDir(doc._raw.sourceFilePath),
+    },
     structuredData: {
       type: 'json',
-      resolve: (doc) => ({
-        '@context': 'https://schema.org',
-        '@type': 'CreativeWork',
-        name: doc.title,
-        description: doc.summary,
-        image: doc.images ? doc.images[0] : siteMetadata.socialBanner,
-        url: `${siteMetadata.siteUrl}/projects/${doc._raw.flattenedPath.replace(/^project\//, '')}`,
-      }),
+      resolve: (doc) => {
+        const images = resolveDocumentImageList(
+          doc.images,
+          requireDocumentAssetDir(doc._raw.sourceFilePath)
+        )
+
+        return {
+          '@context': 'https://schema.org',
+          '@type': 'CreativeWork',
+          name: doc.title,
+          description: doc.summary,
+          image: images[0] ?? siteMetadata.socialBanner,
+          url: `${siteMetadata.siteUrl}/projects/${doc._raw.flattenedPath.replace(/^project\//, '')}`,
+        }
+      },
     },
   },
 }))
@@ -210,11 +271,14 @@ export default makeSource({
       rehypeKatex,
       [rehypeCitation, { path: path.join(root, 'articles') }],
       [rehypePrismPlus, { defaultLanguage: 'js', ignoreMissing: true }],
+      rehypeResolveContentImages,
       rehypePresetMinify,
     ],
   },
   onSuccess: async (importData) => {
-    const { allBlogs } = (await importData()) as { allBlogs: typeof import('contentlayer/generated').allBlogs }
+    const { allBlogs } = (await importData()) as {
+      allBlogs: typeof import('contentlayer/generated').allBlogs
+    }
     createTagCount(allBlogs)
     createSearchIndex(allBlogs)
   },

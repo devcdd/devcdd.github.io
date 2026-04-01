@@ -120,7 +120,7 @@ func main() throws {
   print("Saved: \(outputFile.path)")
   print("")
   print("MDX:")
-  print("<img src=\"\(publicPath)\" alt=\"\(options.alt)\" className=\"w-full\" />")
+  print("<Image src=\"\(fileName)\" alt=\"\(options.alt)\" className=\"w-full\" />")
 }
 
 do {

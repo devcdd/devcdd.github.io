@@ -3,6 +3,7 @@
 ## Blog Documents
 
 Locations:
+
 - `articles/blog/frontend`
 - `articles/blog/backend`
 - `articles/blog/retrospect`
@@ -24,6 +25,7 @@ summary: ''
 ```
 
 Main fields:
+
 - `title`
 - `date`
 - `tags`
@@ -38,6 +40,7 @@ Main fields:
 ## Project Documents
 
 Location:
+
 - `articles/project/*.mdx`
 
 Template:
@@ -56,6 +59,7 @@ tags: []
 ```
 
 Main fields:
+
 - `title`: required
 - `summary`: required
 - `images`: hero/OG images
@@ -69,10 +73,12 @@ Main fields:
 ## Link Semantics
 
 In project detail pages:
+
 - `href` renders as `라이브 보기`
 - `repo` renders as `GitHub에서 보기`
 
 Footer `문서 원본 보기` is different:
+
 - it points to the blog repository file for the MDX document itself
 - it is not the app/project source repository
 
@@ -93,5 +99,7 @@ If you want projects included in search or tag aggregation, update the `onSucces
 
 ## Image Paths
 
-- Blog images should live under `public/static/images/posts/...`
-- Project images should live under `public/static/images/projects/...`
+- Blog images should live under `public/static/images/posts/<category>/<slug>/...`
+- Project images should live under `public/static/images/projects/<slug>/...`
+- In MDX body, use document-relative paths such as `<Image src="cover.png" ... />`, not full `/static/images/...` paths
+- In frontmatter `images`, use relative file names such as `images: ['cover.png']`

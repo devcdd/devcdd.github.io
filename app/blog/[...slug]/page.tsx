@@ -1,7 +1,7 @@
 import 'css/prism.css'
 import 'katex/dist/katex.css'
 
-import { components } from '@/components/MDXComponents'
+import { getMDXComponents } from '@/components/MDXComponents'
 import { MDXLayoutRenderer } from 'pliny/mdx-components.js'
 import { sortPosts, coreContent, allCoreContent } from 'pliny/utils/contentlayer.js'
 import { allBlogs, allAuthors } from 'contentlayer/generated'
@@ -13,6 +13,7 @@ import { Metadata } from 'next'
 import siteMetadata from '@/articles/siteMetadata'
 import { notFound } from 'next/navigation'
 import JsonLd from '@/components/JsonLd'
+import { resolveDocumentImageList } from '@/content-images'
 
 const defaultLayout = 'PostLayout'
 const layouts = {
@@ -41,10 +42,8 @@ export async function generateMetadata({
   const publishedAt = new Date(post.date).toISOString()
   const modifiedAt = new Date(post.lastmod || post.date).toISOString()
   const authors = authorDetails.map((author) => author.name)
-  let imageList = [siteMetadata.socialBanner]
-  if (post.images) {
-    imageList = typeof post.images === 'string' ? [post.images] : post.images
-  }
+  const imageList = resolveDocumentImageList(post.images, post.assetDir)
+  const metadataImageList = imageList.length > 0 ? imageList : [siteMetadata.socialBanner]
   const ogImages = imageList.map((img) => {
     return {
       url: img?.includes('http') ? img : siteMetadata.siteUrl + img,
@@ -63,14 +62,17 @@ export async function generateMetadata({
       publishedTime: publishedAt,
       modifiedTime: modifiedAt,
       url: './',
-      images: ogImages,
+      images:
+        ogImages.length > 0
+          ? ogImages
+          : [{ url: siteMetadata.siteUrl + siteMetadata.socialBanner }],
       authors: authors.length > 0 ? authors : [siteMetadata.author],
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
       description: post.summary,
-      images: imageList,
+      images: metadataImageList,
     },
   }
 }
@@ -99,7 +101,11 @@ export default async function Page({ params }: { params: Promise<{ slug: string[
     const authorResults = allAuthors.find((p) => p.slug === author)
     return coreContent(authorResults as Authors)
   })
-  const mainContent = coreContent(post)
+  const mainContent = {
+    ...coreContent(post),
+    assetDir: post.assetDir,
+    images: resolveDocumentImageList(post.images, post.assetDir),
+  }
   const jsonLd = {
     ...post.structuredData,
     author: authorDetails.map((author) => {
@@ -117,7 +123,11 @@ export default async function Page({ params }: { params: Promise<{ slug: string[
     <>
       <JsonLd id={`blog-jsonld-${slug}`} json={serializedJsonLd} />
       <Layout content={mainContent} authorDetails={authorDetails} next={next} prev={prev}>
-        <MDXLayoutRenderer code={post.body.code} components={components} toc={post.toc} />
+        <MDXLayoutRenderer
+          code={post.body.code}
+          components={getMDXComponents(post.assetDir)}
+          toc={post.toc}
+        />
       </Layout>
     </>
   )

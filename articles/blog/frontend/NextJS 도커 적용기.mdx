@@ -59,10 +59,9 @@ build/
 
 ## Docker
 
-<section className={"flex items-center justify-center my-[-10px]"}>
-  <img src="/static/images/posts/docker.png" alt="Docker Image" className={"w-1/2"} />
+<section className={'my-[-10px] flex items-center justify-center'}>
+  <Image src="docker.png" alt="Docker Image" className={'w-1/2'} />
 </section>
-
 
 반면 `Docker`를 쓴다면 이야기가 다릅니다. 저러한 구성 그대로 이미지의 형태를 만들게 된다면 서버의 레포지토리가 아닌 하나의 도커 컨테이너로써 구동 되기 때문에 독립된 `OS`를 사용하는 형식이 됩니다. `Debian`과는 다르게 `/opt/company`에 들어가봐도 아무것도 존재하지 않게 된다는 말이죠. 이외에도 여러가지 이점이 있기도 하고, 이참에 한 번 공부해봐야겠다 싶어서 `도커 씁시다`라고 제안했고, 수용되었습니다.
 
@@ -182,8 +181,8 @@ server {
 
 구조 상 도커 컨테이너는 호스트와 별개로 존재하는 `OS`와 같은 느낌이라서 도커 컨테이너 내부의 파일에 접근하기 위해서는 `docker exec`와 같은 별도의 방법을 사용해야 합니다. 하지만 저렇게 `nginx`를 컨테이너 내부에서 돌려주면 내부 정적 파일 자체를 nginx가 80 포트로 내보내고, 그렇게 빠져나온 80 포트를 호스트와 매핑만 시켜주게 된다면 별도의 설정 없이 정적 파일을 제공할 수 있게 되는 것이죠.
 
-<section className={"flex items-center justify-center my-[-30px]"}>
-  <img src="/static/images/posts/docker-proxy.png" alt="Docker Image" className={"w-full"} />
+<section className={'my-[-30px] flex items-center justify-center'}>
+  <Image src="docker-proxy.png" alt="Docker Image" className={'w-full'} />
 </section>
 
 그래서 이를 실행하기 위해서는 `docker run -p 3000:80 image` 명령어를 입력하면 됩니다. 3000:80의 의미는 도커 컨테이너의 80 포트를 호스트의 3000으로 할당한다는 뜻입니다. 호스트 포트:컨테이너 포트 순서로 입력한다고 생각하면 될 것 같아요.
