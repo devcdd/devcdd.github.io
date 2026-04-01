@@ -2,7 +2,7 @@
   "name": "CDD DEVLOG",
   "version": "2.2.0",
   "private": true,
-  "homepage": "https://devcdd.github.io/",
+  "homepage": "https://blog.cdd.co.kr/",
   "scripts": {
     "start": "next dev",
     "dev": "next dev --webpack",
@@ -14,7 +14,7 @@
     "lint": "eslint --fix app components layouts scripts articles",
     "typecheck": "next typegen && tsc --noEmit",
     "prepare": "husky",
-    "deploy": "touch out/.nojekyll && gh-pages -d out --dotfiles"
+    "deploy": "gh-pages -d out --dotfiles --nojekyll"
   },
   "dependencies": {
     "@fontsource-variable/jetbrains-mono": "^5.2.8",

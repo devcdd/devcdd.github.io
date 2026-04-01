@@ -7,7 +7,7 @@ const siteMetadata = {
   language: 'ko-KR',
   locale: 'ko-KR',
   theme: 'system', // system, dark or light
-  siteUrl: 'https://devcdd.github.io',
+  siteUrl: 'https://blog.cdd.co.kr',
   siteRepo: 'https://github.com/devcdd/devcdd.github.io',
   siteLogo: '/static/images/logo.png',
   image: '/static/images/avatar.png',
