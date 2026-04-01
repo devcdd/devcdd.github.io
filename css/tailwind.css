@@ -2,6 +2,91 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    color-scheme: light;
+    --header-offset: 5rem;
+    --page-background: #f2f4f8;
+    --page-background-rgb: 242 244 248;
+    --page-foreground: #0f172a;
+    --surface: #ffffff;
+    --surface-rgb: 255 255 255;
+    --surface-muted: #f8fafc;
+    --surface-strong: #0f172a;
+    --surface-accent: #eef4ff;
+    --border: #dbe3f4;
+    --copy: #334155;
+    --copy-strong: #0f172a;
+    --copy-muted: #64748b;
+  }
+
+  .dark {
+    color-scheme: dark;
+    --page-background: #060f1d;
+    --page-background-rgb: 6 15 29;
+    --page-foreground: #e2e8f0;
+    --surface: #0f1b2f;
+    --surface-rgb: 15 27 47;
+    --surface-muted: #12223b;
+    --surface-strong: #08111d;
+    --surface-accent: #142847;
+    --border: #21385f;
+    --copy: #cbd5e1;
+    --copy-strong: #f8fafc;
+    --copy-muted: #94a3b8;
+  }
+
+  html {
+    @apply bg-[color:var(--page-background)] text-[color:var(--page-foreground)];
+    scroll-padding-top: var(--header-offset);
+  }
+
+  body {
+    @apply min-h-screen bg-[color:var(--page-background)] text-[color:var(--page-foreground)] transition-colors duration-300;
+    word-spacing: -0.06em;
+  }
+
+  ::selection {
+    @apply bg-primary-200 text-primary-950 dark:bg-primary-700 dark:text-white;
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+
+  code,
+  pre,
+  input,
+  textarea,
+  button,
+  select,
+  option {
+    word-spacing: normal;
+  }
+}
+
+@layer components {
+  .surface-card {
+    @apply rounded-none border-b border-[color:var(--border)] bg-transparent shadow-none;
+  }
+
+  .surface-panel {
+    @apply rounded-none border-b border-[color:var(--border)] bg-transparent;
+  }
+
+  .surface-accent {
+    @apply rounded-none border-b border-primary-200 bg-primary-50/35 dark:border-primary-800 dark:bg-primary-950/20;
+  }
+
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.24em] text-primary-600 dark:text-primary-300;
+  }
+
+  .section-title {
+    @apply font-display text-3xl font-bold tracking-tight text-[color:var(--copy-strong)] sm:text-4xl;
+  }
+}
+
 .task-list-item::before {
   @apply hidden;
 }
@@ -11,7 +96,7 @@
 }
 
 .footnotes {
-  @apply mt-12 border-t border-gray-200 pt-8 dark:border-gray-700;
+  @apply mt-12 border-t border-[color:var(--border)] pt-8;
 }
 
 .data-footnote-backref {
@@ -34,6 +119,44 @@ input:-webkit-autofill:focus {
   overflow: auto hidden;
 }
 
+.prose {
+  @apply text-[color:var(--copy)];
+  overflow-wrap: anywhere;
+}
+
+.prose :where(pre):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  @apply overflow-x-auto rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-0 py-0 shadow-none;
+}
+
+.prose :where(pre code):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  background: transparent;
+  color: inherit;
+  border-radius: 0;
+  display: block;
+  padding: 1rem;
+}
+
+.prose :where(pre code)::before,
+.prose :where(pre code)::after {
+  content: none;
+}
+
+.prose :where(img):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  @apply rounded-none;
+}
+
+.prose :where(a):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  overflow-wrap: anywhere;
+}
+
+.prose :where(table):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  @apply my-6 w-full table-fixed text-sm;
+}
+
+.prose :where(th, td):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  @apply break-words align-top;
+}
+
 .content-header-link {
   opacity: 0;
   margin-left: -24px;
@@ -45,7 +168,43 @@ input:-webkit-autofill:focus {
   opacity: 1;
 }
 
+.content-header,
+#comment {
+  scroll-margin-top: var(--header-offset);
+}
+
 .linkicon {
   display: inline-block;
   vertical-align: middle;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --header-offset: 5.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .prose :where(pre):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    overflow-x: hidden;
+  }
+
+  .prose :where(pre code):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    padding: 0.875rem;
+  }
+
+  .code-line,
+  .highlight-line {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
+  }
+
+  .line-number::before {
+    margin-right: 0.75rem;
+  }
 }

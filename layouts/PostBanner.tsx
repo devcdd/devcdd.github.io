@@ -1,13 +1,12 @@
 import { ReactNode } from 'react'
 import Image from '@/components/Image'
-import Bleed from 'pliny/ui/Bleed'
-import { CoreContent } from 'pliny/utils/contentlayer'
+import Bleed from 'pliny/ui/Bleed.js'
+import { CoreContent } from 'pliny/utils/contentlayer.js'
 import type { Blog } from 'contentlayer/generated'
 import Comments from '@/components/Comments'
 import Link from '@/components/Link'
-import PageTitle from '@/components/PageTitle'
-import SectionContainer from '@/components/SectionContainer'
-import siteMetadata from '@/data/siteMetadata'
+import MobileContentInset from '@/components/MobileContentInset'
+import siteMetadata from '@/articles/siteMetadata'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
 
 interface LayoutProps {
@@ -20,59 +19,63 @@ interface LayoutProps {
 export default function PostMinimal({ content, next, prev, children }: LayoutProps) {
   const { slug, title, images } = content
   const displayImage =
-    images && images.length > 0 ? images[0] : 'https://picsum.photos/seed/picsum/800/400'
+    images && images.length > 0 ? images[0] : '/static/images/twitter-card.png'
 
   return (
-    <SectionContainer>
+    <MobileContentInset>
       <ScrollTopAndComment />
-      <article>
-        <div>
-          <div className="space-y-1 pb-10 text-center dark:border-gray-700">
-            <div className="w-full">
-              <Bleed>
-                <div className="relative aspect-[2/1] w-full">
-                  <Image src={displayImage} alt={title} fill className="object-cover" />
-                </div>
-              </Bleed>
+      <article className="space-y-10">
+        <header className="overflow-hidden border-b border-[color:var(--border)] pb-8">
+          <Bleed>
+            <div className="relative aspect-[2/1] w-full">
+              <Image src={displayImage} alt={title} fill className="object-cover" />
             </div>
-            <div className="relative pt-10">
-              <PageTitle>{title}</PageTitle>
-            </div>
+          </Bleed>
+          <div className="px-5 py-6 text-center sm:p-10">
+            <p className="eyebrow">Featured Story</p>
+            <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-[color:var(--copy-strong)] sm:text-4xl">
+              {title}
+            </h1>
           </div>
-          <div className="prose max-w-none py-4 dark:prose-invert">{children}</div>
-          {siteMetadata.comments && (
-            <div className="pb-6 pt-6 text-center text-gray-700 dark:text-gray-300" id="comment">
-              <Comments slug={slug} />
-            </div>
-          )}
-          <footer>
-            <div className="flex flex-col text-sm font-medium sm:flex-row sm:justify-between sm:text-base">
-              {prev && prev.path && (
-                <div className="pt-4 xl:pt-8">
-                  <Link
-                    href={`/${prev.path}`}
-                    className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
-                    aria-label={`Previous post: ${prev.title}`}
-                  >
-                    &larr; {prev.title}
-                  </Link>
-                </div>
+        </header>
+
+        <div className="pb-8">
+          <div className="prose max-w-none dark:prose-invert">{children}</div>
+        </div>
+
+        {(prev || next) && (
+          <footer className="border-t border-[color:var(--border)] pt-6">
+            <div className="flex flex-col gap-4 text-sm font-semibold sm:flex-row sm:justify-between">
+              {prev?.path ? (
+                <Link
+                  href={`/${prev.path}`}
+                  className="text-primary-600 hover:text-primary-700 dark:text-primary-300 dark:hover:text-primary-200"
+                  aria-label={`Previous post: ${prev.title}`}
+                >
+                  ← {prev.title}
+                </Link>
+              ) : (
+                <span />
               )}
-              {next && next.path && (
-                <div className="pt-4 xl:pt-8">
-                  <Link
-                    href={`/${next.path}`}
-                    className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
-                    aria-label={`Next post: ${next.title}`}
-                  >
-                    {next.title} &rarr;
-                  </Link>
-                </div>
+              {next?.path && (
+                <Link
+                  href={`/${next.path}`}
+                  className="text-primary-600 hover:text-primary-700 dark:text-primary-300 dark:hover:text-primary-200"
+                  aria-label={`Next post: ${next.title}`}
+                >
+                  {next.title} →
+                </Link>
               )}
             </div>
           </footer>
-        </div>
+        )}
+
+        {siteMetadata.comments && (
+          <section className="border-t border-[color:var(--border)] pt-8 text-center" id="comment">
+            <Comments slug={slug} />
+          </section>
+        )}
       </article>
-    </SectionContainer>
+    </MobileContentInset>
   )
 }

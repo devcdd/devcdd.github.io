@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
 import type { Authors } from 'contentlayer/generated'
+import MobileContentInset from '@/components/MobileContentInset'
 import SocialIcon from '@/components/social-icons'
 import Image from '@/components/Image'
 
@@ -12,39 +13,37 @@ export default function AuthorLayout({ children, content }: Props) {
   const { name, avatar, occupation, company, email, twitter, linkedin, github } = content
 
   return (
-    <>
-      <div className="divide-y divide-gray-200 dark:divide-gray-700">
-        <div className="space-y-2 pb-8 pt-6 md:space-y-5">
-          <h1 className="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">
-            About
-          </h1>
-        </div>
-        <div className="items-start space-y-2 xl:grid xl:grid-cols-3 xl:gap-x-8 xl:space-y-0">
-          <div className="flex flex-col items-center space-x-2 pt-8">
-            {avatar && (
-              <Image
-                src={avatar}
-                alt="avatar"
-                width={192}
-                height={192}
-                className="h-48 w-48 rounded-full"
-              />
-            )}
-            <h3 className="pb-2 pt-4 text-2xl font-bold leading-8 tracking-tight">{name}</h3>
-            <div className="text-gray-500 dark:text-gray-400">{occupation}</div>
-            <div className="text-gray-500 dark:text-gray-400">{company}</div>
-            <div className="flex space-x-3 pt-6">
-              <SocialIcon kind="mail" href={`mailto:${email}`} />
-              <SocialIcon kind="github" href={github} />
-              <SocialIcon kind="linkedin" href={linkedin} />
-              <SocialIcon kind="x" href={twitter} />
+    <MobileContentInset>
+      <div className="space-y-8">
+        <section className="border-b border-[color:var(--border)] pb-8">
+          <p className="eyebrow">About</p>
+          <div className="mt-4 grid gap-8 xl:grid-cols-[18rem_minmax(0,1fr)]">
+            <div className="border-b border-[color:var(--border)] pb-6 text-center xl:border-b-0 xl:border-r xl:pb-0 xl:pr-8">
+              {avatar && (
+                <Image
+                  src={avatar}
+                  alt="avatar"
+                  width={192}
+                  height={192}
+                  className="mx-auto h-40 w-40 object-cover"
+                />
+              )}
+              <h1 className="mt-5 font-display text-2xl font-bold tracking-tight text-[color:var(--copy-strong)] sm:text-3xl">
+                {name}
+              </h1>
+              {occupation && <p className="mt-2 text-[color:var(--copy-muted)]">{occupation}</p>}
+              {company && <p className="text-[color:var(--copy-muted)]">{company}</p>}
+              <div className="mt-6 flex gap-3">
+                <SocialIcon kind="mail" href={`mailto:${email}`} size={5} />
+                <SocialIcon kind="github" href={github} size={5} />
+                <SocialIcon kind="linkedin" href={linkedin} size={5} />
+                <SocialIcon kind="x" href={twitter} size={5} />
+              </div>
             </div>
+            <div className="prose max-w-none dark:prose-invert">{children}</div>
           </div>
-          <div className="prose max-w-none pb-8 pt-8 dark:prose-invert xl:col-span-2">
-            {children}
-          </div>
-        </div>
+        </section>
       </div>
-    </>
+    </MobileContentInset>
   )
 }

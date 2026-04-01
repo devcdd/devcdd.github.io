@@ -1,22 +1,16 @@
 import 'css/tailwind.css'
 import 'pliny/search/algolia.css'
 import 'remark-github-blockquote-alert/alert.css'
-
-import { Space_Grotesk } from 'next/font/google'
-import { Analytics, AnalyticsConfig } from 'pliny/analytics'
-import { SearchProvider, SearchConfig } from 'pliny/search'
+import 'pretendard/dist/web/variable/pretendardvariable.css'
+import '@fontsource-variable/jetbrains-mono/wght.css'
+import { Analytics, AnalyticsConfig } from 'pliny/analytics/index.js'
+import { SearchProvider, SearchConfig } from 'pliny/search/index.js'
 import Header from '@/components/Header'
 import SectionContainer from '@/components/SectionContainer'
 import Footer from '@/components/Footer'
-import siteMetadata from '@/data/siteMetadata'
+import siteMetadata from '@/articles/siteMetadata'
 import { ThemeProviders } from './theme-providers'
 import { Metadata } from 'next'
-
-const space_grotesk = Space_Grotesk({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-space-grotesk',
-})
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteMetadata.siteUrl),
@@ -33,7 +27,7 @@ export const metadata: Metadata = {
     url: './',
     siteName: siteMetadata.title,
     images: [siteMetadata.socialBanner],
-    locale: 'en_US',
+    locale: 'ko_KR',
     type: 'website',
   },
   alternates: {
@@ -64,46 +58,32 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang={siteMetadata.language}
-      className={`${space_grotesk.variable} scroll-smooth`}
+      className="overflow-x-hidden scroll-smooth"
       suppressHydrationWarning
     >
-      <script
-        src="https://giscus.app/client.js"
-        data-repo="devcdd/devcdd.github.io"
-        data-repo-id="R_kgDOMQ309g"
-        data-category="General"
-        data-category-id="DIC_kwDOMQ309s4Cgh__"
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="bottom"
-        data-theme="preferred_color_scheme"
-        data-lang="ko"
-        crossOrigin="anonymous"
-        async
-      ></script>
       <link rel="apple-touch-icon" sizes="76x76" href="/static/favicons/cdd-32x32.png" />
       <link rel="icon" type="image/png" sizes="32x32" href="/static/favicons/cdd-32x32.png" />
       <link rel="icon" type="image/png" sizes="16x16" href="/static/favicons/cdd-16x16.png" />
       <link rel="manifest" href="/static/favicons/site.webmanifest" />
-      {/*<link rel="mask-icon" href="/static/favicons/safari-pinned-tab.svg" color="#5bbad5" />*/}
-      <meta name="msapplication-TileColor" content="#000000" />
-      <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fff" />
-      <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000" />
+      <meta name="msapplication-TileColor" content="#183fcb" />
+      <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2f4f8" />
+      <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#060f1d" />
       <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
-      <body className="bg-white pl-[calc(100vw-100%)] text-black antialiased dark:bg-gray-950 dark:text-white">
+      <body className="overflow-x-hidden bg-[color:var(--page-background)] font-sans text-[color:var(--page-foreground)] antialiased">
         <ThemeProviders>
           <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} />
-          <SectionContainer>
-            <div className="flex h-screen flex-col justify-between font-sans">
-              <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
-                <Header />
-                <main className="mb-auto">{children}</main>
-              </SearchProvider>
-              <Footer />
+          <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
+            <div className="relative min-h-screen">
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-[linear-gradient(180deg,rgba(47,99,255,0.03),rgba(47,99,255,0))] dark:bg-[linear-gradient(180deg,rgba(91,142,255,0.06),rgba(91,142,255,0))]" />
+              <SectionContainer>
+                <div className="relative flex min-h-screen flex-col">
+                  <Header />
+                  <main className="mb-auto pb-20 pt-6">{children}</main>
+                  <Footer />
+                </div>
+              </SectionContainer>
             </div>
-          </SectionContainer>
+          </SearchProvider>
         </ThemeProviders>
       </body>
     </html>

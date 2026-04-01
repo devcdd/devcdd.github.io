@@ -1,58 +1,62 @@
 import Image from './Image'
 import Link from './Link'
 
-const Card = ({ title, description, imgSrc, href, self }) => (
-  <div className="md max-w-[544px] p-4 md:w-1/2">
-    <div
-      className={`${
-        imgSrc && 'h-full'
-      }  overflow-hidden rounded-md border-2 border-gray-200 border-opacity-60 dark:border-gray-700`}
-    >
+interface CardProps {
+  title: string
+  description: string
+  href: string
+  externalHref?: string
+  imgSrc?: string
+  self?: boolean
+}
+
+const Card = ({ title, description, imgSrc, href, externalHref, self }: CardProps) => (
+  <div className="w-full p-0">
+    <article className="group relative flex h-full flex-col gap-5 border-b border-[color:var(--border)] pb-6 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary-400 focus-within:ring-offset-4 focus-within:ring-offset-[color:var(--page-background)]">
+      <Link href={href} aria-label={`Link to ${title}`} className="absolute inset-0 z-10 block" />
       {imgSrc &&
-        (href ? (
-          <Link href={href} aria-label={`Link to ${title}`}>
-            <Image
-              alt={title}
-              src={imgSrc}
-              className="object-cover object-center md:h-36 lg:h-48"
-              width={544}
-              height={306}
-            />
-          </Link>
-        ) : (
+        (
+          <div>
           <Image
             alt={title}
             src={imgSrc}
-            className="object-cover object-center md:h-36 lg:h-48"
+            className="h-52 w-full object-cover object-center"
             width={544}
             height={306}
           />
-        ))}
-      <div className="p-6">
-        <h2 className="mb-3 text-2xl font-bold leading-8 tracking-tight">
-          {href ? (
-            <Link href={href} aria-label={`Link to ${title}`}>
-              {title}
-            </Link>
-          ) : (
-            title
-          )}
-        </h2>
-        <p className="prose mb-3 max-w-none font-semibold text-primary-500">
-          {self ? '혼자 개발했어요..!!' : '공동 개발 프로젝트에요..!!'}
-        </p>
-        <p className="prose mb-3 max-w-none text-gray-500 dark:text-gray-400">{description}</p>
-        {href && (
-          <Link
-            href={href}
-            className="text-base font-medium leading-6 text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
-            aria-label={`Link to ${title}`}
-          >
-            Learn more &rarr;
-          </Link>
+          </div>
         )}
+      <div className="flex flex-1 flex-col gap-4">
+        <div className="flex items-center justify-between gap-4">
+          <p className="eyebrow">{self ? 'Solo Build' : 'Team Project'}</p>
+          {externalHref && (
+            <span className="border border-[color:var(--border)] px-3 py-1 text-xs font-semibold text-[color:var(--copy-muted)]">
+              Live
+            </span>
+          )}
+        </div>
+        <h2 className="font-display text-2xl font-bold tracking-tight text-[color:var(--copy-strong)] transition-colors group-hover:text-primary-700 dark:group-hover:text-primary-200">
+          {title}
+        </h2>
+        <p className="flex-1 text-sm leading-7 text-[color:var(--copy-muted)] sm:text-base">
+          {description}
+        </p>
+        <div className="flex flex-wrap items-center gap-4">
+          <span className="inline-flex items-center text-sm font-semibold text-primary-600 dark:text-primary-300">
+            상세 보기
+          </span>
+          {externalHref && (
+            <Link
+              href={externalHref}
+              className="relative z-20 inline-flex items-center text-sm font-semibold text-[color:var(--copy-muted)] hover:text-[color:var(--copy-strong)]"
+              aria-label={`Open live site for ${title}`}
+            >
+              라이브 보기
+            </Link>
+          )}
+        </div>
       </div>
-    </div>
+    </article>
   </div>
 )
 

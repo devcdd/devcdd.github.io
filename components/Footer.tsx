@@ -1,27 +1,40 @@
 import Link from './Link'
-import siteMetadata from '@/data/siteMetadata'
+import siteMetadata from '@/articles/siteMetadata'
 import SocialIcon from '@/components/social-icons'
+import MobileContentInset from '@/components/MobileContentInset'
 
 export default function Footer() {
   return (
-    <footer>
-      <div className="mt-16 flex flex-col items-center">
-        <div className="mb-3 flex space-x-4">
-          <SocialIcon kind="github" href={siteMetadata.github} size={6} />
-          <SocialIcon kind="youtube" href={siteMetadata.youtube} size={6} />
-          <SocialIcon kind="instagram" href={siteMetadata.instagram} size={6} />
+    <footer className="mt-16 border-t border-[color:var(--border)] py-8">
+      <MobileContentInset>
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div className="space-y-3">
+            <p className="eyebrow">{siteMetadata.title}</p>
+            <h2 className="font-display text-2xl font-bold tracking-tight text-[color:var(--copy-strong)]">
+              {siteMetadata.headerTitle}
+            </h2>
+            <p className="max-w-2xl text-sm leading-7 text-[color:var(--copy-muted)] sm:text-base">
+              {siteMetadata.description}
+            </p>
+          </div>
+          <div className="space-y-4 md:text-right">
+            <div className="flex gap-3 md:justify-end">
+              <SocialIcon kind="github" href={siteMetadata.github} size={5} />
+              <SocialIcon kind="youtube" href={siteMetadata.youtube} size={5} />
+              <SocialIcon kind="instagram" href={siteMetadata.instagram} size={5} />
+            </div>
+            <div className="text-sm text-[color:var(--copy-muted)]">
+              <span>{siteMetadata.author}</span>
+              <span>{` · © ${new Date().getFullYear()}`}</span>
+              <span>{` · `}</span>
+              <Link href="/">{siteMetadata.title}</Link>
+            </div>
+            <div className="text-sm font-medium text-primary-600 dark:text-primary-300">
+              <Link href={siteMetadata.siteRepo}>GitHub Repository</Link>
+            </div>
+          </div>
         </div>
-        <div className="mb-2 flex space-x-2 text-sm text-gray-500 dark:text-gray-400">
-          <div>{siteMetadata.author}</div>
-          <div>{` • `}</div>
-          <div>{`© ${new Date().getFullYear()}`}</div>
-          <div>{` • `}</div>
-          <Link href="/">{siteMetadata.title}</Link>
-        </div>
-        <div className="mb-8 text-sm text-gray-500 dark:text-gray-400">
-          <Link href="https://github.com/devcdd">CDD GITHUB</Link>
-        </div>
-      </div>
+      </MobileContentInset>
     </footer>
   )
 }

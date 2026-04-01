@@ -24,6 +24,12 @@ const components = {
   instagram: Instagram,
 }
 
+const sizeMap = {
+  5: 'h-5 w-5',
+  6: 'h-6 w-6',
+  8: 'h-8 w-8',
+}
+
 type SocialIconProps = {
   kind: keyof typeof components
   href: string | undefined
@@ -38,14 +44,14 @@ const SocialIcon = ({ kind, href, size = 8 }: SocialIconProps) => {
 
   return (
     <a
-      className="text-sm text-gray-500 transition hover:text-gray-600"
+      className="text-sm text-[color:var(--copy-muted)] transition hover:text-primary-600 dark:hover:text-primary-300"
       target="_blank"
       rel="noopener noreferrer"
       href={href}
     >
       <span className="sr-only">{kind}</span>
       <SocialSvg
-        className={`fill-current text-gray-700 hover:text-primary-500 dark:text-gray-200 dark:hover:text-primary-400 h-${size} w-${size}`}
+        className={`fill-current ${sizeMap[size] ?? sizeMap[8]}`}
       />
     </a>
   )

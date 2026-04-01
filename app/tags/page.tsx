@@ -1,5 +1,5 @@
 import Link from '@/components/Link'
-import Tag from '@/components/Tag'
+import MobileContentInset from '@/components/MobileContentInset'
 import { slug } from 'github-slugger'
 import tagData from 'app/tag-data.json'
 import { genPageMetadata } from 'app/seo'
@@ -8,34 +8,44 @@ export const metadata = genPageMetadata({ title: 'Tags', description: 'Things I 
 
 export default async function Page() {
   const tagCounts = tagData as Record<string, number>
-  const tagKeys = Object.keys(tagCounts)
-  const sortedTags = tagKeys.sort((a, b) => tagCounts[b] - tagCounts[a])
+  const sortedTags = Object.keys(tagCounts).sort((a, b) => tagCounts[b] - tagCounts[a])
+
   return (
-    <>
-      <div className="flex flex-col items-start justify-start divide-y divide-gray-200 dark:divide-gray-700 md:mt-24 md:flex-row md:items-center md:justify-center md:space-x-6 md:divide-y-0">
-        <div className="space-x-2 pb-8 pt-6 md:space-y-5">
-          <h1 className="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:border-r-2 md:px-6 md:text-6xl md:leading-14">
+    <MobileContentInset>
+      <div className="space-y-8">
+        <section className="border-b border-[color:var(--border)] pb-8">
+          <p className="eyebrow">Explore by Topic</p>
+          <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-[color:var(--copy-strong)] sm:text-4xl">
             Tags
           </h1>
-        </div>
-        <div className="flex max-w-lg flex-wrap">
-          {tagKeys.length === 0 && 'No tags found.'}
-          {sortedTags.map((t) => {
-            return (
-              <div key={t} className="mb-2 mr-5 mt-2">
-                <Tag text={t} />
-                <Link
-                  href={`/tags/${slug(t)}`}
-                  className="-ml-2 text-sm font-semibold uppercase text-gray-600 dark:text-gray-300"
-                  aria-label={`View posts tagged ${t}`}
+          <p className="mt-4 max-w-3xl text-base leading-8 text-[color:var(--copy-muted)] sm:text-lg">
+            자주 다루는 기술과 주제를 태그 단위로 묶었습니다. 특정 분야의 글만 빠르게 보고 싶을 때
+            사용하면 됩니다.
+          </p>
+        </section>
+
+        <section className="border-t border-[color:var(--border)] pt-6">
+          <div className="flex flex-wrap gap-3">
+            {sortedTags.map((tag) => (
+              <Link
+                key={tag}
+                href={`/tags/${slug(tag)}`}
+                className="group flex items-center gap-2 border border-[color:var(--border)] px-3 py-2 transition-colors hover:border-primary-300 dark:hover:border-primary-700"
+                aria-label={`View posts tagged ${tag}`}
+              >
+                <span
+                  className="inline-flex border border-primary-200 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary-700 transition-colors group-hover:text-primary-700 dark:border-primary-800 dark:text-primary-200 dark:group-hover:text-primary-200"
                 >
-                  {` (${tagCounts[t]})`}
-                </Link>
-              </div>
-            )
-          })}
-        </div>
+                  {tag.split(' ').join('-')}
+                </span>
+                <span className="text-sm font-semibold text-[color:var(--copy-muted)] transition-colors group-hover:text-primary-700 dark:group-hover:text-primary-200">
+                  {tagCounts[tag]}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
       </div>
-    </>
+    </MobileContentInset>
   )
 }

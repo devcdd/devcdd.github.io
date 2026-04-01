@@ -21,7 +21,7 @@ import rehypeKatex from 'rehype-katex'
 import rehypeCitation from 'rehype-citation'
 import rehypePrismPlus from 'rehype-prism-plus'
 import rehypePresetMinify from 'rehype-preset-minify'
-import siteMetadata from './data/siteMetadata'
+import siteMetadata from './articles/siteMetadata'
 import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer.js'
 
 const root = process.cwd()
@@ -55,6 +55,14 @@ const computedFields: ComputedFields = {
     resolve: (doc) => doc._raw.sourceFilePath,
   },
   toc: { type: 'string', resolve: (doc) => extractTocHeadings(doc.body.raw) },
+}
+
+const projectComputedFields: ComputedFields = {
+  ...computedFields,
+  path: {
+    type: 'string',
+    resolve: (doc) => `projects/${doc._raw.flattenedPath.replace(/^project\//, '')}`,
+  },
 }
 
 /**
@@ -143,9 +151,40 @@ export const Authors = defineDocumentType(() => ({
   computedFields,
 }))
 
+export const Project = defineDocumentType(() => ({
+  name: 'Project',
+  filePathPattern: 'project/**/*.mdx',
+  contentType: 'mdx',
+  fields: {
+    title: { type: 'string', required: true },
+    summary: { type: 'string', required: true },
+    images: { type: 'json' },
+    href: { type: 'string' },
+    repo: { type: 'string' },
+    self: { type: 'boolean' },
+    tags: { type: 'list', of: { type: 'string' }, default: [] },
+    order: { type: 'number', default: 0 },
+    draft: { type: 'boolean' },
+  },
+  computedFields: {
+    ...projectComputedFields,
+    structuredData: {
+      type: 'json',
+      resolve: (doc) => ({
+        '@context': 'https://schema.org',
+        '@type': 'CreativeWork',
+        name: doc.title,
+        description: doc.summary,
+        image: doc.images ? doc.images[0] : siteMetadata.socialBanner,
+        url: `${siteMetadata.siteUrl}/projects/${doc._raw.flattenedPath.replace(/^project\//, '')}`,
+      }),
+    },
+  },
+}))
+
 export default makeSource({
-  contentDirPath: 'data',
-  documentTypes: [Blog, Authors],
+  contentDirPath: 'articles',
+  documentTypes: [Blog, Authors, Project],
   mdx: {
     cwd: process.cwd(),
     remarkPlugins: [
@@ -169,13 +208,13 @@ export default makeSource({
         },
       ],
       rehypeKatex,
-      [rehypeCitation, { path: path.join(root, 'data') }],
+      [rehypeCitation, { path: path.join(root, 'articles') }],
       [rehypePrismPlus, { defaultLanguage: 'js', ignoreMissing: true }],
       rehypePresetMinify,
     ],
   },
   onSuccess: async (importData) => {
-    const { allBlogs } = await importData()
+    const { allBlogs } = (await importData()) as { allBlogs: typeof import('contentlayer/generated').allBlogs }
     createTagCount(allBlogs)
     createSearchIndex(allBlogs)
   },

@@ -1,36 +1,52 @@
-import projectsData from '@/data/projectsData'
 import Card from '@/components/Card'
+import MobileContentInset from '@/components/MobileContentInset'
+import { allProjects } from 'contentlayer/generated'
 import { genPageMetadata } from 'app/seo'
 
 export const metadata = genPageMetadata({ title: 'Projects' })
 
+const sortProjects = (projects: typeof allProjects) =>
+  [...projects]
+    .filter((project) => project.draft !== true)
+    .sort((left, right) => {
+      if ((right.order ?? 0) !== (left.order ?? 0)) {
+        return (right.order ?? 0) - (left.order ?? 0)
+      }
+
+      return left.title.localeCompare(right.title, 'ko')
+    })
+
 export default function Projects() {
+  const projects = sortProjects(allProjects)
+
   return (
-    <>
-      <div className="divide-y divide-gray-200 dark:divide-gray-700">
-        <div className="space-y-2 pb-8 pt-6 md:space-y-5">
-          <h1 className="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">
-            Projects
+    <MobileContentInset>
+      <div className="space-y-8">
+        <section className="border-b border-[color:var(--border)] pb-8">
+          <p className="eyebrow">Projects</p>
+          <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-[color:var(--copy-strong)] sm:text-4xl">
+            직접 만든 제품과 실험들
           </h1>
-          <p className="text-lg leading-7 text-gray-500 dark:text-gray-400">
-            디디가 만든 프로젝트들을 소개합니다.
+          <p className="mt-4 max-w-3xl text-base leading-8 text-[color:var(--copy-muted)] sm:text-lg">
+            아이디어를 빠르게 형태로 만드는 과정에서 얻은 인사이트를 프로젝트 단위로 정리합니다.
+            작은 서비스라도 끝까지 배포해보는 편을 선호합니다.
           </p>
-        </div>
-        <div className="container py-12">
-          <div className="-m-4 flex flex-wrap">
-            {projectsData.map((d) => (
-              <Card
-                key={d.title}
-                title={d.title}
-                description={d.description}
-                imgSrc={d.imgSrc}
-                href={d.href}
-                self={d.self}
-              />
-            ))}
-          </div>
-        </div>
+        </section>
+
+        <section className="grid gap-6 lg:grid-cols-2">
+          {projects.map((project) => (
+            <Card
+              key={project.path}
+              title={project.title}
+              description={project.summary}
+              imgSrc={Array.isArray(project.images) ? project.images[0] : undefined}
+              href={`/${project.path}`}
+              externalHref={project.href}
+              self={project.self}
+            />
+          ))}
+        </section>
       </div>
-    </>
+    </MobileContentInset>
   )
 }

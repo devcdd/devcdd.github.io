@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next'
-import siteMetadata from '@/data/siteMetadata'
+import siteMetadata from '@/articles/siteMetadata'
+
+export const dynamic = 'force-static'
 
 export default function robots(): MetadataRoute.Robots {
   return {
