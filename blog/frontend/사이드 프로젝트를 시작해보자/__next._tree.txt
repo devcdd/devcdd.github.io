@@ -1,5 +1,5 @@
 :HL["/_next/static/css/4e990cf79bdacf9b.css","style"]
-:HL["/_next/static/css/1bbe4d10dfc7437e.css","style"]
+:HL["/_next/static/css/cf7e76c0b65bc95c.css","style"]
 :HL["/_next/static/css/117b8940b1fdc375.css","style"]
-:HL["/static/images/posts/meal-compass-roulette.gif","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"blog","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"c","key":"frontend/%EC%82%AC%EC%9D%B4%EB%93%9C%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EB%A5%BC%20%EC%8B%9C%EC%9E%91%ED%95%B4%EB%B3%B4%EC%9E%90","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"pt_lFzM_CoeTpWXRxP6NB"}
+:HL["/static/images/posts/frontend/사이드 프로젝트를 시작해보자/meal-compass-roulette.gif","image"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"blog","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"c","key":"frontend/%EC%82%AC%EC%9D%B4%EB%93%9C%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EB%A5%BC%20%EC%8B%9C%EC%9E%91%ED%95%B4%EB%B3%B4%EC%9E%90","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"zj2QUXt8Kbp0RYYliDjHf"}

@@ -1,5 +1,5 @@
 :HL["/_next/static/css/4e990cf79bdacf9b.css","style"]
-:HL["/_next/static/css/1bbe4d10dfc7437e.css","style"]
+:HL["/_next/static/css/cf7e76c0b65bc95c.css","style"]
 :HL["/_next/static/css/117b8940b1fdc375.css","style"]
-:HL["/static/images/posts/nest-controller.png","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"blog","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"c","key":"backend/Nest%20%EA%B3%B5%EC%8B%9D%EB%AC%B8%EC%84%9C%20%ED%83%90%EB%B0%A9%EA%B8%B0","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"pt_lFzM_CoeTpWXRxP6NB"}
+:HL["/static/images/posts/backend/Nest 공식문서 탐방기/nest-controller.png","image"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"blog","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"c","key":"backend/Nest%20%EA%B3%B5%EC%8B%9D%EB%AC%B8%EC%84%9C%20%ED%83%90%EB%B0%A9%EA%B8%B0","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"zj2QUXt8Kbp0RYYliDjHf"}
