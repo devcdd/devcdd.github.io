@@ -19,6 +19,16 @@ export const metadata: Metadata = {
     template: `%s | ${siteMetadata.title}`,
   },
   description: siteMetadata.description,
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+    shortcut: ['/favicon.ico'],
+  },
+  manifest: '/site.webmanifest',
 
   openGraph: {
     title: siteMetadata.title,
@@ -61,10 +71,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className="overflow-x-hidden scroll-smooth"
       suppressHydrationWarning
     >
-      <link rel="apple-touch-icon" sizes="76x76" href="/static/favicons/cdd-32x32.png" />
-      <link rel="icon" type="image/png" sizes="32x32" href="/static/favicons/cdd-32x32.png" />
-      <link rel="icon" type="image/png" sizes="16x16" href="/static/favicons/cdd-16x16.png" />
-      <link rel="manifest" href="/static/favicons/site.webmanifest" />
       <meta name="msapplication-TileColor" content="#183fcb" />
       <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2f4f8" />
       <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#060f1d" />
