@@ -4,4 +4,4 @@
 :HL["/static/images/posts/devtool-error.png","image"]
 :HL["/static/images/posts/style-stuck.png","image"]
 :HL["/static/images/posts/style-fixed.png","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"blog","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"c","key":"frontend/CSS%20%EB%B3%91%ED%95%A9%20%EC%9D%B4%EC%8A%88%20%ED%95%B4%EA%B2%B0%EA%B8%B0","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"Ga4Rb8W-BvxcLDPUfBQpX"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"blog","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"c","key":"frontend/CSS%20%EB%B3%91%ED%95%A9%20%EC%9D%B4%EC%8A%88%20%ED%95%B4%EA%B2%B0%EA%B8%B0","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"pt_lFzM_CoeTpWXRxP6NB"}

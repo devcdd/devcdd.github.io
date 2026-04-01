@@ -2,18 +2,18 @@
   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
       <title>디디의 개발일지</title>
-      <link>https://devcdd.github.io/blog</link>
+      <link>https://blog.cdd.co.kr/blog</link>
       <description>디디의 개발 경험, 회고, 그리고 사이드 프로젝트들을 정리하는 블로그</description>
       <language>ko-KR</language>
       <managingEditor>developer.cdd@gmail.com (디디)</managingEditor>
       <webMaster>developer.cdd@gmail.com (디디)</webMaster>
       <lastBuildDate>Sat, 10 Aug 2024 00:00:00 GMT</lastBuildDate>
-      <atom:link href="https://devcdd.github.io/tags/backend/feed.xml" rel="self" type="application/rss+xml"/>
+      <atom:link href="https://blog.cdd.co.kr/tags/backend/feed.xml" rel="self" type="application/rss+xml"/>
       
   <item>
-    <guid>https://devcdd.github.io/blog/backend/Nest 공식문서 탐방기</guid>
+    <guid>https://blog.cdd.co.kr/blog/backend/Nest 공식문서 탐방기</guid>
     <title>Nest 공식문서 1차 탐방기</title>
-    <link>https://devcdd.github.io/blog/backend/Nest 공식문서 탐방기</link>
+    <link>https://blog.cdd.co.kr/blog/backend/Nest 공식문서 탐방기</link>
     <description>사이드 프로젝트를 진행하려 하니 백엔드를 구하기도 뭐하고, 사내에서도 프론트 용 백엔드가 필요한 상황이어서 가볍게 시작해보기로 했습니다.</description>
     <pubDate>Sat, 10 Aug 2024 00:00:00 GMT</pubDate>
     <author>developer.cdd@gmail.com (디디)</author>

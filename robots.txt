@@ -1,5 +1,5 @@
 User-Agent: *
 Allow: /
 
-Host: https://devcdd.github.io
-Sitemap: https://devcdd.github.io/sitemap.xml
+Host: https://blog.cdd.co.kr
+Sitemap: https://blog.cdd.co.kr/sitemap.xml

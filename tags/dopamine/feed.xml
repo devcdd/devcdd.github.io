@@ -2,18 +2,18 @@
   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
       <title>디디의 개발일지</title>
-      <link>https://devcdd.github.io/blog</link>
+      <link>https://blog.cdd.co.kr/blog</link>
       <description>디디의 개발 경험, 회고, 그리고 사이드 프로젝트들을 정리하는 블로그</description>
       <language>ko-KR</language>
       <managingEditor>developer.cdd@gmail.com (디디)</managingEditor>
       <webMaster>developer.cdd@gmail.com (디디)</webMaster>
       <lastBuildDate>Tue, 13 Aug 2024 00:00:00 GMT</lastBuildDate>
-      <atom:link href="https://devcdd.github.io/tags/dopamine/feed.xml" rel="self" type="application/rss+xml"/>
+      <atom:link href="https://blog.cdd.co.kr/tags/dopamine/feed.xml" rel="self" type="application/rss+xml"/>
       
   <item>
-    <guid>https://devcdd.github.io/blog/retrospect/DOPAMINE DETOX</guid>
+    <guid>https://blog.cdd.co.kr/blog/retrospect/DOPAMINE DETOX</guid>
     <title>DOPAMINE DETOX</title>
-    <link>https://devcdd.github.io/blog/retrospect/DOPAMINE DETOX</link>
+    <link>https://blog.cdd.co.kr/blog/retrospect/DOPAMINE DETOX</link>
     <description>도파민 디톡스라고 들어보셨나요?</description>
     <pubDate>Tue, 13 Aug 2024 00:00:00 GMT</pubDate>
     <author>developer.cdd@gmail.com (디디)</author>

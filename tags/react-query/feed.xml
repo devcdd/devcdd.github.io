@@ -2,18 +2,18 @@
   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
       <title>디디의 개발일지</title>
-      <link>https://devcdd.github.io/blog</link>
+      <link>https://blog.cdd.co.kr/blog</link>
       <description>디디의 개발 경험, 회고, 그리고 사이드 프로젝트들을 정리하는 블로그</description>
       <language>ko-KR</language>
       <managingEditor>developer.cdd@gmail.com (디디)</managingEditor>
       <webMaster>developer.cdd@gmail.com (디디)</webMaster>
       <lastBuildDate>Sat, 07 Sep 2024 00:00:00 GMT</lastBuildDate>
-      <atom:link href="https://devcdd.github.io/tags/react-query/feed.xml" rel="self" type="application/rss+xml"/>
+      <atom:link href="https://blog.cdd.co.kr/tags/react-query/feed.xml" rel="self" type="application/rss+xml"/>
       
   <item>
-    <guid>https://devcdd.github.io/blog/frontend/useInfiniteQuery 도입기 (feat. ag-grid)</guid>
+    <guid>https://blog.cdd.co.kr/blog/frontend/useInfiniteQuery 도입기 (feat. ag-grid)</guid>
     <title>useInfiniteQuery 도입기 (feat. ag-grid)</title>
-    <link>https://devcdd.github.io/blog/frontend/useInfiniteQuery 도입기 (feat. ag-grid)</link>
+    <link>https://blog.cdd.co.kr/blog/frontend/useInfiniteQuery 도입기 (feat. ag-grid)</link>
     <description>useQuery 기반 사내 프로젝트에서 useInfiniteQuery를 새롭게 도입하게 된 계기, 그리고 어떤식으로 Optimistic Update를 적용했는지에 대해 작성해보려고 합니다.</description>
     <pubDate>Sat, 07 Sep 2024 00:00:00 GMT</pubDate>
     <author>developer.cdd@gmail.com (디디)</author>

@@ -2,18 +2,18 @@
   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
       <title>디디의 개발일지</title>
-      <link>https://devcdd.github.io/blog</link>
+      <link>https://blog.cdd.co.kr/blog</link>
       <description>디디의 개발 경험, 회고, 그리고 사이드 프로젝트들을 정리하는 블로그</description>
       <language>ko-KR</language>
       <managingEditor>developer.cdd@gmail.com (디디)</managingEditor>
       <webMaster>developer.cdd@gmail.com (디디)</webMaster>
       <lastBuildDate>Fri, 26 Jul 2024 00:00:00 GMT</lastBuildDate>
-      <atom:link href="https://devcdd.github.io/tags/reactjs/feed.xml" rel="self" type="application/rss+xml"/>
+      <atom:link href="https://blog.cdd.co.kr/tags/reactjs/feed.xml" rel="self" type="application/rss+xml"/>
       
   <item>
-    <guid>https://devcdd.github.io/blog/frontend/CSS 병합 이슈 해결기</guid>
+    <guid>https://blog.cdd.co.kr/blog/frontend/CSS 병합 이슈 해결기</guid>
     <title>CSS 병합 이슈 해결기</title>
-    <link>https://devcdd.github.io/blog/frontend/CSS 병합 이슈 해결기</link>
+    <link>https://blog.cdd.co.kr/blog/frontend/CSS 병합 이슈 해결기</link>
     <description>특이한 프로젝트 구조 때문에 `tailwindcss`가 중복 생성되어 개발자 도구 콘솔 마저 죽어버리는 상황, 어떻게 해결했을까요?</description>
     <pubDate>Fri, 26 Jul 2024 00:00:00 GMT</pubDate>
     <author>developer.cdd@gmail.com (디디)</author>
@@ -21,9 +21,9 @@
   </item>
 
   <item>
-    <guid>https://devcdd.github.io/blog/frontend/Next.js 다크모드 적용기</guid>
+    <guid>https://blog.cdd.co.kr/blog/frontend/Next.js 다크모드 적용기</guid>
     <title>사내 프로젝트 다크모드 적용기</title>
-    <link>https://devcdd.github.io/blog/frontend/Next.js 다크모드 적용기</link>
+    <link>https://blog.cdd.co.kr/blog/frontend/Next.js 다크모드 적용기</link>
     <description>사내 프로젝트에서 다크모드를 도입하게 되어 관련해서 적어봤습니다.</description>
     <pubDate>Fri, 12 Jul 2024 00:00:00 GMT</pubDate>
     <author>developer.cdd@gmail.com (디디)</author>
@@ -31,9 +31,9 @@
   </item>
 
   <item>
-    <guid>https://devcdd.github.io/blog/frontend/useInfiniteQuery 도입기 (feat. ag-grid)</guid>
+    <guid>https://blog.cdd.co.kr/blog/frontend/useInfiniteQuery 도입기 (feat. ag-grid)</guid>
     <title>useInfiniteQuery 도입기 (feat. ag-grid)</title>
-    <link>https://devcdd.github.io/blog/frontend/useInfiniteQuery 도입기 (feat. ag-grid)</link>
+    <link>https://blog.cdd.co.kr/blog/frontend/useInfiniteQuery 도입기 (feat. ag-grid)</link>
     <description>useQuery 기반 사내 프로젝트에서 useInfiniteQuery를 새롭게 도입하게 된 계기, 그리고 어떤식으로 Optimistic Update를 적용했는지에 대해 작성해보려고 합니다.</description>
     <pubDate>Sat, 07 Sep 2024 00:00:00 GMT</pubDate>
     <author>developer.cdd@gmail.com (디디)</author>
@@ -41,9 +41,9 @@
   </item>
 
   <item>
-    <guid>https://devcdd.github.io/blog/frontend/리액트 단에서 미디어 쿼리 구현하기</guid>
+    <guid>https://blog.cdd.co.kr/blog/frontend/리액트 단에서 미디어 쿼리 구현하기</guid>
     <title>리액트 단에서 미디어 쿼리 구현하기</title>
-    <link>https://devcdd.github.io/blog/frontend/리액트 단에서 미디어 쿼리 구현하기</link>
+    <link>https://blog.cdd.co.kr/blog/frontend/리액트 단에서 미디어 쿼리 구현하기</link>
     <description>미디어 쿼리 비슷한 기능을 구현할 일이 있었는데, 어떤식으로 처리했는지에 대해 작성해봤습니다.</description>
     <pubDate>Tue, 03 Sep 2024 00:00:00 GMT</pubDate>
     <author>developer.cdd@gmail.com (디디)</author>
@@ -51,9 +51,9 @@
   </item>
 
   <item>
-    <guid>https://devcdd.github.io/blog/frontend/사내 컨벤션 정하기</guid>
+    <guid>https://blog.cdd.co.kr/blog/frontend/사내 컨벤션 정하기</guid>
     <title>사내 컨벤션 정하기</title>
-    <link>https://devcdd.github.io/blog/frontend/사내 컨벤션 정하기</link>
+    <link>https://blog.cdd.co.kr/blog/frontend/사내 컨벤션 정하기</link>
     <description>회사에서 컨벤션을 새롭게 정의하는 날이 와서 작성해봤습니다.</description>
     <pubDate>Tue, 02 Jul 2024 00:00:00 GMT</pubDate>
     <author>developer.cdd@gmail.com (디디)</author>
@@ -61,9 +61,9 @@
   </item>
 
   <item>
-    <guid>https://devcdd.github.io/blog/frontend/전역 상태에서 효율적으로 모달 호출하기</guid>
+    <guid>https://blog.cdd.co.kr/blog/frontend/전역 상태에서 효율적으로 모달 호출하기</guid>
     <title>전역 상태에서 효율적으로 모달 호출하기</title>
-    <link>https://devcdd.github.io/blog/frontend/전역 상태에서 효율적으로 모달 호출하기</link>
+    <link>https://blog.cdd.co.kr/blog/frontend/전역 상태에서 효율적으로 모달 호출하기</link>
     <description>어떻게 해야 효율적으로 많은 모달들을 관리할 수 있을까요?</description>
     <pubDate>Thu, 04 Jul 2024 00:00:00 GMT</pubDate>
     <author>developer.cdd@gmail.com (디디)</author>
@@ -71,9 +71,9 @@
   </item>
 
   <item>
-    <guid>https://devcdd.github.io/blog/frontend/컴포넌트 강제로 리렌더링 시키기</guid>
+    <guid>https://blog.cdd.co.kr/blog/frontend/컴포넌트 강제로 리렌더링 시키기</guid>
     <title>컴포넌트 강제로 리렌더링 시키기</title>
-    <link>https://devcdd.github.io/blog/frontend/컴포넌트 강제로 리렌더링 시키기</link>
+    <link>https://blog.cdd.co.kr/blog/frontend/컴포넌트 강제로 리렌더링 시키기</link>
     <description>컴포넌트를 강제로 리렌더 시켜야 하는 상황은 언제일까요? 그럴 땐 어떻게 대처하면 될까요?</description>
     <pubDate>Fri, 26 Jul 2024 00:00:00 GMT</pubDate>
     <author>developer.cdd@gmail.com (디디)</author>
@@ -81,9 +81,9 @@
   </item>
 
   <item>
-    <guid>https://devcdd.github.io/blog/frontend/컴포넌트 동적 생성기</guid>
+    <guid>https://blog.cdd.co.kr/blog/frontend/컴포넌트 동적 생성기</guid>
     <title>컴포넌트 동적 생성기</title>
-    <link>https://devcdd.github.io/blog/frontend/컴포넌트 동적 생성기</link>
+    <link>https://blog.cdd.co.kr/blog/frontend/컴포넌트 동적 생성기</link>
     <description>.tsx 파일 자체를 동적으로 생성해야 한다면 어떻게 해야 할까요? 사내의 특이한 프로젝트 환경 때문에 도전하게 된 경험을 공유해보려고 합니다.</description>
     <pubDate>Mon, 02 Sep 2024 00:00:00 GMT</pubDate>
     <author>developer.cdd@gmail.com (디디)</author>

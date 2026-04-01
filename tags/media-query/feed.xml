@@ -2,18 +2,18 @@
   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
       <title>디디의 개발일지</title>
-      <link>https://devcdd.github.io/blog</link>
+      <link>https://blog.cdd.co.kr/blog</link>
       <description>디디의 개발 경험, 회고, 그리고 사이드 프로젝트들을 정리하는 블로그</description>
       <language>ko-KR</language>
       <managingEditor>developer.cdd@gmail.com (디디)</managingEditor>
       <webMaster>developer.cdd@gmail.com (디디)</webMaster>
       <lastBuildDate>Tue, 03 Sep 2024 00:00:00 GMT</lastBuildDate>
-      <atom:link href="https://devcdd.github.io/tags/media-query/feed.xml" rel="self" type="application/rss+xml"/>
+      <atom:link href="https://blog.cdd.co.kr/tags/media-query/feed.xml" rel="self" type="application/rss+xml"/>
       
   <item>
-    <guid>https://devcdd.github.io/blog/frontend/리액트 단에서 미디어 쿼리 구현하기</guid>
+    <guid>https://blog.cdd.co.kr/blog/frontend/리액트 단에서 미디어 쿼리 구현하기</guid>
     <title>리액트 단에서 미디어 쿼리 구현하기</title>
-    <link>https://devcdd.github.io/blog/frontend/리액트 단에서 미디어 쿼리 구현하기</link>
+    <link>https://blog.cdd.co.kr/blog/frontend/리액트 단에서 미디어 쿼리 구현하기</link>
     <description>미디어 쿼리 비슷한 기능을 구현할 일이 있었는데, 어떤식으로 처리했는지에 대해 작성해봤습니다.</description>
     <pubDate>Tue, 03 Sep 2024 00:00:00 GMT</pubDate>
     <author>developer.cdd@gmail.com (디디)</author>

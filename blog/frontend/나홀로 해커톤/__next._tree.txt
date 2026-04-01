@@ -7,4 +7,4 @@
 :HL["/static/images/posts/figma-nbbang.png","image"]
 :HL["/static/images/posts/iphone-nbbang-capture.png","image"]
 :HL["/static/images/posts/iphone-nbbang-user-add.png","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"blog","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"c","key":"frontend/%EB%82%98%ED%99%80%EB%A1%9C%20%ED%95%B4%EC%BB%A4%ED%86%A4","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"Ga4Rb8W-BvxcLDPUfBQpX"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"blog","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"c","key":"frontend/%EB%82%98%ED%99%80%EB%A1%9C%20%ED%95%B4%EC%BB%A4%ED%86%A4","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"pt_lFzM_CoeTpWXRxP6NB"}
