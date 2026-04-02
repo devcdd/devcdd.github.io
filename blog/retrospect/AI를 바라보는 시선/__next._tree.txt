@@ -1,0 +1,6 @@
+:HL["/_next/static/css/4e990cf79bdacf9b.css","style"]
+:HL["/_next/static/css/182c266045d1fd3f.css","style"]
+:HL["/_next/static/css/117b8940b1fdc375.css","style"]
+:HL["/static/images/posts/retrospect/AI를 바라보는 시선/google-ai-search.png","image"]
+:HL["/static/images/posts/retrospect/AI를 바라보는 시선/gemini.png","image"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"blog","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"c","key":"retrospect/AI%EB%A5%BC%20%EB%B0%94%EB%9D%BC%EB%B3%B4%EB%8A%94%20%EC%8B%9C%EC%84%A0","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"ssiY414SZ1X0b0A8CMdhR"}
