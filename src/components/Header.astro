@@ -1,15 +1,15 @@
 ---
-import { SITE } from "@/lib/site";
+import { SITE, url } from "@/lib/site";
 const path = Astro.url.pathname;
-const isActive = (href: string) => path === href || path.startsWith(href + "/");
+const isActive = (href: string) => path === url(href) || path.startsWith(url(href) + "/");
 ---
 
 <header class="site-header">
   <div class="container bar">
-    <a href="/" class="wordmark">{SITE.name}</a>
+    <a href={url("/")} class="wordmark">{SITE.name}</a>
     <nav>
       {SITE.nav.map((item) => (
-        <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined}>{item.label}</a>
+        <a href={url(item.href)} aria-current={isActive(item.href) ? "page" : undefined}>{item.label}</a>
       ))}
     </nav>
   </div>

@@ -1,3 +1,7 @@
+// 사이트가 배포되는 하위 경로(astro.config 의 base)를 붙인 내부 링크
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+export const url = (path = "/") => `${BASE}${path.startsWith("/") ? path : `/${path}`}`;
+
 export const SITE = {
   name: "LABS",
   title: "LABS — 개인 연구소",

@@ -1,5 +1,6 @@
 ---
 import Base from "@/layouts/Base.astro";
+import { url } from "@/lib/site";
 import StatusLabel from "@/components/StatusLabel.astro";
 import { getEntries, formatDate, pad2, renderMarkdown, TYPE_LABEL, type Entry } from "@/lib/entries";
 
@@ -44,7 +45,7 @@ const progress = d.milestones.length ? Math.round((doneCount / d.milestones.leng
   <article class="container">
     <header class="entry-head">
       <nav class="crumb mono" aria-label="경로">
-        <a href="/entries" class="text-link">문서</a>
+        <a href={url("/entries")} class="text-link">문서</a>
         <span aria-hidden="true">/</span>
         <span>{d.code}</span>
       </nav>
@@ -58,7 +59,7 @@ const progress = d.milestones.length ? Math.round((doneCount / d.milestones.leng
           <div>
             <dt class="label">태그</dt>
             <dd class="tags">
-              {d.tags.map((t) => <a href={`/tags/${t}`} class="text-link">#{t}</a>)}
+              {d.tags.map((t) => <a href={url(`/tags/${t}`)} class="text-link">#{t}</a>)}
             </dd>
           </div>
         )}

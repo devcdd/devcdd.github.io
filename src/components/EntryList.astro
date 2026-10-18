@@ -1,5 +1,6 @@
 ---
 import StatusLabel from "./StatusLabel.astro";
+import { url } from "@/lib/site";
 import { formatDate, lastTouched, TYPE_LABEL, type Entry } from "@/lib/entries";
 interface Props {
   entries: Entry[];
@@ -18,7 +19,7 @@ const { entries } = Astro.props;
   <ul>
     {entries.map((e) => (
       <li data-status={e.data.status} data-type={e.data.type}>
-        <a href={`/entries/${e.id}`} class="row">
+        <a href={url(`/entries/${e.id}`)} class="row">
           <span class="mono code">{e.data.code}</span>
           <span class="main">
             <span class="title">{e.data.title}</span>

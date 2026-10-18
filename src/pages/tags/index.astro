@@ -1,5 +1,6 @@
 ---
 import Base from "@/layouts/Base.astro";
+import { url } from "@/lib/site";
 import { getEntries, getTags } from "@/lib/entries";
 const tags = getTags(await getEntries());
 ---
@@ -13,7 +14,7 @@ const tags = getTags(await getEntries());
     <ul class="tags">
       {tags.map(([tag, count]) => (
         <li>
-          <a href={`/tags/${tag}`}>
+          <a href={url(`/tags/${tag}`)}>
             <span>#{tag}</span>
             <span class="mono n">{count}</span>
           </a>

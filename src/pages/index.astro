@@ -1,5 +1,6 @@
 ---
 import Base from "@/layouts/Base.astro";
+import { url } from "@/lib/site";
 import EntryList from "@/components/EntryList.astro";
 import { countBy, getEntries, STATUS_META } from "@/lib/entries";
 import { ENTRY_STATUSES } from "@/content.config";
@@ -21,7 +22,7 @@ const recent = entries.slice(0, 8);
         기획하고, 스케치하는 스케치북 같은 공간입니다.<br />
         요즘 같은 시대에 쇠맛 안 나게 잘 가꿔보겠습니다.
       </p>
-      <a href="/entries" class="more">전체 문서 보기 →</a>
+      <a href={url("/entries")} class="more">전체 문서 보기 →</a>
     </div>
   </section>
 
@@ -29,7 +30,7 @@ const recent = entries.slice(0, 8);
     <ol class="pipeline" aria-label="단계별 문서 수">
       {ENTRY_STATUSES.map((s) => (
         <li class:list={{ empty: !counts[s] }}>
-          <a href={`/entries?status=${s}`}>
+          <a href={url(`/entries?status=${s}`)}>
             <span class="name">{STATUS_META[s].label}</span>
             <span class="n">{counts[s] ?? 0}</span>
           </a>
@@ -41,7 +42,7 @@ const recent = entries.slice(0, 8);
   <section class="container recent">
     <div class="recent-head">
       <h2 class="recent-title">디디의 계획들</h2>
-      <a href="/entries" class="mono text-link">전체 보기 ({entries.length})</a>
+      <a href={url("/entries")} class="mono text-link">전체 보기 ({entries.length})</a>
     </div>
     <EntryList entries={recent} />
   </section>

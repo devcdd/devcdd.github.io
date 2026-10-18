@@ -1,12 +1,13 @@
 ---
 import Base from "@/layouts/Base.astro";
+import { url } from "@/lib/site";
 ---
 
 <Base title="페이지 없음">
   <div class="container wrap">
     <p class="label">404</p>
     <h1 class="title">페이지를 찾을 수 없습니다.</h1>
-    <a href="/" class="text-link">← 처음으로</a>
+    <a href={url("/")} class="text-link">← 처음으로</a>
   </div>
 </Base>
 

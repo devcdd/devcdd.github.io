@@ -1,5 +1,6 @@
 ---
 import Base from "@/layouts/Base.astro";
+import { url } from "@/lib/site";
 import EntryList from "@/components/EntryList.astro";
 import { getEntries, getTags, type Entry } from "@/lib/entries";
 
@@ -17,7 +18,7 @@ const { tag, entries } = Astro.props as { tag: string; entries: Entry[] };
   <div class="container">
     <header class="page-head">
       <div>
-        <a href="/tags" class="mono text-link">태그 /</a>
+        <a href={url("/tags")} class="mono text-link">태그 /</a>
         <h1 class="title">#{tag}</h1>
       </div>
       <span class="mono count">{entries.length}</span>
