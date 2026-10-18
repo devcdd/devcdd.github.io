@@ -1,0 +1,133 @@
+---
+import Base from "@/layouts/Base.astro";
+import EntryList from "@/components/EntryList.astro";
+import { countBy, getEntries, STATUS_META, TYPE_LABEL } from "@/lib/entries";
+import { ENTRY_STATUSES, ENTRY_TYPES } from "@/content.config";
+
+const entries = await getEntries();
+const groups = [
+  {
+    key: "status",
+    label: "단계",
+    counts: countBy(entries, (e) => e.data.status),
+    options: ENTRY_STATUSES.map((s) => ({ value: s, label: STATUS_META[s].label })),
+  },
+  {
+    key: "type",
+    label: "종류",
+    counts: countBy(entries, (e) => e.data.type),
+    options: ENTRY_TYPES.map((t) => ({ value: t, label: TYPE_LABEL[t] })),
+  },
+] as const;
+---
+
+<Base title="문서">
+  <div class="container">
+    <header class="page-head">
+      <h1 class="page-title">문서</h1>
+      <span class="mono count"><span data-visible>{entries.length}</span> / {entries.length}</span>
+    </header>
+
+    <div class="filters" data-filters>
+      {groups.map((g) => (
+        <div class="group" data-key={g.key}>
+          <span class="label">{g.label}</span>
+          <div class="options">
+            <button type="button" data-value="" aria-pressed="true">전체</button>
+            {g.options.map((o) => (
+              <button
+                type="button"
+                data-value={o.value}
+                aria-pressed="false"
+                disabled={!(g.counts as Record<string, number>)[o.value]}
+              >
+                {o.label}<span class="n">{(g.counts as Record<string, number>)[o.value] ?? 0}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <EntryList entries={entries} />
+    <p class="empty" hidden data-empty>조건에 맞는 문서가 없습니다.</p>
+  </div>
+</Base>
+
+<script>
+  // 정적 페이지에서 status/type 필터를 클라이언트에서 처리합니다. (?status=building&type=service)
+  const params = new URLSearchParams(location.search);
+  const state: Record<string, string> = {
+    status: params.get("status") ?? "",
+    type: params.get("type") ?? "",
+  };
+  const rows = document.querySelectorAll<HTMLLIElement>("li[data-status]");
+  const empty = document.querySelector<HTMLElement>("[data-empty]")!;
+  const visibleCount = document.querySelector<HTMLElement>("[data-visible]")!;
+  const groups = document.querySelectorAll<HTMLElement>("[data-filters] .group");
+
+  function apply() {
+    let visible = 0;
+    rows.forEach((li) => {
+      const show =
+        (!state.status || li.dataset.status === state.status) &&
+        (!state.type || li.dataset.type === state.type);
+      li.hidden = !show;
+      if (show) visible++;
+    });
+    empty.hidden = visible > 0;
+    visibleCount.textContent = String(visible);
+    groups.forEach((g) => {
+      g.querySelectorAll<HTMLButtonElement>("button").forEach((b) => {
+        b.setAttribute("aria-pressed", String(b.dataset.value === state[g.dataset.key!]));
+      });
+    });
+    const q = new URLSearchParams(Object.entries(state).filter(([, v]) => v));
+    history.replaceState(null, "", q.size ? `?${q}` : location.pathname);
+  }
+
+  groups.forEach((g) => {
+    g.addEventListener("click", (ev) => {
+      const btn = (ev.target as HTMLElement).closest<HTMLButtonElement>("button");
+      if (!btn) return;
+      state[g.dataset.key!] = btn.dataset.value ?? "";
+      apply();
+    });
+  });
+  apply();
+</script>
+
+<style>
+  .count { color: var(--muted); }
+  .filters {
+    display: grid;
+    gap: var(--s-2);
+    padding-block: var(--s-4) var(--s-6);
+  }
+  .group {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    align-items: baseline;
+    gap: var(--s-5);
+  }
+  .options { display: flex; flex-wrap: wrap; gap: var(--s-1) var(--s-4); }
+  button {
+    font: inherit;
+    font-size: var(--t-sm);
+    background: none;
+    border: 0;
+    padding: 0 0 2px;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 1px solid transparent;
+  }
+  button:hover:not(:disabled) { color: var(--ink); }
+  button[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--line-strong); }
+  button:disabled { color: var(--faint); cursor: default; }
+  .n { font-family: var(--font-mono); font-size: var(--t-xs); margin-left: var(--s-1); color: var(--faint); }
+  .empty { color: var(--muted); padding: var(--s-7) 0; margin: 0; }
+
+  @media (max-width: 720px) {
+    .group { grid-template-columns: 1fr; gap: var(--s-1); }
+  }
+</style>

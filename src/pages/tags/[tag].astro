@@ -1,0 +1,33 @@
+---
+import Base from "@/layouts/Base.astro";
+import EntryList from "@/components/EntryList.astro";
+import { getEntries, getTags, type Entry } from "@/lib/entries";
+
+export async function getStaticPaths() {
+  const entries = await getEntries();
+  return getTags(entries).map(([tag]) => ({
+    params: { tag },
+    props: { tag, entries: entries.filter((e) => e.data.tags.includes(tag)) },
+  }));
+}
+const { tag, entries } = Astro.props as { tag: string; entries: Entry[] };
+---
+
+<Base title={`#${tag}`}>
+  <div class="container">
+    <header class="page-head">
+      <div>
+        <a href="/tags" class="mono text-link">태그 /</a>
+        <h1 class="title">#{tag}</h1>
+      </div>
+      <span class="mono count">{entries.length}</span>
+    </header>
+    <div class="list"><EntryList entries={entries} /></div>
+  </div>
+</Base>
+
+<style>
+  .title { font-size: var(--t-2xl); font-weight: 700; letter-spacing: -0.03em; line-height: 1.2; margin: var(--s-2) 0 0; }
+  .count { color: var(--muted); }
+  .list { margin-top: var(--s-5); }
+</style>

@@ -1,0 +1,78 @@
+---
+import StatusLabel from "./StatusLabel.astro";
+import { formatDate, lastTouched, TYPE_LABEL, type Entry } from "@/lib/entries";
+interface Props {
+  entries: Entry[];
+}
+const { entries } = Astro.props;
+---
+
+<div class="entry-list">
+  <div class="row head label" aria-hidden="true">
+    <span>번호</span>
+    <span>제목</span>
+    <span>종류</span>
+    <span>단계</span>
+    <span class="date">마지막 수정</span>
+  </div>
+  <ul>
+    {entries.map((e) => (
+      <li data-status={e.data.status} data-type={e.data.type}>
+        <a href={`/entries/${e.id}`} class="row">
+          <span class="mono code">{e.data.code}</span>
+          <span class="main">
+            <span class="title">{e.data.title}</span>
+            <span class="summary">{e.data.summary}</span>
+          </span>
+          <span class="mono type">{TYPE_LABEL[e.data.type]}</span>
+          <span class="status"><StatusLabel status={e.data.status} /></span>
+          <span class="mono date">{formatDate(lastTouched(e))}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  ul { list-style: none; margin: 0; padding: 0; }
+  li { border-bottom: 1px solid var(--line); }
+  .row {
+    display: grid;
+    grid-template-columns: 80px minmax(0, 1fr) 112px 80px 88px;
+    gap: var(--s-5);
+    align-items: baseline;
+    padding: var(--s-4) 0;
+  }
+  .head {
+    padding-block: var(--s-2);
+    border-bottom: 1px solid var(--line-strong);
+  }
+  a.row:hover { background: var(--surface); }
+  .code, .type, .date { color: var(--muted); }
+  .date { text-align: right; }
+  .main { display: flex; flex-direction: column; gap: 2px; }
+  .title { font-size: var(--t-md); font-weight: 600; color: var(--ink); }
+  .summary {
+    font-size: var(--t-sm);
+    color: var(--muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* 모바일: ID·상태를 윗줄, 제목, 유형·날짜를 아랫줄로 재배치 */
+  @media (max-width: 720px) {
+    .head { display: none; }
+    .row {
+      grid-template-columns: 1fr auto;
+      grid-template-areas: "code status" "main main" "type date";
+      gap: var(--s-1) var(--s-3);
+    }
+    .code { grid-area: code; }
+    .main { grid-area: main; padding-block: var(--s-1); }
+    .type { grid-area: type; }
+    .status { grid-area: status; }
+    .date { grid-area: date; }
+  }
+</style>

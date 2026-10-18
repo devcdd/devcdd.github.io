@@ -1,0 +1,21 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="container">
+  <div class="inner mono">
+    <span>© {year} CDD LABS</span>
+  </div>
+</footer>
+
+<style>
+  footer { margin-top: var(--s-9); }
+  .inner {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding-block: var(--s-5);
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+  }
+</style>

@@ -1,0 +1,315 @@
+---
+import Base from "@/layouts/Base.astro";
+import StatusLabel from "@/components/StatusLabel.astro";
+import { getEntries, formatDate, pad2, renderMarkdown, TYPE_LABEL, type Entry } from "@/lib/entries";
+
+export async function getStaticPaths() {
+  const entries = await getEntries();
+  return entries.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props as { entry: Entry };
+const d = entry.data;
+type Section = Entry["data"]["sections"][number];
+
+// 본문 블록을 렌더 순서대로 나열 — 목차와 번호가 이 순서를 따릅니다.
+type Block =
+  | { kind: "goals" | "specs" | "flow" | "milestones" | "links"; id: string; title: string }
+  | { kind: "section"; id: string; title: string; section: Section };
+
+const toSection = (section: Section, i: number): Block => ({
+  kind: "section",
+  id: `section-${i + 1}`,
+  title: section.heading,
+  section,
+});
+const early = d.sections.filter((s) => s.beforeMilestones);
+const late = d.sections.filter((s) => !s.beforeMilestones);
+
+const blocks: Block[] = [
+  ...(d.goals.length ? [{ kind: "goals", id: "goals", title: "목표" } as const] : []),
+  ...(d.specs.length ? [{ kind: "specs", id: "specs", title: "사양" } as const] : []),
+  ...(d.flow.length ? [{ kind: "flow", id: "flow", title: "흐름" } as const] : []),
+  ...early.map(toSection),
+  ...(d.milestones.length ? [{ kind: "milestones", id: "milestones", title: "진행 단계" } as const] : []),
+  ...late.map((s, i) => toSection(s, early.length + i)),
+  ...(d.links.length ? [{ kind: "links", id: "references", title: "참고 자료" } as const] : []),
+];
+
+const doneCount = d.milestones.filter((m) => m.done).length;
+const progress = d.milestones.length ? Math.round((doneCount / d.milestones.length) * 100) : 0;
+---
+
+<Base title={d.title} description={d.summary}>
+  <article class="container">
+    <header class="entry-head">
+      <nav class="crumb mono" aria-label="경로">
+        <a href="/entries" class="text-link">문서</a>
+        <span aria-hidden="true">/</span>
+        <span>{d.code}</span>
+      </nav>
+      <h1 class="entry-title">{d.title}</h1>
+      <dl class="meta">
+        <div><dt class="label">단계</dt><dd><StatusLabel status={d.status} /></dd></div>
+        <div><dt class="label">종류</dt><dd>{TYPE_LABEL[d.type]}</dd></div>
+        <div><dt class="label">시작일</dt><dd class="mono">{formatDate(d.created)}</dd></div>
+        {d.updated && <div><dt class="label">마지막 수정</dt><dd class="mono">{formatDate(d.updated)}</dd></div>}
+        {d.tags.length > 0 && (
+          <div>
+            <dt class="label">태그</dt>
+            <dd class="tags">
+              {d.tags.map((t) => <a href={`/tags/${t}`} class="text-link">#{t}</a>)}
+            </dd>
+          </div>
+        )}
+      </dl>
+    </header>
+
+    <div class="entry-grid">
+      <aside class="toc" aria-label="목차">
+        <p class="label toc-label">목차</p>
+        <ol>
+          <li><a href="#summary"><span class="mono">00</span>요약</a></li>
+          {blocks.map((b, i) => (
+            <li><a href={`#${b.id}`}><span class="mono">{pad2(i + 1)}</span>{b.title}</a></li>
+          ))}
+        </ol>
+      </aside>
+
+      <div class="entry-body">
+        <section id="summary" class="summary">
+          <h2 class="label">요약</h2>
+          <p>{d.summary}</p>
+          {d.hypothesis && (
+            <>
+              <h2 class="label hyp-label">가설</h2>
+              <p class="hyp">{d.hypothesis}</p>
+            </>
+          )}
+        </section>
+
+        {blocks.map((b, i) => (
+          <section id={b.id} class="block">
+            <h2 class="block-title">
+              <span class="mono idx">{pad2(i + 1)}</span>
+              {b.title}
+              {b.kind === "milestones" && <span class="mono aside">{doneCount}/{d.milestones.length}</span>}
+            </h2>
+
+            {b.kind === "goals" && (
+              <ol class="goals">
+                {d.goals.map((g) => <li>{g}</li>)}
+              </ol>
+            )}
+
+            {b.kind === "specs" && (
+              <dl class="specs">
+                {d.specs.map((s) => (
+                  <div>
+                    <dt class="label">{s.label}</dt>
+                    <dd class="spec-value">{s.value}</dd>
+                    {s.note && <dd class="spec-note">{s.note}</dd>}
+                  </div>
+                ))}
+              </dl>
+            )}
+
+            {b.kind === "flow" && (
+              <ol class="flow">
+                {d.flow.map((f) => (
+                  <li>
+                    <span class="flow-label">{f.label}</span>
+                    {f.detail && <span class="flow-detail">{f.detail}</span>}
+                  </li>
+                ))}
+              </ol>
+            )}
+
+            {b.kind === "milestones" && (
+              <>
+                <div class="progress" role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100">
+                  <span style={`width:${progress}%`}></span>
+                </div>
+                <ul class="milestones">
+                  {d.milestones.map((m) => (
+                    <li class:list={{ done: m.done }}>
+                      <span class="check" aria-label={m.done ? "완료" : "미완료"}></span>
+                      <span class="m-title">{m.title}</span>
+                      <span class="mono due">{m.due ? formatDate(m.due) : "—"}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+
+            {b.kind === "section" && <div class="prose" set:html={renderMarkdown(b.section.body)} />}
+
+            {b.kind === "links" && (
+              <ul class="links">
+                {d.links.map((l) => (
+                  <li>
+                    <a href={l.url} target="_blank" rel="noopener">{l.label}</a>
+                    <span class="mono host">{new URL(l.url).host}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        ))}
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  /* ── Header ── */
+  .entry-head { padding-top: var(--s-7); border-bottom: 1px solid var(--line-strong); }
+  .crumb { display: flex; gap: var(--s-2); color: var(--muted); }
+  .entry-title {
+    font-size: var(--t-2xl);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.25;
+    margin: var(--s-3) 0 var(--s-5);
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3) var(--s-6);
+    margin: 0;
+    padding-block: var(--s-3) var(--s-4);
+    border-top: 1px solid var(--line);
+    font-size: var(--t-sm);
+  }
+  .meta dd { margin: 2px 0 0; }
+  .tags { display: flex; gap: var(--s-2); }
+
+  /* ── Layout: 목차 | 본문 ── */
+  .entry-grid {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 720px);
+    gap: var(--s-8);
+    padding-top: var(--s-6);
+  }
+  .toc {
+    position: sticky;
+    top: calc(var(--header-h) + var(--s-5));
+    align-self: start;
+    max-height: calc(100vh - var(--header-h) - var(--s-7));
+    overflow-y: auto;
+  }
+  .toc-label { margin-bottom: var(--s-2); }
+  .toc ol { list-style: none; margin: 0; padding: 0; }
+  .toc a {
+    display: flex;
+    gap: var(--s-3);
+    padding: 3px 0;
+    font-size: var(--t-sm);
+    color: var(--muted);
+  }
+  .toc a:hover { color: var(--ink); }
+  .toc .mono { color: var(--faint); padding-top: 2px; }
+
+  /* ── Summary: 강조색 세로선 하나로만 구분 ── */
+  .summary {
+    border-left: 2px solid var(--accent);
+    padding-left: var(--s-5);
+  }
+  .summary p { margin: var(--s-2) 0 0; font-size: var(--t-lg); line-height: 1.7; font-weight: 500; }
+  .hyp-label { margin-top: var(--s-5); }
+  .summary .hyp { font-size: var(--t-md); font-weight: 400; color: var(--ink-2); }
+
+  /* ── Blocks ── */
+  .block { margin-top: var(--s-7); }
+  .block-title {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-3);
+    font-size: var(--t-xl);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin: 0 0 var(--s-4);
+  }
+  .idx { color: var(--faint); font-weight: 400; }
+  .aside { margin-left: auto; color: var(--muted); font-weight: 400; }
+
+  /* Goals: 번호 목록 — 줄 구분 없이 촘촘하게 */
+  .goals { margin: 0; padding-left: 1.4em; color: var(--ink-2); }
+  .goals li { padding-left: var(--s-1); }
+  .goals li + li { margin-top: var(--s-2); }
+  .goals li::marker { font-family: var(--font-mono); font-size: var(--t-xs); color: var(--faint); }
+
+  /* Specs: 표처럼 선으로만 나눈 격자 */
+  .specs {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--line-strong);
+  }
+  .specs > div { padding: var(--s-3) var(--s-4) var(--s-4) 0; border-bottom: 1px solid var(--line); }
+  .specs dd { margin: 0; }
+  .spec-value { font-size: var(--t-xl); font-weight: 700; letter-spacing: -0.03em; margin-top: var(--s-1) !important; }
+  .spec-note { font-size: var(--t-sm); color: var(--muted); }
+
+  /* Flow: 단계 번호 + 이름 | 설명 */
+  .flow { list-style: none; margin: 0; padding: 0; counter-reset: step; border-top: 1px solid var(--line-strong); }
+  .flow li {
+    counter-increment: step;
+    position: relative;
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: var(--s-4);
+    padding: var(--s-2) 0 var(--s-2) var(--s-6);
+    border-bottom: 1px solid var(--line);
+  }
+  .flow li::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: calc(var(--s-2) + 4px);
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    color: var(--faint);
+  }
+  .flow-label { font-weight: 600; }
+  .flow-detail { color: var(--muted); font-size: var(--t-sm); padding-top: 2px; }
+
+  /* Milestones: 진행률 + 체크리스트 */
+  .progress { height: 2px; background: var(--line); }
+  .progress span { display: block; height: 100%; background: var(--ink); }
+  .milestones { list-style: none; margin: 0; padding: 0; }
+  .milestones li {
+    display: grid;
+    grid-template-columns: 12px 1fr auto;
+    align-items: center;
+    gap: var(--s-3);
+    padding: var(--s-2) 0;
+    border-bottom: 1px solid var(--line);
+    font-size: var(--t-sm);
+  }
+  .check { width: 12px; height: 12px; border: 1px solid var(--faint); border-radius: var(--radius); }
+  .done .check { background: var(--ink); border-color: var(--ink); }
+  .done .m-title { color: var(--muted); }
+  .due { color: var(--muted); }
+
+  /* References */
+  .links { list-style: none; margin: 0; padding: 0; }
+  .links li { display: flex; justify-content: space-between; gap: var(--s-4); padding: var(--s-2) 0; border-bottom: 1px solid var(--line); }
+  .links a { text-decoration: underline; text-decoration-color: var(--faint); text-underline-offset: 3px; }
+  .links a:hover { text-decoration-color: var(--ink); }
+  .host { color: var(--faint); }
+
+  /* ── Responsive ── */
+  @media (max-width: 960px) {
+    .entry-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .toc { display: none; }
+  }
+  @media (max-width: 720px) {
+    .entry-head { padding-top: var(--s-6); }
+    .entry-title { font-size: 26px; }
+    .meta { gap: var(--s-3) var(--s-5); }
+    .summary { padding-left: var(--s-4); }
+    .specs { grid-template-columns: repeat(2, 1fr); }
+    .flow li { grid-template-columns: 1fr; gap: 0; }
+  }
+</style>

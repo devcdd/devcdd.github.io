@@ -1,0 +1,45 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getEntries, getTags } from "@/lib/entries";
+const tags = getTags(await getEntries());
+---
+
+<Base title="태그">
+  <div class="container">
+    <header class="page-head">
+      <h1 class="page-title">태그</h1>
+      <span class="mono count">{tags.length}</span>
+    </header>
+    <ul class="tags">
+      {tags.map(([tag, count]) => (
+        <li>
+          <a href={`/tags/${tag}`}>
+            <span>#{tag}</span>
+            <span class="mono n">{count}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Base>
+
+<style>
+  .count { color: var(--muted); }
+  .tags {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    column-gap: var(--s-6);
+  }
+  .tags a {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: var(--s-3) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .tags a:hover { color: var(--muted); }
+  .n { color: var(--muted); }
+</style>

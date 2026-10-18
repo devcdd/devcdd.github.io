@@ -1,0 +1,114 @@
+---
+import Base from "@/layouts/Base.astro";
+import EntryList from "@/components/EntryList.astro";
+import { countBy, getEntries, STATUS_META } from "@/lib/entries";
+import { ENTRY_STATUSES } from "@/content.config";
+
+const entries = await getEntries();
+const counts = countBy(entries, (e) => e.data.status);
+const recent = entries.slice(0, 8);
+---
+
+<Base>
+  <section class="container intro">
+    <div class="lead">
+      <p class="tagline">디디의 아이디어 보관소</p>
+      <h1 class="wordmark">CDD<br />LABS</h1>
+    </div>
+    <div class="about">
+      <p>
+        제 머릿속에 있는 여러 가지 아이디어들을<br />
+        기획하고, 스케치하는 스케치북 같은 공간입니다.<br />
+        요즘 같은 시대에 쇠맛 안 나게 잘 가꿔보겠습니다.
+      </p>
+      <a href="/entries" class="more">전체 문서 보기 →</a>
+    </div>
+  </section>
+
+  <section class="container">
+    <ol class="pipeline" aria-label="단계별 문서 수">
+      {ENTRY_STATUSES.map((s) => (
+        <li class:list={{ empty: !counts[s] }}>
+          <a href={`/entries?status=${s}`}>
+            <span class="name">{STATUS_META[s].label}</span>
+            <span class="n">{counts[s] ?? 0}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="container recent">
+    <div class="recent-head">
+      <h2 class="recent-title">디디의 계획들</h2>
+      <a href="/entries" class="mono text-link">전체 보기 ({entries.length})</a>
+    </div>
+    <EntryList entries={recent} />
+  </section>
+</Base>
+
+<style>
+  .intro {
+    display: grid;
+    grid-template-columns: 7fr 5fr;
+    gap: var(--s-6);
+    align-items: end;
+    padding-block: var(--s-8) var(--s-6);
+  }
+  .tagline { margin: 0 0 var(--s-3); color: var(--muted); font-size: var(--t-md); }
+  .wordmark {
+    font-family: var(--font-display);
+    font-size: var(--t-3xl);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    line-height: 0.92;
+    margin: 0;
+  }
+  .about p { margin: 0 0 var(--s-4); color: var(--ink-2); line-height: 1.75; }
+  .more { font-size: var(--t-sm); font-weight: 600; border-bottom: 1px solid var(--line-strong); padding-bottom: 1px; }
+  .more:hover { color: var(--muted); border-color: var(--muted); }
+
+  /* 단계 브레드크럼: 아이디어 › 진행중 › 완성 */
+  .pipeline {
+    list-style: none;
+    margin: 0;
+    padding: var(--s-4) 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: var(--s-2);
+    border-block: 1px solid var(--line);
+  }
+  .pipeline li { display: inline-flex; align-items: center; }
+  .pipeline li + li::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-top: 1px solid var(--faint);
+    border-right: 1px solid var(--faint);
+    transform: rotate(45deg);
+    margin: 0 var(--s-5) 0 var(--s-4);
+  }
+  .pipeline a { display: inline-flex; align-items: baseline; gap: var(--s-2); }
+  .name { font-size: var(--t-lg); font-weight: 700; letter-spacing: -0.02em; }
+  .n { font-family: var(--font-mono); font-size: var(--t-sm); color: var(--muted); }
+  .empty .name, .empty .n { color: var(--faint); }
+  .pipeline a:hover .name { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+
+  .recent { margin-top: var(--s-8); }
+  .recent-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: var(--s-3);
+  }
+  .recent-title { font-size: var(--t-lg); font-weight: 700; letter-spacing: -0.02em; margin: 0; }
+
+  @media (max-width: 720px) {
+    .intro { grid-template-columns: 1fr; gap: var(--s-5); padding-block: var(--s-7) var(--s-5); }
+    .wordmark { font-size: 44px; }
+    .name { font-size: var(--t-md); }
+    .pipeline li + li::before { margin: 0 var(--s-3) 0 var(--s-2); }
+  }
+</style>

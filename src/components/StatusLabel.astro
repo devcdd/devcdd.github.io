@@ -1,0 +1,17 @@
+---
+import { STATUS_META, type Entry } from "@/lib/entries";
+
+interface Props {
+  status: Entry["data"]["status"];
+}
+const { status } = Astro.props;
+---
+
+<span class="status" data-status={status}>{STATUS_META[status].label}</span>
+
+<style>
+  .status { white-space: nowrap; font-weight: 600; color: var(--muted); }
+  /* 강조색은 진행중일 때만 */
+  [data-status="building"] { color: var(--accent-text); }
+  [data-status="done"] { color: var(--ink); }
+</style>

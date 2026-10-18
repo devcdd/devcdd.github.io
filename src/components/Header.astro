@@ -1,0 +1,46 @@
+---
+import { SITE } from "@/lib/site";
+const path = Astro.url.pathname;
+const isActive = (href: string) => path === href || path.startsWith(href + "/");
+---
+
+<header class="site-header">
+  <div class="container bar">
+    <a href="/" class="wordmark">{SITE.name}</a>
+    <nav>
+      {SITE.nav.map((item) => (
+        <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined}>{item.label}</a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar {
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-size: var(--t-lg);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+  nav { display: flex; gap: var(--s-5); }
+  nav a {
+    font-size: var(--t-sm);
+    color: var(--muted);
+  }
+  nav a:hover,
+  nav a[aria-current="page"] { color: var(--ink); }
+</style>

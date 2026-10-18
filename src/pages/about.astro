@@ -1,0 +1,24 @@
+---
+import Base from "@/layouts/Base.astro";
+---
+
+<Base title="소개">
+  <div class="container">
+    <header class="page-head">
+      <h1 class="page-title">소개</h1>
+    </header>
+    <div class="prose body">
+      <p>
+        이곳은 개인 연구소입니다. 머릿속의 계획과 기획, 작은 실험들을 YAML 문서로 정리하고
+        상태별로 관리합니다.
+      </p>
+      <p>
+        모든 문서는 <code>content/entries/</code> 아래의 YAML 파일이며, 빌드 시 정적 HTML 로 발행됩니다.
+      </p>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .body { max-width: 640px; padding-top: var(--s-6); }
+</style>
