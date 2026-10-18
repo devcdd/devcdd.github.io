@@ -49,6 +49,23 @@ marked.use({
       const attrs = external ? ' target="_blank" rel="noopener"' : "";
       return `<a href="${href}"${title ? ` title="${title}"` : ""}${attrs}>${text}</a>`;
     },
+    // 칸마다 열 제목을 data-label 로 달아 두면 모바일에서 행을 카드처럼 쌓아 보여줄 수 있음
+    table({ header, rows }) {
+      const labels = header.map((c) => c.text.replace(/"/g, "&quot;"));
+      const align = (a: string | null) => (a ? ` align="${a}"` : "");
+      const head = header.map((c) => `<th${align(c.align)}>${this.parser.parseInline(c.tokens)}</th>`).join("");
+      const body = rows
+        .map((r) => {
+          // 내용을 span 하나로 감싸야 <br> 이 있어도 모바일 격자에서 한 칸으로 유지됨
+          const cells = r.map((c, i) => {
+            const html = this.parser.parseInline(c.tokens);
+            return `<td data-label="${labels[i]}"${align(c.align)}>${html && `<span>${html}</span>`}</td>`;
+          });
+          return `<tr>${cells.join("")}</tr>`;
+        })
+        .join("\n");
+      return `<table>\n<thead><tr>${head}</tr></thead>\n<tbody>${body}</tbody>\n</table>\n`;
+    },
   },
 });
 

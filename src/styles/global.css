@@ -186,10 +186,38 @@ img { max-width: 100%; display: block; }
   border-bottom-color: var(--line-strong);
 }
 .prose td:first-child { color: var(--ink); }
+.prose table { word-break: keep-all; }
+/* 마지막 열(가격 등 짧은 값)은 줄바꿈 없이 */
+.prose td:last-child { white-space: nowrap; }
 .prose input[type="checkbox"] { margin: 0 var(--s-2) 0 0; vertical-align: -1px; }
 .prose li:has(> input[type="checkbox"]) { list-style: none; margin-left: -1.25em; }
 
-/* 표가 넓을 때 모바일에서 가로 스크롤 */
+/* 모바일: 행을 카드처럼 쌓고, 칸마다 열 제목(data-label)을 왼쪽에 표시 */
 @media (max-width: 720px) {
-  .prose table { display: block; overflow-x: auto; }
+  .prose table,
+  .prose tbody,
+  .prose tr { display: block; }
+  .prose thead { display: none; }
+  .prose tbody { border-top: 1px solid var(--line-strong); }
+  .prose tr { padding: var(--s-3) 0; border-bottom: 1px solid var(--line); }
+  .prose td {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: var(--s-3);
+    padding: 2px 0;
+    border: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .prose td::before {
+    content: attr(data-label);
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    color: var(--muted);
+    padding-top: 2px;
+  }
+  /* 첫 칸은 카드 제목 */
+  .prose td:first-child { display: block; font-weight: 600; padding-bottom: var(--s-1); }
+  .prose td:first-child::before { content: none; }
+  .prose td:empty { display: none; }
 }
