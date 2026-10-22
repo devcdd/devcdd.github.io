@@ -1,16 +1,16 @@
 # CDD LABS
 
-디디의 아이디어 보관소. YAML로 쓴 계획 문서를 Astro로 정적 빌드해 [cdd.co.kr](https://cdd.co.kr)에 발행합니다.
+디디의 아이디어 보관소. Markdown으로 쓴 글(끄적끄적)과 계획 문서(뚝딱뚝딱)를 Astro로 정적 빌드해 [cdd.co.kr](https://cdd.co.kr)에 발행합니다.
 
 ```sh
 pnpm install
-pnpm dev     # http://localhost:4321
+pnpm dev     # http://localhost:4321 (글 편집기: /__editor)
 pnpm build   # dist/
 ```
 
 ## 문서 쓰기
 
-`content/entries/_template.yaml`을 복사해 `content/entries/<이름>.yaml`로 저장하면 `/entries/<이름>`으로 발행됩니다. 형식은 `src/content.config.ts`에 정의돼 있어 잘못 쓰면 빌드가 실패합니다.
+`content/entries/_template.md`를 복사해 `content/entries/<이름>.md`로 저장하면 `/entries/<이름>`으로 발행됩니다. 끄적끄적 글은 `content/posts/<이름>.md`에 쓰고 이미지는 `public/posts/<이름>/`에 둡니다. frontmatter 형식은 `src/content.config.ts`에 정의돼 있어 잘못 쓰면 빌드가 실패합니다.
 
 ## 배포
 

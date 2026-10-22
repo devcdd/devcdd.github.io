@@ -11,6 +11,7 @@
   --line-strong: #151515;
   --accent: #a4cbc5;       /* 선·면 */
   --accent-text: #497a73;  /* 같은 색조, 흰 배경에서 읽히는 글자색 */
+  --ok: #2f9e57;           /* 완료 체크 */
 
   /* Type */
   --font-display: "Archivo", "Pretendard Variable", sans-serif;
@@ -61,6 +62,7 @@
     --line-strong: #ececee;
     --accent: #a4cbc5;
     --accent-text: #a4cbc5;
+    --ok: #4cc27a;
     color-scheme: dark;
   }
 }
@@ -129,6 +131,62 @@ img { max-width: 100%; display: block; }
   margin: 0;
 }
 
+/* ───────── 문서 레이아웃: 목차 | 본문 ───────── */
+.doc-grid {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 720px);
+  gap: var(--s-8);
+  padding-top: var(--s-6);
+}
+.toc {
+  position: sticky;
+  top: calc(var(--header-h) + var(--s-5));
+  align-self: start;
+  max-height: calc(100vh - var(--header-h) - var(--s-7));
+  overflow-y: auto;
+}
+.toc-label { margin-bottom: var(--s-2); }
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.toc a {
+  display: flex;
+  gap: var(--s-3);
+  padding: 3px 0;
+  font-size: var(--t-sm);
+  color: var(--muted);
+}
+.toc a:hover { color: var(--ink); }
+.toc .mono { color: var(--faint); padding-top: 2px; }
+/* 목차로 이동한 제목을 잠깐 밝혀서 어디에 도착했는지 보여줌 */
+.block, .summary, .prose :is(h2, h3) { scroll-margin-top: calc(var(--header-h) + var(--s-5)); }
+.block:target > .block-title,
+.summary:target > .label,
+.prose :is(h2, h3):target {
+  border-radius: var(--radius);
+  animation: target-flash 1.8s ease-out;
+}
+@keyframes target-flash {
+  0% {
+    background: color-mix(in srgb, var(--accent) 40%, transparent);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 40%, transparent);
+    transform: translateX(6px);
+  }
+  25% { transform: none; }
+  100% { background: transparent; box-shadow: 0 0 0 6px transparent; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .block:target > .block-title,
+  .summary:target > .label,
+  .prose :is(h2, h3):target { animation: none; }
+}
+.toc .sub a { padding-left: var(--s-6); font-size: var(--t-xs); }
+@media (max-width: 960px) {
+  .doc-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .toc { display: none; }
+}
+
 /* ───────── Prose (Markdown body) ───────── */
 .prose { font-size: var(--t-md); line-height: 1.75; color: var(--ink-2); }
 .prose > :first-child { margin-top: 0; }
@@ -139,6 +197,12 @@ img { max-width: 100%; display: block; }
 .prose strong { color: var(--ink); font-weight: 600; }
 .prose a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--faint); text-underline-offset: 3px; }
 .prose a:hover { text-decoration-color: var(--ink); }
+.prose h2 { font-size: var(--t-lg); font-weight: 700; color: var(--ink); letter-spacing: -0.02em; margin: var(--s-7) 0 var(--s-3); }
+.prose h4 { font-size: var(--t-md); font-weight: 600; color: var(--ink-2); margin: var(--s-4) 0 var(--s-2); }
+.prose figure { margin: 0 0 var(--s-4); display: flex; flex-wrap: wrap; flex-direction: column; align-items: center; gap: var(--s-2); }
+.prose figure:has(> img + img) { flex-direction: row; justify-content: center; }
+.prose img { max-width: 100%; height: auto; border: 1px solid var(--line); }
+.prose figcaption { font-size: var(--t-sm); color: var(--muted); }
 .prose h3 { font-size: var(--t-md); font-weight: 600; color: var(--ink); margin: var(--s-5) 0 var(--s-2); }
 .prose code {
   font-family: var(--font-mono);

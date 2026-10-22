@@ -1,0 +1,67 @@
+---
+import Base from "@/layouts/Base.astro";
+import { SECTIONS, url } from "@/lib/site";
+import { formatDate, pad2, renderWithToc } from "@/lib/entries";
+import { CATEGORY_LABEL, getPosts, type Post } from "@/lib/posts";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props as { post: Post };
+const d = post.data;
+const { html, toc } = renderWithToc(post.body ?? "");
+let n = 0;
+const items = toc.map((h) => ({ ...h, num: h.depth === 2 ? pad2(++n) : "" }));
+---
+
+<Base title={d.title} description={d.summary}>
+  <article class="container post">
+    <header class="post-head">
+      <nav class="crumb mono" aria-label="경로">
+        <a href={url(SECTIONS.posts.href)} class="text-link">{SECTIONS.posts.label}</a>
+        <span aria-hidden="true">/</span>
+        <span>{CATEGORY_LABEL[d.category]}</span>
+      </nav>
+      <h1 class="post-title">{d.title}</h1>
+      <p class="meta">
+        <span class="mono">{formatDate(d.date)}</span>
+        {d.tags.map((t) => <span>#{t}</span>)}
+        {import.meta.env.DEV && <a href={`/__editor#${post.id}`} class="text-link">수정</a>}
+      </p>
+    </header>
+    <div class="doc-grid">
+      {items.length > 0 && <aside class="toc" aria-label="목차">
+        <p class="label toc-label">목차</p>
+        <ol>
+          {items.map((h) => (
+            <li class:list={{ sub: h.depth === 3 }}>
+              <a href={`#${h.id}`}>{h.num && <span class="mono">{h.num}</span>}{h.text}</a>
+            </li>
+          ))}
+        </ol>
+      </aside>}
+      <div class="prose" set:html={html} />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .post-head { padding-top: var(--s-7); padding-bottom: var(--s-4); border-bottom: 1px solid var(--line-strong); }
+  .crumb { display: flex; gap: var(--s-2); color: var(--muted); }
+  .post-title {
+    font-size: var(--t-2xl);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.25;
+    margin: var(--s-3) 0 var(--s-3);
+  }
+  .meta { display: flex; flex-wrap: wrap; gap: var(--s-1) var(--s-3); margin: 0; font-size: var(--t-sm); color: var(--muted); }
+  .post .prose { padding-bottom: var(--s-8); }
+
+  @media (max-width: 720px) {
+    .post-head { padding-top: var(--s-6); }
+    .post-title { font-size: 26px; }
+  }
+</style>

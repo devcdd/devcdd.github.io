@@ -1,0 +1,29 @@
+---
+import Base from "@/layouts/Base.astro";
+import PostList from "@/components/PostList.astro";
+import { SECTIONS } from "@/lib/site";
+import { getPosts } from "@/lib/posts";
+
+const posts = await getPosts();
+---
+
+<Base title={SECTIONS.posts.label} description={SECTIONS.posts.caption}>
+  <div class="container">
+    <header class="page-head">
+      <div>
+        <h1 class="page-title">{SECTIONS.posts.label}</h1>
+        <p class="caption">{SECTIONS.posts.caption}</p>
+      </div>
+      <span class="mono count">
+        {import.meta.env.DEV && <a href="/__editor" class="text-link">편집기</a>} {posts.length}
+      </span>
+    </header>
+    <PostList posts={posts} />
+  </div>
+</Base>
+
+<style>
+  .page-head { border-bottom: 0; }
+  .caption { margin: var(--s-2) 0 0; font-size: var(--t-sm); color: var(--muted); }
+  .count { color: var(--muted); }
+</style>

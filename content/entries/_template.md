@@ -1,10 +1,11 @@
+---
 # 새 문서 템플릿 — 복사해서 파일명을 바꿔 사용하세요.
 # 파일명이 `_` 로 시작하면 빌드에서 제외됩니다.
 
 code: LAB-000
 title: 문서 제목
 type: service         # service(서비스 기획) | life(인생 업그레이드) | etc(기타)
-status: idea          # idea(아이디어) → building(진행중) → done(완성)
+status: idea          # idea(아이디어) → building(진행중) → done(완성) | dropped(중단)
 created: 2026-01-01
 updated: 2026-01-01   # 선택
 tags: [tag-a, tag-b]
@@ -28,23 +29,25 @@ goals:               # 선택
   - 목표 1
   - 목표 2
 
-milestones:          # 선택
+milestones:          # 선택 — 본문 섹션 다음에 표시
   - title: 첫 번째 단계
     due: 2026-02-01
     done: false
-
-sections:            # 본문. body 는 Markdown 지원
-  - heading: 배경
-    body: |
-      왜 이걸 하려는지.
-  - heading: 계획
-    beforeMilestones: true   # 선택 — Milestones 위에 표시
-    body: |
-      - 단계별 내용
-      - **강조**, `코드`, [링크](https://example.com)
 
 links:               # 선택
   - label: 참고 자료
     url: https://example.com
 
 draft: false         # true 면 빌드에서 숨김
+
+# 본문은 아래 Markdown — `## 제목` 하나가 목차의 섹션 하나가 됩니다.
+---
+
+## 배경
+
+왜 이걸 하려는지.
+
+## 계획
+
+- 단계별 내용
+- **강조**, `코드`, [링크](https://example.com)

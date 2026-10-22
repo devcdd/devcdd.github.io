@@ -1,6 +1,7 @@
 ---
 import Base from "@/layouts/Base.astro";
 import EntryList from "@/components/EntryList.astro";
+import { SECTIONS } from "@/lib/site";
 import { countBy, getEntries, STATUS_META, TYPE_LABEL } from "@/lib/entries";
 import { ENTRY_STATUSES, ENTRY_TYPES } from "@/content.config";
 
@@ -21,10 +22,13 @@ const groups = [
 ] as const;
 ---
 
-<Base title="문서">
+<Base title={SECTIONS.entries.label} description={SECTIONS.entries.caption}>
   <div class="container">
     <header class="page-head">
-      <h1 class="page-title">문서</h1>
+      <div>
+        <h1 class="page-title">{SECTIONS.entries.label}</h1>
+        <p class="caption">{SECTIONS.entries.caption}</p>
+      </div>
       <span class="mono count"><span data-visible>{entries.length}</span> / {entries.length}</span>
     </header>
 
@@ -98,6 +102,7 @@ const groups = [
 </script>
 
 <style>
+  .caption { margin: var(--s-2) 0 0; font-size: var(--t-sm); color: var(--muted); }
   .count { color: var(--muted); }
   .filters {
     display: grid;

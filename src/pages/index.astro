@@ -1,20 +1,39 @@
 ---
 import Base from "@/layouts/Base.astro";
-import { url } from "@/lib/site";
+import { SECTIONS, url } from "@/lib/site";
 import EntryList from "@/components/EntryList.astro";
+import PostList from "@/components/PostList.astro";
 import { countBy, getEntries, STATUS_META } from "@/lib/entries";
+import { getPosts } from "@/lib/posts";
 import { ENTRY_STATUSES } from "@/content.config";
 
 const entries = await getEntries();
+const posts = await getPosts();
 const counts = countBy(entries, (e) => e.data.status);
 const recent = entries.slice(0, 8);
+// 글자마다 순번(--i)을 매겨 차례로 등장시킴
+const wordmark = ["CDD", "LABS"].map((line, li, all) => {
+  const offset = all.slice(0, li).join("").length;
+  return [...line].map((ch, i) => ({ ch, i: offset + i }));
+});
+const doors = [
+  { ...SECTIONS.entries, count: entries.length },
+  { ...SECTIONS.posts, count: posts.length },
+];
 ---
 
 <Base>
   <section class="container intro">
     <div class="lead">
       <p class="tagline">디디의 아이디어 보관소</p>
-      <h1 class="wordmark">CDD<br />LABS</h1>
+      <h1 class="wordmark" aria-label="CDD LABS">
+        {wordmark.map((line, li) => (
+          <span class="line" aria-hidden="true">
+            {line.map(({ ch, i }) => <span class="ch" style={`--i:${i}`}>{ch}</span>)}
+            {li === wordmark.length - 1 && <span class="caret"></span>}
+          </span>
+        ))}
+      </h1>
     </div>
     <div class="about">
       <p>
@@ -22,11 +41,24 @@ const recent = entries.slice(0, 8);
         기획하고, 스케치하는 스케치북 같은 공간입니다.<br />
         요즘 같은 시대에 쇠맛 안 나게 잘 가꿔보겠습니다.
       </p>
-      <a href={url("/entries")} class="more">전체 문서 보기 →</a>
     </div>
   </section>
 
-  <section class="container">
+  <nav class="container doors" aria-label="진입점">
+    {doors.map((d) => (
+      <a href={url(d.href)} class="door">
+        <span class="door-label">{d.label}<span class="mono n">{d.count}</span></span>
+        <span class="door-caption">{d.caption}</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    ))}
+  </nav>
+
+  <section class="container recent">
+    <div class="recent-head">
+      <h2 class="recent-title">{SECTIONS.entries.label}</h2>
+      <a href={url(SECTIONS.entries.href)} class="mono text-link">전체 보기 ({entries.length})</a>
+    </div>
     <ol class="pipeline" aria-label="단계별 문서 수">
       {ENTRY_STATUSES.map((s) => (
         <li class:list={{ empty: !counts[s] }}>
@@ -37,14 +69,15 @@ const recent = entries.slice(0, 8);
         </li>
       ))}
     </ol>
+    <EntryList entries={recent} />
   </section>
 
   <section class="container recent">
     <div class="recent-head">
-      <h2 class="recent-title">디디의 계획들</h2>
-      <a href={url("/entries")} class="mono text-link">전체 보기 ({entries.length})</a>
+      <h2 class="recent-title">{SECTIONS.posts.label}</h2>
+      <a href={url(SECTIONS.posts.href)} class="mono text-link">전체 보기 ({posts.length})</a>
     </div>
-    <EntryList entries={recent} />
+    <PostList posts={posts.slice(0, 5)} />
   </section>
 </Base>
 
@@ -66,9 +99,53 @@ const recent = entries.slice(0, 8);
     line-height: 0.92;
     margin: 0;
   }
+  .line { display: block; }
+  .ch {
+    display: inline-block;
+    opacity: 0;
+    animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation-delay: calc(var(--i) * 70ms + 150ms);
+  }
+  .caret {
+    display: inline-block;
+    width: 0.1em;
+    height: 0.78em;
+    margin-left: 0.06em;
+    background: var(--accent);
+    opacity: 0;
+    animation: blink 1s steps(1) 0.8s infinite;
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(0.35em); filter: blur(4px); }
+    to { opacity: 1; transform: none; filter: none; }
+  }
+  @keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ch { opacity: 1; animation: none; }
+    .caret { opacity: 1; animation: none; }
+  }
   .about p { margin: 0 0 var(--s-4); color: var(--ink-2); line-height: 1.75; }
-  .more { font-size: var(--t-sm); font-weight: 600; border-bottom: 1px solid var(--line-strong); padding-bottom: 1px; }
-  .more:hover { color: var(--muted); border-color: var(--muted); }
+
+  /* 진입점: 뚝딱뚝딱 | 끄적끄적 */
+  .doors { display: grid; grid-template-columns: 1fr 1fr; }
+  .door {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    padding: var(--s-5) var(--s-6) var(--s-5) 0;
+    border-top: 1px solid var(--line-strong);
+    border-bottom: 1px solid var(--line);
+  }
+  .door + .door { padding-left: var(--s-5); border-left: 1px solid var(--line); }
+  .door-label { display: flex; align-items: baseline; gap: var(--s-2); font-size: var(--t-xl); font-weight: 700; letter-spacing: -0.03em; }
+  .door-caption { font-size: var(--t-xs); color: var(--muted); }
+  .arrow { position: absolute; right: var(--s-4); top: var(--s-5); color: var(--faint); transition: transform 0.15s; }
+  .door:hover .arrow { color: var(--ink); transform: translateX(4px); }
+  .door:hover .door-label { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
 
   /* 단계 브레드크럼: 아이디어 › 진행중 › 완성 */
   .pipeline {
@@ -98,6 +175,7 @@ const recent = entries.slice(0, 8);
   .pipeline a:hover .name { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
 
   .recent { margin-top: var(--s-8); }
+  .recent .pipeline { border-top: 0; }
   .recent-head {
     display: flex;
     justify-content: space-between;
@@ -111,5 +189,7 @@ const recent = entries.slice(0, 8);
     .wordmark { font-size: 44px; }
     .name { font-size: var(--t-md); }
     .pipeline li + li::before { margin: 0 var(--s-3) 0 var(--s-2); }
+    .doors { grid-template-columns: 1fr; }
+    .door + .door { padding-left: 0; border-left: 0; border-top-color: var(--line); }
   }
 </style>

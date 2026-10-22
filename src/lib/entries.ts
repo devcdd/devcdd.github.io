@@ -1,5 +1,5 @@
 import { getCollection, type CollectionEntry } from "astro:content";
-import { marked } from "marked";
+import { marked, type Tokens } from "marked";
 
 export type Entry = CollectionEntry<"entries">;
 
@@ -7,6 +7,7 @@ export const STATUS_META = {
   idea: { label: "아이디어" },
   building: { label: "진행중" },
   done: { label: "완성" },
+  dropped: { label: "중단" },
 } as const;
 
 export const TYPE_LABEL = {
@@ -42,6 +43,11 @@ export const pad2 = (n: number) => String(n).padStart(2, "0");
 
 marked.use({
   renderer: {
+    // id 는 renderWithToc 가 토큰에 미리 달아 둠
+    heading(token) {
+      const { tokens, depth, id } = token as Tokens.Heading & { id?: string };
+      return `<h${depth}${id ? ` id="${id}"` : ""}>${this.parser.parseInline(tokens)}</h${depth}>\n`;
+    },
     // 외부 링크(구매 링크 등)는 새 탭으로 열기
     link({ href, title, tokens }) {
       const text = this.parser.parseInline(tokens);
@@ -70,3 +76,33 @@ marked.use({
 });
 
 export const renderMarkdown = (src: string) => marked.parse(src, { async: false });
+
+/** h2·h3 에 id 를 달아 렌더하고, 같은 순서의 목차를 함께 돌려줌 */
+export function renderWithToc(src: string) {
+  const tokens = marked.lexer(src);
+  const seen = new Map<string, number>();
+  const toc: { id: string; text: string; depth: 2 | 3 }[] = [];
+  for (const token of tokens) {
+    if (token.type !== "heading" || (token.depth !== 2 && token.depth !== 3)) continue;
+    const text = token.text.replace(/[`*_]/g, "");
+    const base = text.toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu, "").trim().replace(/\s+/g, "-") || "section";
+    const n = seen.get(base) ?? 0;
+    seen.set(base, n + 1);
+    const id = n ? `${base}-${n}` : base;
+    (token as Tokens.Heading & { id: string }).id = id;
+    toc.push({ id, text, depth: token.depth });
+  }
+  return { html: marked.parser(tokens), toc };
+}
+
+/** 본문을 `## 제목` 단위로 나눠 목차·번호를 붙일 수 있게 함 */
+export function splitSections(entry: Entry) {
+  const sections: { heading: string; body: string }[] = [];
+  for (const token of marked.lexer(entry.body ?? "")) {
+    if (token.type === "heading" && token.depth === 2) sections.push({ heading: token.text, body: "" });
+    else if (sections.length) sections.at(-1)!.body += token.raw;
+    // 첫 `##` 앞의 글은 들어갈 섹션이 없어 조용히 사라지므로 빌드를 실패시킴
+    else if (token.type !== "space") throw new Error(`${entry.id}: 본문은 \`## 제목\` 으로 시작해야 합니다.`);
+  }
+  return sections;
+}

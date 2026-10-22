@@ -1,8 +1,8 @@
 ---
 import Base from "@/layouts/Base.astro";
-import { url } from "@/lib/site";
+import { SECTIONS, url } from "@/lib/site";
 import StatusLabel from "@/components/StatusLabel.astro";
-import { getEntries, formatDate, pad2, renderMarkdown, TYPE_LABEL, type Entry } from "@/lib/entries";
+import { getEntries, formatDate, pad2, renderMarkdown, splitSections, TYPE_LABEL, type Entry } from "@/lib/entries";
 
 export async function getStaticPaths() {
   const entries = await getEntries();
@@ -11,7 +11,7 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props as { entry: Entry };
 const d = entry.data;
-type Section = Entry["data"]["sections"][number];
+type Section = ReturnType<typeof splitSections>[number];
 
 // 본문 블록을 렌더 순서대로 나열 — 목차와 번호가 이 순서를 따릅니다.
 type Block =
@@ -24,16 +24,14 @@ const toSection = (section: Section, i: number): Block => ({
   title: section.heading,
   section,
 });
-const early = d.sections.filter((s) => s.beforeMilestones);
-const late = d.sections.filter((s) => !s.beforeMilestones);
+const sections = splitSections(entry);
 
 const blocks: Block[] = [
   ...(d.goals.length ? [{ kind: "goals", id: "goals", title: "목표" } as const] : []),
   ...(d.specs.length ? [{ kind: "specs", id: "specs", title: "사양" } as const] : []),
   ...(d.flow.length ? [{ kind: "flow", id: "flow", title: "흐름" } as const] : []),
-  ...early.map(toSection),
+  ...sections.map(toSection),
   ...(d.milestones.length ? [{ kind: "milestones", id: "milestones", title: "진행 단계" } as const] : []),
-  ...late.map((s, i) => toSection(s, early.length + i)),
   ...(d.links.length ? [{ kind: "links", id: "references", title: "참고 자료" } as const] : []),
 ];
 
@@ -45,7 +43,7 @@ const progress = d.milestones.length ? Math.round((doneCount / d.milestones.leng
   <article class="container">
     <header class="entry-head">
       <nav class="crumb mono" aria-label="경로">
-        <a href={url("/entries")} class="text-link">문서</a>
+        <a href={url(SECTIONS.entries.href)} class="text-link">{SECTIONS.entries.label}</a>
         <span aria-hidden="true">/</span>
         <span>{d.code}</span>
       </nav>
@@ -66,7 +64,7 @@ const progress = d.milestones.length ? Math.round((doneCount / d.milestones.leng
       </dl>
     </header>
 
-    <div class="entry-grid">
+    <div class="doc-grid">
       <aside class="toc" aria-label="목차">
         <p class="label toc-label">목차</p>
         <ol>
@@ -185,31 +183,6 @@ const progress = d.milestones.length ? Math.round((doneCount / d.milestones.leng
   .meta dd { margin: 2px 0 0; }
   .tags { display: flex; gap: var(--s-2); }
 
-  /* ── Layout: 목차 | 본문 ── */
-  .entry-grid {
-    display: grid;
-    grid-template-columns: 200px minmax(0, 720px);
-    gap: var(--s-8);
-    padding-top: var(--s-6);
-  }
-  .toc {
-    position: sticky;
-    top: calc(var(--header-h) + var(--s-5));
-    align-self: start;
-    max-height: calc(100vh - var(--header-h) - var(--s-7));
-    overflow-y: auto;
-  }
-  .toc-label { margin-bottom: var(--s-2); }
-  .toc ol { list-style: none; margin: 0; padding: 0; }
-  .toc a {
-    display: flex;
-    gap: var(--s-3);
-    padding: 3px 0;
-    font-size: var(--t-sm);
-    color: var(--muted);
-  }
-  .toc a:hover { color: var(--ink); }
-  .toc .mono { color: var(--faint); padding-top: 2px; }
 
   /* ── Summary: 강조색 세로선 하나로만 구분 ── */
   .summary {
@@ -281,16 +254,27 @@ const progress = d.milestones.length ? Math.round((doneCount / d.milestones.leng
   .milestones { list-style: none; margin: 0; padding: 0; }
   .milestones li {
     display: grid;
-    grid-template-columns: 12px 1fr auto;
+    grid-template-columns: 14px 1fr auto;
     align-items: center;
     gap: var(--s-3);
     padding: var(--s-2) 0;
     border-bottom: 1px solid var(--line);
     font-size: var(--t-sm);
   }
-  .check { width: 12px; height: 12px; border: 1px solid var(--faint); border-radius: var(--radius); }
-  .done .check { background: var(--ink); border-color: var(--ink); }
-  .done .m-title { color: var(--muted); }
+  .check { position: relative; width: 14px; height: 14px; border: 1px solid var(--faint); border-radius: var(--radius); }
+  .done .check { background: var(--ok); border-color: var(--ok); }
+  .done .check::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 4px;
+    height: 8px;
+    border: solid var(--bg);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .done .m-title { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--faint); }
   .due { color: var(--muted); }
 
   /* References */
@@ -301,10 +285,6 @@ const progress = d.milestones.length ? Math.round((doneCount / d.milestones.leng
   .host { color: var(--faint); }
 
   /* ── Responsive ── */
-  @media (max-width: 960px) {
-    .entry-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
-    .toc { display: none; }
-  }
   @media (max-width: 720px) {
     .entry-head { padding-top: var(--s-6); }
     .entry-title { font-size: 26px; }

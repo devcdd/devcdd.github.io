@@ -1,0 +1,239 @@
+---
+title: Next.js Docker 적용기
+date: '2024-10-25'
+tags: ['nextJS', 'devOps', 'docker']
+draft: false
+summary: Next.js로 개발한 프로젝트를 도커 이미지로 만들게 되었는데, 이와 관련해서 작성해봤습니다.
+category: frontend
+---
+
+## 서론
+
+지난 번 게시글에서는 환경변수 관련해서 글을 작성했었죠, 그것은 이번 글을 위한 빌드업 같은 느낌으로 이해해주시면 될 것 같습니다. 이번 글에서는 본격적으로 패키징을 해서 패키지화(제품화) 시키는 과정을 작성해보려고 합니다.
+
+
+## Debian VS Docker
+
+## Debian
+
+`Debian`을 사용하여 사내 레포지토리에 올려놓는다면 `sudo apt-get install [package_name]`으로 패키지 설치가 가능합니다. 다만 이후에 `conf`를 할당해주거나 이외의 서버 환경에 맞는 커스텀은 설치하는 사람이 담당해야 한다는 단점이 존재하죠. 어차피 `Ubuntu` 기반 서버에 설치될 것이기 때문에 요구사항은 `Debian` 설치를 하는 방향으로 들어왔습니다. 그래서 아래와 같이 구조를 짜고, 설치 스크립트를 고민중이었습니다.
+
+```bash
+build/
+├── deb/
+│   ├── DEBIAN/
+│   │   ├── control
+│   │   └── postinst
+│   ├── Makefile
+│   ├── product.deb
+│   └── opt/
+│       └── company/
+│           ├── etc/
+│           │   └── product/
+│           │       ├── cert/
+│           │       └── conf/
+│           │           ├── product.nginx.conf
+│           │           └── setting.sh
+│           └── lib/
+│               └── product/
+│                   ├── .next/
+│                   ├── nextconfig.js
+│                   ├── package.json
+│                   ├── node_modules/
+│                   ├── ecosystem.config.js
+│                   ├── config.json
+│                   └── .env
+├── conf/
+│   └── product.nginx.conf
+└── target/
+    ├── .next/
+    ├── next.config.js
+    ├── package.json
+    ├── node_modules/
+    ├── config.json
+    ├── .env
+    └── setting.sh
+```
+
+그러나 이렇게 설치를 하게 되면 서버가 돌기 위해 신경써야 할 요소들이 많습니다. `Next` 서버가 돌기 위해 `next.config.js`, `package.json`, `node_modules` 등등 경로 설정 같은 것들도 신경써야 하죠. 거기다 다른 프로젝트들까지 동시에 설치가 될 예정인데, 아무리 `depth`를 파서 설치를 한다고 하더라도 비개발자에게 설치를 시키기에는 구조가 복잡했습니다.
+
+## Docker
+
+<figure>
+  <img src="/posts/nextjs-도커-적용기/docker.png" alt="Docker Image" loading="lazy" />
+</figure>
+
+반면 `Docker`를 쓴다면 이야기가 다릅니다. 저러한 구성 그대로 이미지의 형태를 만들게 된다면 서버의 레포지토리가 아닌 하나의 도커 컨테이너로써 구동 되기 때문에 독립된 `OS`를 사용하는 형식이 됩니다. `Debian`과는 다르게 `/opt/company`에 들어가봐도 아무것도 존재하지 않게 된다는 말이죠. 이외에도 여러가지 이점이 있기도 하고, 이참에 한 번 공부해봐야겠다 싶어서 `도커 씁시다`라고 제안했고, 수용되었습니다.
+
+## Docker Image
+
+### 생성 과정
+
+우선 도커를 사용하기로 결정했다면 어떻게 이미지로 만들지부터 생각을 해야합니다. 이미지를 빌드하기 위해서는 일반적으로 `docker build` 명령어를 사용하는데, 그냥 무작정 빌드하면 되는 건 아니고 빌드를 위한 스크립트를 짜줘야 합니다. 여기에 활용되는 파일이 바로 `DockerFile`인데요, 예제가 [`Next` 공식예제](https://github.com/vercel/next.js/tree/canary/examples/with-docker)에 자세히 나와있더군요. 이를 참고하여 아래와 같이 작성을 해봤습니다, 단계마다 주석을 달아놓았으니 이해하시기 편할겁니다.
+
+```dockerfile
+# node:18-alpine을 베이스로 사용합니다.
+FROM node:18-alpine AS base
+
+# 베이스는 node:18-alpine을 그대로 사용하고, deps라는 이름으로 복사합니다.
+FROM base AS deps
+
+# libc6-compat을 설치합니다, 이건 공식 예제에도 있던데 노드 관련 패키지라고 하는 것 같더군요.
+RUN apk add --no-cache libc6-compat
+# /app 경로로 이동합니다.
+WORKDIR /app
+
+# package.json, yarn.lock, package-lock.json을 복사합니다.
+COPY package.json yarn.lock* package-lock.json* ./
+
+# 이건 예제 명령어 그대로 작성한건데, 패키지 매니저에 따라 다르게 Install을 하는 것 같습니다.
+# 저희는 yarn을 사용하고 있기에 첫 번째 조건문이 실행되겠죠?
+RUN \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
+
+# 베이스는 node:18-alpine을 그대로 사용하고, builder라는 이름으로 복사합니다.
+FROM base AS builder
+
+# /app 경로로 이동합니다.
+WORKDIR /app
+
+# 아까 deps에서 설치한 node_modules를 복사하여 사용합니다.
+COPY --from=deps /app/node_modules ./node_modules
+
+# .dockerignore에 node_modules를 추가해놓았기 때문에 이중 복사가 되지 않습니다.
+COPY . .
+
+# yarn build를 실행합니다.
+RUN \
+  if [ -f yarn.lock ]; then yarn run build; \
+  elif [ -f package-lock.json ]; then npm run build; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
+
+# 베이스는 node:18-alpine을 그대로 사용하고, runner라는 이름으로 복사합니다.
+FROM base AS runner
+
+# nginx를 설치합니다, 왜 설치하는지는 아래에서 추가적으로 설명하도록 하겠습니다.
+RUN apk add --no-cache nginx
+# 로그 디렉토리를 따로 빼서 편하게 보기 위해 디렉토리를 생성합니다, 이후에는 볼륨 마운트를 걸어서 호스트에서도 확인할 수 있게 할 예정입니다.
+RUN mkdir -p /app/logs && \
+    chmod -R 755 /app/logs
+
+# /app 경로로 이동합니다.
+WORKDIR /app
+
+# 아래에 복사되는 파일들이 최종적으로 이미지에 들어가게 될 구성이라고 생각하시면 될 것 같습니다.
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/product.nginx.conf /etc/nginx/http.d/default.conf
+# nginx 기본 include 설정이 /etc/nginx/http.d로 되어 있어서 그냥 해당 경로에 맞게 복사해줬습니다.
+
+# 80번 포트를 열어줍니다.
+EXPOSE 80
+
+# next와 nginx를 실행합니다.
+CMD ["sh", "-c", "node server.js & nginx -g 'daemon off;'"]
+```
+
+이렇게 `DockerFile`을 구성하고, `docker build -t [image_name] .` 명령어를 통해 이미지를 빌드하면 `image_name`이라는 이름으로 이미지가 생성됩니다. 이는 `docker images` 명령어를 통해 확인 하실 수 있습니다.
+
+### Docker 안에 Nginx가 들어가는 이유는?
+
+아까 작성한 `DockerFile` 부분을 읽어보시면 `nginx`를 설치하고 `conf` 파일을 옮기는 단계가 포함되어 있습니다. `conf` 파일은 아래와 같이 구성되어 있습니다.
+
+```editorconfig
+server {
+    listen 80;
+    server_name localhost;
+
+    error_log /app/logs/error.log;
+    access_log /app/logs/access.log;
+
+    location /static/ {
+        root /app/public;
+        access_log off;
+        log_not_found off;
+        expires max;
+    }
+
+    location /_next/static {
+        alias /app/.next/static/;
+        access_log off;
+        log_not_found off;
+        expires max;
+    }
+
+    location / {
+        proxy_pass http://localhost:3000; # Next.js 서버로 프록시
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+구조 상 도커 컨테이너는 호스트와 별개로 존재하는 `OS`와 같은 느낌이라서 도커 컨테이너 내부의 파일에 접근하기 위해서는 `docker exec`와 같은 별도의 방법을 사용해야 합니다. 하지만 저렇게 `nginx`를 컨테이너 내부에서 돌려주면 내부 정적 파일 자체를 nginx가 80 포트로 내보내고, 그렇게 빠져나온 80 포트를 호스트와 매핑만 시켜주게 된다면 별도의 설정 없이 정적 파일을 제공할 수 있게 되는 것이죠.
+
+<figure>
+  <img src="/posts/nextjs-도커-적용기/docker-proxy.png" alt="Docker Image" loading="lazy" />
+</figure>
+
+그래서 이를 실행하기 위해서는 `docker run -p 3000:80 image` 명령어를 입력하면 됩니다. 3000:80의 의미는 도커 컨테이너의 80 포트를 호스트의 3000으로 할당한다는 뜻입니다. 호스트 포트:컨테이너 포트 순서로 입력한다고 생각하면 될 것 같아요.
+
+### 그러면 이전 게시글에서의 runtime env는 어떻게 적용해?
+
+`--env-file` 옵션을 사용하여 `docker run`을 해주면 해당 `env`를 보게 됩니다. `docker run --env-file ./.env -p 3000:80 image`을 입력하면 되겠죠? 그러면 호스트의 `env`가 바뀌었을 때는 해당 컨테이너만 `restart` 해주면 되겠죠?
+
+### 아쉽지만 ..
+
+틀렸습니다. `docker restart container`와 같은 명령어를 통해 컨테이너를 재실행하게 되면 단순히 컨테이너만 재실행 되는 것이며, 내부 어플리케이션이 재실행을 하지는 않습니다. 그래서 `.env`를 새롭게 적용할수가 없고, 차안이라면 컨테이너 자체를 완전히 내렸다가 올리는 방법입니다. 하지만, 그런 방식은 좀 귀찮으니 새로운 방식을 알려드리겠습니다.
+
+### Docker Compose
+
+원래 멀티 컨테이너를 위해 사용한다고는 하는데, 아직 거기까지는 공부를 못했고 보다 간단히 새로운 `.env`를 적용시킬 수 있을 것 같아 도입했습니다. 우선 호스트 쪽에 아래와 같은 `.yml` 파일을 만들어줍니다.
+
+```yaml
+services:
+  app:
+    image: image
+    ports:
+      - "3000:80"
+    env_file:
+      - ./.env # yml 파일과 같은 경로에 있어야겠죠?
+    container_name: container
+```
+
+이후 `docker-compose up -d` 명령어만 실행해주면 컨테이너가 새롭게 만들어지며 프로젝트가 재실행 됩니다. 즉, 새로운 `.env`를 적용시킬 수 있다는 말이죠.
+
+## 최종적인 설치 과정
+
+하지만 비개발자의 설치를 고려한다면 이미지를 `pull` 받고, `docker-compose`를 실행시키는 이 과정까지 자동화가 되어야 합니다. 여기까지의 과정을 저희는 `debian`을 활용할 것 같습니다. 아래가 구성한 최종 워크플로우입니다.
+
+```bash
+# 도커는 설치 완료했다고 가정
+
+# Debian
+1. sudo apt-get install product을 통해 패키지 설치 (설치자 입력 필요)
+2. docker-compose.yml, product.sh 설치 (자동)
+
+# postinst
+1. docker pull image로 이미지 다운로드 (자동)
+2. product.sh 실행 (자동)
+
+# product.sh
+1. .env 파일이 있는지 확인하고 있으면 덮어쓸건지, 없으면 새롭게 입력을 받을 수 있는 스크립트 수행
+  - 도메인 정보를 입력해주세요 등의 input (설치자 입력 필요)
+2. .env 생성, .env 정보를 기반으로 nginx.conf 파일 생성 (자동)
+3. docker-compose up -d 수행 (자동)
+```
+
+결국 설치자는 `sudo apt-get install product` 명령어 입력 후, 한동안 기다렸다가 `.env` 정보를 입력하라는 스크립트가 나오면 입력해주면 설치가 완료되는 구조가 되는 것이죠. 혹시나 갑자기 서버의 문제 때문에 컨테이너가 내려갔다고 하더라도 `debian`에서 함께 설치된 `product.sh` 파일만 실행시켜주면 곧바로 프로젝트를 재실행 할 수 있게 됩니다.
+
+현재까지는 이미지를 빌드하는 것까지만 해놨는데, 이후에 최종 패키징에 성공한다면 후기를 추가적으로 작성해두겠습니다. 긴 글 읽어주셔서 감사합니다!

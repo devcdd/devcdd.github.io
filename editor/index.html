@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>글 편집기 — LABS</title>
+    <style>
+      :root {
+        --ink: #151515;
+        --muted: #6c6e75;
+        --bg: #ffffff;
+        --surface: #f6f6f7;
+        --line: #e4e4e7;
+        --accent: #497a73;
+        --danger: #c0392b;
+        color-scheme: light;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --ink: #ececee;
+          --muted: #9a9ca3;
+          --bg: #0f1012;
+          --surface: #18191c;
+          --line: #2a2b30;
+          --accent: #a4cbc5;
+          --danger: #e57366;
+          color-scheme: dark;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        height: 100vh;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        background: var(--bg);
+        color: var(--ink);
+        font: 14px/1.5 "Pretendard Variable", -apple-system, system-ui, sans-serif;
+      }
+      aside { display: flex; flex-direction: column; border-right: 1px solid var(--line); min-height: 0; }
+      .side-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+      .side-head a { color: var(--ink); font-weight: 700; text-decoration: none; }
+      ul { list-style: none; margin: 0; padding: 0; overflow-y: auto; }
+      li button {
+        width: 100%;
+        text-align: left;
+        padding: 10px 16px;
+        border: 0;
+        border-bottom: 1px solid var(--line);
+        background: none;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+      }
+      li button:hover { background: var(--surface); }
+      li button[aria-current="true"] { background: var(--surface); box-shadow: inset 2px 0 var(--accent); }
+      .t { display: block; font-weight: 600; }
+      .d { font: 12px ui-monospace, Menlo, monospace; color: var(--muted); }
+      main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+      .bar { display: flex; gap: 8px; align-items: center; padding: 8px 16px; border-bottom: 1px solid var(--line); }
+      .slug { font: 13px ui-monospace, Menlo, monospace; color: var(--muted); margin-right: auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .status { font-size: 12px; color: var(--muted); }
+      .status.error { color: var(--danger); }
+      .btn {
+        padding: 6px 12px;
+        border: 1px solid var(--line);
+        border-radius: 2px;
+        background: var(--bg);
+        color: var(--ink);
+        font: inherit;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .btn:hover { background: var(--surface); }
+      .btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+      .btn[aria-disabled="true"] { pointer-events: none; opacity: 0.4; }
+      /* 미리보기 폭 상한 = 사이트 본문 720px + 좌우 여백 32px×2 */
+      .panes {
+        --preview-max: 784px;
+        flex: 1;
+        display: grid;
+        grid-template-columns: minmax(240px, 1fr) 12px var(--preview-w, min(50%, var(--preview-max)));
+        min-height: 0;
+      }
+      .panes[hidden] { display: none; }
+      .split {
+        display: grid;
+        place-items: center;
+        cursor: col-resize;
+        touch-action: none;
+        user-select: none;
+        background: var(--surface);
+        border-inline: 1px solid var(--line);
+      }
+      .split::before { content: ""; width: 2px; height: 32px; border-radius: 1px; background: var(--muted); opacity: 0.5; }
+      .split:hover::before, .split.dragging::before, .split:focus-visible::before { background: var(--accent); opacity: 1; height: 48px; }
+      .split:focus-visible { outline: none; }
+      iframe { width: 100%; height: 100%; border: 0; background: var(--bg); }
+      textarea {
+        width: 100%;
+        height: 100%;
+        padding: 20px 24px;
+        border: 0;
+        resize: none;
+        outline: none;
+        background: var(--bg);
+        color: var(--ink);
+        font: 14px/1.7 "JetBrains Mono", ui-monospace, Menlo, monospace;
+        tab-size: 2;
+      }
+      .empty { margin: auto; color: var(--muted); }
+    </style>
+  </head>
+  <body>
+    <aside>
+      <div class="side-head">
+        <a href="/posts">끄적끄적</a>
+        <button type="button" class="btn" id="new">새 글</button>
+      </div>
+      <ul id="list"></ul>
+    </aside>
+    <main>
+      <div class="bar">
+        <span class="slug" id="slug">글을 고르거나 새로 만드세요</span>
+        <span class="status" id="status" role="status"></span>
+        <a class="btn" id="view" target="_blank" aria-disabled="true">보기</a>
+        <button type="button" class="btn primary" id="save" disabled>저장 ⌘S</button>
+      </div>
+      <div class="panes" id="panes" hidden>
+        <textarea id="editor" spellcheck="false"></textarea>
+        <div class="split" id="split" role="separator" aria-orientation="vertical" aria-label="미리보기 폭 조절" tabindex="0" title="드래그로 폭 조절 · 더블클릭으로 초기화"></div>
+        <iframe id="preview" title="미리보기"></iframe>
+      </div>
+      <p class="empty" id="empty">왼쪽에서 글을 고르세요.</p>
+    </main>
+
+    <script type="module">
+      const $ = (id) => document.getElementById(id);
+      const api = (path, init) =>
+        fetch(`/__editor/api/posts${path}`, init).then(async (r) => {
+          const data = await r.json();
+          if (!r.ok) throw new Error(data.error);
+          return data;
+        });
+      const slugify = (s) => s.toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu, "").trim().replace(/\s+/g, "-").normalize("NFC");
+      const template = (title) => {
+        const today = new Date().toLocaleDateString("sv-SE");
+        return `---\ntitle: '${title}'\ndate: '${today}'\ncategory: retrospect # frontend | backend | retrospect\ntags: []\nsummary: ''\ndraft: true # 다 쓰면 false\n---\n\n## 서론\n\n`;
+      };
+
+      let current = null; // { slug, isNew }
+      let saved = "";
+      const dirty = () => current && $("editor").value !== saved;
+
+      function setStatus(text, error = false) {
+        $("status").textContent = text;
+        $("status").classList.toggle("error", error);
+      }
+
+      async function refreshList() {
+        const posts = await api("");
+        $("list").replaceChildren(
+          ...posts.map((p) => {
+            const li = document.createElement("li");
+            const b = document.createElement("button");
+            b.type = "button";
+            b.dataset.slug = p.slug;
+            b.setAttribute("aria-current", String(p.slug === current?.slug));
+            b.innerHTML = `<span class="t"></span><span class="d"></span>`;
+            b.querySelector(".t").textContent = p.title || p.slug;
+            b.querySelector(".d").textContent = `${p.date}${p.draft ? " · 초안" : ""}`;
+            b.onclick = () => open(p.slug);
+            li.append(b);
+            return li;
+          }),
+        );
+      }
+
+      function show(slug, content, isNew) {
+        current = { slug, isNew };
+        saved = isNew ? "" : content;
+        $("editor").value = content;
+        $("panes").hidden = false;
+        $("empty").hidden = true;
+        $("save").disabled = false;
+        $("slug").textContent = `content/posts/${slug}.md${isNew ? " (새 글)" : ""}`;
+        $("view").href = `/posts/${slug}/`;
+        $("view").setAttribute("aria-disabled", String(isNew));
+        history.replaceState(null, "", `#${slug}`);
+        document.querySelectorAll("#list button").forEach((b) => b.setAttribute("aria-current", String(b.dataset.slug === slug)));
+        setStatus(isNew ? "아직 저장 안 됨" : "");
+        $("editor").focus();
+        renderPreview();
+      }
+
+      // 사이트와 같은 렌더러·스타일로 그려서 실제 글 페이지와 똑같이 보이게 함
+      let previewTimer;
+      async function renderPreview() {
+        try {
+          const r = await fetch("/__editor/api/preview", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ content: $("editor").value }),
+          });
+          const { title, html, error } = await r.json();
+          if (error) throw new Error(error);
+          const frame = $("preview");
+          const y = frame.contentWindow?.scrollY ?? 0;
+          frame.onload = () => {
+            frame.contentDocument.querySelector("h1").textContent = title;
+            frame.contentWindow.scrollTo(0, y);
+          };
+          frame.srcdoc = `<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/src/styles/global.css">
+<style>body{padding:var(--s-6) var(--s-6) var(--s-8)}.prose,h1{max-width:720px}h1{font-size:var(--t-2xl);font-weight:700;letter-spacing:-0.03em;line-height:1.25;margin:0 0 var(--s-6)}</style>
+</head><body><h1></h1><div class="prose">${html}</div></body></html>`;
+        } catch (e) {
+          setStatus(`미리보기 실패: ${e.message}`, true);
+        }
+      }
+
+      async function open(slug) {
+        if (dirty() && !confirm("저장하지 않은 내용이 있습니다. 버릴까요?")) return;
+        try {
+          const { content } = await api(`/${encodeURIComponent(slug)}`);
+          show(slug, content, false);
+        } catch (e) {
+          setStatus(e.message, true);
+        }
+      }
+
+      async function save() {
+        if (!current) return;
+        const content = $("editor").value;
+        try {
+          await api(`/${encodeURIComponent(current.slug)}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ content, create: current.isNew }),
+          });
+          saved = content;
+          if (current.isNew) show(current.slug, content, false);
+          setStatus(`저장됨 ${new Date().toLocaleTimeString()}`);
+          refreshList();
+        } catch (e) {
+          setStatus(e.message, true);
+        }
+      }
+
+      $("new").onclick = () => {
+        if (dirty() && !confirm("저장하지 않은 내용이 있습니다. 버릴까요?")) return;
+        const title = prompt("글 제목")?.trim();
+        if (!title) return;
+        const slug = prompt("주소에 쓸 slug", slugify(title))?.trim();
+        if (slug) show(slugify(slug), template(title.replace(/'/g, "''")), true);
+      };
+      const panes = $("panes");
+      const split = $("split");
+      const PREVIEW_MIN = 320;
+      const previewMax = () => parseFloat(getComputedStyle(panes).getPropertyValue("--preview-max"));
+      function setPreviewWidth(w) {
+        if (w == null) {
+          panes.style.removeProperty("--preview-w");
+        } else {
+          w = Math.round(Math.min(previewMax(), Math.max(PREVIEW_MIN, w)));
+          panes.style.setProperty("--preview-w", `${w}px`);
+        }
+        try {
+          w == null ? localStorage.removeItem("editor.previewWidth") : localStorage.setItem("editor.previewWidth", w);
+        } catch {}
+      }
+      const previewWidth = () => $("preview").getBoundingClientRect().width;
+
+      split.onpointerdown = (e) => {
+        e.preventDefault(); // 드래그·더블클릭이 옆 텍스트를 선택하지 않게
+        split.focus();
+        split.setPointerCapture(e.pointerId);
+        split.classList.add("dragging");
+        split.onpointermove = (ev) => setPreviewWidth(panes.getBoundingClientRect().right - ev.clientX - 6);
+        split.onpointerup = () => {
+          split.onpointermove = null;
+          split.classList.remove("dragging");
+        };
+      };
+      split.ondblclick = () => setPreviewWidth(null);
+      split.onkeydown = (e) => {
+        const step = e.shiftKey ? 96 : 24;
+        if (e.key === "ArrowLeft") setPreviewWidth(previewWidth() + step);
+        else if (e.key === "ArrowRight") setPreviewWidth(previewWidth() - step);
+        else return;
+        e.preventDefault();
+      };
+      try {
+        const stored = Number(localStorage.getItem("editor.previewWidth"));
+        if (stored) setPreviewWidth(stored);
+      } catch {}
+      $("save").onclick = save;
+      $("editor").oninput = () => {
+        setStatus(dirty() ? "수정됨" : "");
+        clearTimeout(previewTimer);
+        previewTimer = setTimeout(renderPreview, 300);
+      };
+      addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === "s") {
+          e.preventDefault();
+          save();
+        }
+      });
+      addEventListener("beforeunload", (e) => {
+        if (dirty()) e.preventDefault();
+      });
+
+      await refreshList();
+      const fromHash = decodeURIComponent(location.hash.slice(1));
+      if (fromHash) open(fromHash);
+    </script>
+  </body>
+</html>

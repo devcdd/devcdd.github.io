@@ -3,12 +3,12 @@ import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 
 export const ENTRY_TYPES = ["service", "life", "etc"] as const;
-// 진행 단계 — 순서대로 아이디어 → 진행중 → 완성
-export const ENTRY_STATUSES = ["idea", "building", "done"] as const;
+// 진행 단계 — 순서대로 아이디어 → 진행중 → 완성, 중간에 접으면 중단
+export const ENTRY_STATUSES = ["idea", "building", "done", "dropped"] as const;
 
 const entries = defineCollection({
-  // content/entries/**/*.yaml → 파일명이 URL slug 가 됩니다.
-  loader: glob({ pattern: "**/[^_]*.{yaml,yml}", base: "./content/entries" }),
+  // content/entries/**/*.md → 파일명이 URL slug 가 됩니다.
+  loader: glob({ pattern: "**/[^_]*.md", base: "./content/entries" }),
   schema: z.object({
     code: z.string(), // 연구 번호. 예: LAB-001
     title: z.string(),
@@ -37,19 +37,23 @@ const entries = defineCollection({
         }),
       )
       .default([]),
-    // 본문은 섹션 단위로 작성하고, body 는 Markdown 을 지원합니다.
-    sections: z
-      .array(
-        z.object({
-          heading: z.string(),
-          body: z.string(),
-          beforeMilestones: z.boolean().default(false), // true 면 Milestones 위에 표시
-        }),
-      )
-      .default([]),
     links: z.array(z.object({ label: z.string(), url: z.url() })).default([]),
     draft: z.boolean().default(false),
   }),
 });
 
-export const collections = { entries };
+export const POST_CATEGORIES = ["frontend", "backend", "retrospect"] as const;
+
+const posts = defineCollection({
+  loader: glob({ pattern: "**/[^_]*.md", base: "./content/posts" }),
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    category: z.enum(POST_CATEGORIES),
+    tags: z.array(z.string()).default([]),
+    summary: z.string(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { entries, posts };
