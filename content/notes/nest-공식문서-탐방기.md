@@ -92,7 +92,7 @@ export class AppController {
 ### Controller
 
 <figure>
-  <img src="/posts/nest-공식문서-탐방기/nest-controller.png" alt="modal" loading="lazy" />
+  <img src="/notes/nest-공식문서-탐방기/nest-controller.png" alt="modal" loading="lazy" />
 </figure>
 
 문서를 좀 더 읽어보니 위와 같은 그림이 나오면서 설명이 나와있네요. 간략하게 요약하자면 `Controller`는 클라이언트로부터 들어온 요청을 받아 처리하고, 응답을 반환하는

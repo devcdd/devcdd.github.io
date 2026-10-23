@@ -44,16 +44,23 @@ const entries = defineCollection({
 
 export const POST_CATEGORIES = ["frontend", "backend", "retrospect"] as const;
 
-const posts = defineCollection({
-  loader: glob({ pattern: "**/[^_]*.md", base: "./content/posts" }),
-  schema: z.object({
-    title: z.string(),
-    date: z.coerce.date(),
-    category: z.enum(POST_CATEGORIES),
-    tags: z.array(z.string()).default([]),
-    summary: z.string(),
-    draft: z.boolean().default(false),
-  }),
+const postSchema = z.object({
+  title: z.string(),
+  date: z.coerce.date(),
+  category: z.enum(POST_CATEGORIES),
+  tags: z.array(z.string()).default([]),
+  summary: z.string(),
+  draft: z.boolean().default(false),
 });
 
-export const collections = { entries, posts };
+const posts = defineCollection({
+  loader: glob({ pattern: "**/[^_]*.md", base: "./content/posts" }),
+  schema: postSchema,
+});
+
+const notes = defineCollection({
+  loader: glob({ pattern: "**/[^_]*.md", base: "./content/notes" }),
+  schema: postSchema,
+});
+
+export const collections = { entries, posts, notes };

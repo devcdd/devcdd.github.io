@@ -11,7 +11,7 @@ const { posts } = Astro.props;
 <ul class="post-list">
   {posts.map((p) => (
     <li data-category={p.data.category}>
-      <a href={url(`/posts/${p.id}`)} class="row">
+      <a href={url(`/${p.collection}/${p.id}`)} class="row">
         <span class="mono date">{formatDate(p.data.date)}</span>
         <span class="main">
           <span class="title">{p.data.title}</span>

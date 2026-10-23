@@ -1,6 +1,6 @@
 # CDD LABS
 
-디디의 아이디어 보관소. Markdown으로 쓴 글(끄적끄적)과 계획 문서(뚝딱뚝딱)를 Astro로 정적 빌드해 [cdd.co.kr](https://cdd.co.kr)에 발행합니다.
+디디의 아이디어 보관소. Markdown으로 쓴 글(끄적끄적), 공부 기록(차곡차곡), 계획 문서(뚝딱뚝딱)를 Astro로 정적 빌드해 [cdd.co.kr](https://cdd.co.kr)에 발행합니다.
 
 ```sh
 pnpm install
@@ -10,7 +10,7 @@ pnpm build   # dist/
 
 ## 문서 쓰기
 
-`content/entries/_template.md`를 복사해 `content/entries/<이름>.md`로 저장하면 `/entries/<이름>`으로 발행됩니다. 끄적끄적 글은 `content/posts/<이름>.md`에 쓰고 이미지는 `public/posts/<이름>/`에 둡니다. frontmatter 형식은 `src/content.config.ts`에 정의돼 있어 잘못 쓰면 빌드가 실패합니다.
+`content/entries/_template.md`를 복사해 `content/entries/<이름>.md`로 저장하면 `/entries/<이름>`으로 발행됩니다. 끄적끄적 글은 `content/posts/<이름>.md`, 차곡차곡 글은 `content/notes/<이름>.md`에 쓰고 이미지는 각각 `public/posts/<이름>/`, `public/notes/<이름>/`에 둡니다. 뚝딱뚝딱 문서의 이미지는 `public/entries/<이름>/`에 둡니다. frontmatter 형식은 `src/content.config.ts`에 정의돼 있어 잘못 쓰면 빌드가 실패합니다.
 
 ## 배포
 

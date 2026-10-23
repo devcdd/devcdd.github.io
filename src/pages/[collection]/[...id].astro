@@ -5,11 +5,12 @@ import { formatDate, pad2, renderWithToc } from "@/lib/entries";
 import { CATEGORY_LABEL, getPosts, type Post } from "@/lib/posts";
 
 export async function getStaticPaths() {
-  const posts = await getPosts();
-  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+  const all = await Promise.all((["posts", "notes"] as const).map((c) => getPosts(c)));
+  return all.flat().map((post) => ({ params: { collection: post.collection, id: post.id }, props: { post } }));
 }
 
 const { post } = Astro.props as { post: Post };
+const section = SECTIONS[post.collection];
 const d = post.data;
 const { html, toc } = renderWithToc(post.body ?? "");
 let n = 0;
@@ -20,7 +21,7 @@ const items = toc.map((h) => ({ ...h, num: h.depth === 2 ? pad2(++n) : "" }));
   <article class="container post">
     <header class="post-head">
       <nav class="crumb mono" aria-label="경로">
-        <a href={url(SECTIONS.posts.href)} class="text-link">{SECTIONS.posts.label}</a>
+        <a href={url(section.href)} class="text-link">{section.label}</a>
         <span aria-hidden="true">/</span>
         <span>{CATEGORY_LABEL[d.category]}</span>
       </nav>
@@ -28,7 +29,7 @@ const items = toc.map((h) => ({ ...h, num: h.depth === 2 ? pad2(++n) : "" }));
       <p class="meta">
         <span class="mono">{formatDate(d.date)}</span>
         {d.tags.map((t) => <span>#{t}</span>)}
-        {import.meta.env.DEV && <a href={`/__editor#${post.id}`} class="text-link">수정</a>}
+        {import.meta.env.DEV && post.collection === "posts" && <a href={`/__editor#${post.id}`} class="text-link">수정</a>}
       </p>
     </header>
     <div class="doc-grid">

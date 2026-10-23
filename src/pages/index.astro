@@ -9,6 +9,7 @@ import { ENTRY_STATUSES } from "@/content.config";
 
 const entries = await getEntries();
 const posts = await getPosts();
+const notes = await getPosts("notes");
 const counts = countBy(entries, (e) => e.data.status);
 const recent = entries.slice(0, 8);
 // 글자마다 순번(--i)을 매겨 차례로 등장시킴
@@ -18,6 +19,7 @@ const wordmark = ["CDD", "LABS"].map((line, li, all) => {
 });
 const doors = [
   { ...SECTIONS.entries, count: entries.length },
+  { ...SECTIONS.notes, count: notes.length },
   { ...SECTIONS.posts, count: posts.length },
 ];
 ---
@@ -70,6 +72,14 @@ const doors = [
       ))}
     </ol>
     <EntryList entries={recent} />
+  </section>
+
+  <section class="container recent">
+    <div class="recent-head">
+      <h2 class="recent-title">{SECTIONS.notes.label}</h2>
+      <a href={url(SECTIONS.notes.href)} class="mono text-link">전체 보기 ({notes.length})</a>
+    </div>
+    <PostList posts={notes.slice(0, 5)} />
   </section>
 
   <section class="container recent">
@@ -129,8 +139,8 @@ const doors = [
   }
   .about p { margin: 0 0 var(--s-4); color: var(--ink-2); line-height: 1.75; }
 
-  /* 진입점: 뚝딱뚝딱 | 끄적끄적 */
-  .doors { display: grid; grid-template-columns: 1fr 1fr; }
+  /* 진입점: 뚝딱뚝딱 | 차곡차곡 | 끄적끄적 */
+  .doors { display: grid; grid-template-columns: repeat(3, 1fr); }
   .door {
     position: relative;
     display: flex;

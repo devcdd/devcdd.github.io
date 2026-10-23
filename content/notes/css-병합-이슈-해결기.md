@@ -57,7 +57,7 @@ project-root/
 ### 그냥 무시하고 돌리면 안되나? 성능에 그렇게 영향이 있나?
 
 <figure>
-  <img src="/posts/css-병합-이슈-해결기/devtool-error.png" alt="modal" width="600" loading="lazy" />
+  <img src="/notes/css-병합-이슈-해결기/devtool-error.png" alt="modal" width="600" loading="lazy" />
 </figure>
 
 있더군요, 우선 디버깅을 위해 개발자 콘솔을 여니 3초 간 반응이 없다가 개발자 콘솔이 강제종료 되더군요. 어찌저찌 페이지들을 줄여서 열어봐도 스크롤을 한참 내려야 적용되는 스타일링의 끝이 보였습니다.
@@ -125,8 +125,8 @@ fi
 ## 결론
 
 <figure>
-  <img src="/posts/css-병합-이슈-해결기/style-stuck.png" alt="modal" width="180" loading="lazy" />
-  <img src="/posts/css-병합-이슈-해결기/style-fixed.png" alt="modal" width="180" loading="lazy" />
+  <img src="/notes/css-병합-이슈-해결기/style-stuck.png" alt="modal" width="180" loading="lazy" />
+  <img src="/notes/css-병합-이슈-해결기/style-fixed.png" alt="modal" width="180" loading="lazy" />
 </figure>
 
 좌측이 수정 전 버전, 우측이 수정 후 버전입니다. 훨씬 겹치는 거 없이 깔끔하게 뜨는 모습을 볼 수 있습니다. 이제는 크롬 개발자 도구도 잘 살아 있네요.

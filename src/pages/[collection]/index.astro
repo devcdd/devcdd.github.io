@@ -1,0 +1,35 @@
+---
+import Base from "@/layouts/Base.astro";
+import PostList from "@/components/PostList.astro";
+import { SECTIONS } from "@/lib/site";
+import { getPosts, type PostCollection } from "@/lib/posts";
+
+export function getStaticPaths() {
+  return (["posts", "notes"] as const).map((collection) => ({ params: { collection } }));
+}
+
+const collection = Astro.params.collection as PostCollection;
+const section = SECTIONS[collection];
+const posts = await getPosts(collection);
+---
+
+<Base title={section.label} description={section.caption}>
+  <div class="container">
+    <header class="page-head">
+      <div>
+        <h1 class="page-title">{section.label}</h1>
+        <p class="caption">{section.caption}</p>
+      </div>
+      <span class="mono count">
+        {import.meta.env.DEV && collection === "posts" && <a href="/__editor" class="text-link">편집기</a>} {posts.length}
+      </span>
+    </header>
+    <PostList posts={posts} />
+  </div>
+</Base>
+
+<style>
+  .page-head { border-bottom: 0; }
+  .caption { margin: var(--s-2) 0 0; font-size: var(--t-sm); color: var(--muted); }
+  .count { color: var(--muted); }
+</style>
