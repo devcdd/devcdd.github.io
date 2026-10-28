@@ -323,7 +323,8 @@ img { max-width: 100%; display: block; }
   .prose td,
   .prose td:last-child:has(br) {
     display: grid;
-    grid-template-columns: 48px minmax(0, 1fr);
+    /* 라벨 열 폭은 표마다 가장 긴 열 제목에 맞춘 --label-w(src/lib/entries.ts의 표 렌더러가 넣음) */
+    grid-template-columns: var(--label-w, 48px) minmax(0, 1fr);
     gap: var(--s-3);
     padding: 2px 0;
     border: 0;
@@ -336,7 +337,11 @@ img { max-width: 100%; display: block; }
     font-size: var(--t-xs);
     color: var(--muted);
     padding-top: 2px;
+    white-space: nowrap;
   }
+  /* 열 제목이 긴 표는 라벨을 값 위에 작게 올림 */
+  .prose table.stack-labels td { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .prose table.stack-labels td:not(:first-child) { padding-block: 2px 4px; }
   /* 첫 칸은 카드 제목 */
   .prose td:first-child { display: block; font-weight: 600; padding-bottom: var(--s-1); white-space: normal; }
   .prose td:first-child::before { content: none; }

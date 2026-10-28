@@ -41,6 +41,15 @@ export const formatDate = (d: Date) =>
 
 export const pad2 = (n: number) => String(n).padStart(2, "0");
 
+// 모바일 카드형 표의 열 제목 폭. 첫 열은 카드 제목이라 빼고, 가장 긴 열 제목에 맞춤(12px 글꼴 기준: 한글 1em, 그 외 0.6em).
+// 너무 길면(한글 7자 남짓 이상) 왼쪽에 두면 값 칸이 좁아져 라벨을 값 위로 올림
+const LABEL_STACK_EM = 7;
+const labelAttr = (labels: string[]) => {
+  const em = Math.max(0, ...labels.map((t) => [...t].reduce((w, ch) => w + (/[\u1100-\uffdc]/.test(ch) ? 1 : 0.6), 0)));
+  if (em > LABEL_STACK_EM) return ' class="stack-labels"';
+  return ` style="--label-w: ${Math.ceil(em * 12) + 2}px"`;
+};
+
 marked.use({
   renderer: {
     // id 는 renderWithToc 가 토큰에 미리 달아 둠
@@ -70,7 +79,7 @@ marked.use({
           return `<tr>${cells.join("")}</tr>`;
         })
         .join("\n");
-      return `<table>\n<thead><tr>${head}</tr></thead>\n<tbody>${body}</tbody>\n</table>\n`;
+      return `<table${labelAttr(header.slice(1).map((c) => c.text))}>\n<thead><tr>${head}</tr></thead>\n<tbody>${body}</tbody>\n</table>\n`;
     },
   },
 });
