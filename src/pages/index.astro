@@ -1,27 +1,27 @@
 ---
 import Base from "@/layouts/Base.astro";
-import { SECTIONS, url } from "@/lib/site";
-import EntryList from "@/components/EntryList.astro";
-import PostList from "@/components/PostList.astro";
-import { countBy, getEntries, STATUS_META } from "@/lib/entries";
+import { SECTIONS, sectionStyle, url, type SectionKey } from "@/lib/site";
+import { getEntries } from "@/lib/entries";
 import { getPosts } from "@/lib/posts";
-import { ENTRY_STATUSES } from "@/content.config";
+import { getConferences } from "@/lib/conferences";
 
-const entries = await getEntries();
-const posts = await getPosts();
-const notes = await getPosts("notes");
-const counts = countBy(entries, (e) => e.data.status);
-const recent = entries.slice(0, 8);
+const [entries, posts, notes, conferences] = await Promise.all([
+  getEntries(),
+  getPosts(),
+  getPosts("notes"),
+  getConferences(),
+]);
 // 글자마다 순번(--i)을 매겨 차례로 등장시킴
 const wordmark = ["CDD", "LABS"].map((line, li, all) => {
   const offset = all.slice(0, li).join("").length;
   return [...line].map((ch, i) => ({ ch, i: offset + i }));
 });
 const doors = [
-  { ...SECTIONS.entries, count: entries.length },
-  { ...SECTIONS.notes, count: notes.length },
-  { ...SECTIONS.posts, count: posts.length },
-];
+  { key: "entries", count: entries.length },
+  { key: "notes", count: notes.length },
+  { key: "posts", count: posts.length },
+  { key: "conferences", count: conferences.length },
+].map((d) => ({ ...d, ...SECTIONS[d.key as SectionKey] }));
 ---
 
 <Base>
@@ -37,59 +37,201 @@ const doors = [
         ))}
       </h1>
     </div>
-    <div class="about">
-      <p>
-        제 머릿속에 있는 여러 가지 아이디어들을<br />
-        기획하고, 스케치하는 스케치북 같은 공간입니다.<br />
-        요즘 같은 시대에 쇠맛 안 나게 잘 가꿔보겠습니다.
-      </p>
+    <div class="term" aria-label="사이트 소개">
+      <div class="titlebar" aria-hidden="true">
+        <span class="lights"><i></i><i></i><i></i></span>
+        <span class="title">cdd — labs</span>
+      </div>
+      <p class="prompt"><span class="sign" aria-hidden="true">❯</span><span class="ask">여기 뭐하는 곳인지 설명 좀 해줘.</span></p>
+      <div class="reply">
+        <span class="lead" aria-hidden="true" data-lead>●</span>
+        <p class="answer" data-typing>
+          제 머릿속에 있는 <em class="hl">여러 가지 아이디어</em>들을<br />
+          기획하고, 스케치하는 <em class="hl">스케치북</em> 같은 공간입니다.<br />
+          요즘 같은 시대에 <em class="hl">쇠맛</em> 안 나게 잘 가꿔보겠습니다.
+        </p>
+      </div>
+      <p class="done" aria-hidden="true" data-done></p>
+      <!-- 첫 답변 뒤 이어지는 두 번째 대화. 스크립트가 질문을 지우고 이 내용으로 바꿔 씀 -->
+      <template data-next-round data-ask="주인장은 뭐하는 놈이야?">
+        <em class="hl">새롭고 재밌는 것</em>을 좋아하고,<br />
+        인생을 <em class="hl">다채롭게</em> 사는 것을 좋아하며,<br />
+        <em class="hl">생각하는 것</em>을 좋아하는 사람으로 알고 있습니다.
+      </template>
     </div>
   </section>
 
   <nav class="container doors" aria-label="진입점">
     {doors.map((d) => (
-      <a href={url(d.href)} class="door">
-        <span class="door-label">{d.label}<span class="mono n">{d.count}</span></span>
+      <a href={url(d.href)} class:list={["door", { outlined: d.outlined }]} style={sectionStyle(d.key as SectionKey)}>
+        <span class="door-label">{d.label}</span>
         <span class="door-caption">{d.caption}</span>
-        <span class="arrow" aria-hidden="true">→</span>
+        <span class="door-foot">
+          <span class="mono n">{d.count}</span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </span>
       </a>
     ))}
   </nav>
-
-  <section class="container recent">
-    <div class="recent-head">
-      <h2 class="recent-title">{SECTIONS.entries.label}</h2>
-      <a href={url(SECTIONS.entries.href)} class="mono text-link">전체 보기 ({entries.length})</a>
-    </div>
-    <ol class="pipeline" aria-label="단계별 문서 수">
-      {ENTRY_STATUSES.map((s) => (
-        <li class:list={{ empty: !counts[s] }}>
-          <a href={url(`/entries?status=${s}`)}>
-            <span class="name">{STATUS_META[s].label}</span>
-            <span class="n">{counts[s] ?? 0}</span>
-          </a>
-        </li>
-      ))}
-    </ol>
-    <EntryList entries={recent} />
-  </section>
-
-  <section class="container recent">
-    <div class="recent-head">
-      <h2 class="recent-title">{SECTIONS.notes.label}</h2>
-      <a href={url(SECTIONS.notes.href)} class="mono text-link">전체 보기 ({notes.length})</a>
-    </div>
-    <PostList posts={notes.slice(0, 5)} />
-  </section>
-
-  <section class="container recent">
-    <div class="recent-head">
-      <h2 class="recent-title">{SECTIONS.posts.label}</h2>
-      <a href={url(SECTIONS.posts.href)} class="mono text-link">전체 보기 ({posts.length})</a>
-    </div>
-    <PostList posts={posts.slice(0, 5)} />
-  </section>
 </Base>
+
+<script>
+  // 소개를 Claude Code 대화처럼 재생: 질문 입력 → 생각 중 → 답변 출력 → 마무리 줄.
+  // 첫 대화가 끝나고 10초 뒤 질문을 지우고 두 번째 대화(<template data-next-round>)를 이어서 재생.
+  // 문장은 HTML에 그대로 두고 화면에서만 지웠다가 다시 찍음
+  const ask = document.querySelector<HTMLElement>(".ask");
+  const answer = document.querySelector<HTMLElement>("[data-typing]");
+  const lead = document.querySelector<HTMLElement>("[data-lead]");
+  const done = document.querySelector<HTMLElement>("[data-done]");
+  const next = document.querySelector<HTMLTemplateElement>("[data-next-round]");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  type Piece = { ch: string; hl: boolean };
+  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  const jitter = (min: number, range: number) => min + Math.random() * range;
+
+  // 강조(em.hl) 구간을 유지하도록 글자를 [문자, 강조 여부]로 펼침. "\n"은 줄바꿈, HTML 들여쓰기 공백은 제거
+  const toPieces = (root: ParentNode): Piece[] => {
+    const pieces: Piece[] = [];
+    for (const node of root.childNodes) {
+      if (node instanceof HTMLBRElement) pieces.push({ ch: "\n", hl: false });
+      else if (node instanceof HTMLElement && node.classList.contains("hl"))
+        for (const ch of node.textContent!) pieces.push({ ch, hl: true });
+      else if (node.nodeType === Node.TEXT_NODE)
+        for (const ch of node.textContent!.replace(/\s+/g, " ")) pieces.push({ ch, hl: false });
+    }
+    return pieces.filter((p, i, all) => {
+      if (p.ch !== " ") return true;
+      const prev = all[i - 1]?.ch;
+      const nextCh = all[i + 1]?.ch;
+      return prev !== undefined && nextCh !== undefined && prev !== "\n" && nextCh !== "\n";
+    });
+  };
+  const plain = (pieces: Piece[]) => pieces.map((p) => (p.ch === "\n" ? " " : p.ch)).join("");
+
+  const makeCursor = () => {
+    const c = document.createElement("span");
+    c.className = "cursor";
+    c.setAttribute("aria-hidden", "true");
+    return c;
+  };
+
+  const typeAsk = async (text: string) => {
+    ask!.setAttribute("aria-label", text);
+    const typed = document.createElement("span");
+    typed.setAttribute("aria-hidden", "true");
+    const cursor = makeCursor();
+    ask!.replaceChildren(typed, cursor);
+    for (const ch of text) {
+      typed.append(ch);
+      await wait(jitter(45, 45));
+    }
+    await wait(350);
+    cursor.remove();
+  };
+
+  const eraseAsk = async () => {
+    const typed = ask!.querySelector<HTMLElement>("span[aria-hidden]");
+    const cursor = makeCursor();
+    ask!.append(cursor);
+    while (typed && typed.textContent) {
+      typed.textContent = typed.textContent.slice(0, -1);
+      await wait(jitter(18, 14));
+    }
+    await wait(300);
+    cursor.remove();
+  };
+
+  // 생각 중: 왼쪽 열 기호가 돌고 초·토큰 수가 올라감
+  const GLYPHS = ["·", "✢", "✳", "✶", "✻", "✽", "✻", "✶", "✳", "✢"];
+  const VERBS = ["Moseying", "Pondering", "Sketching", "Brewing"];
+  const THINK_MS = 1800;
+  const think = async (started: number) => {
+    const status = document.createElement("span");
+    status.className = "status";
+    status.setAttribute("aria-hidden", "true");
+    answer!.replaceChildren(status);
+    lead!.classList.add("spinning");
+    let frame = 0;
+    let tokens = 0;
+    const render = () => {
+      const elapsed = performance.now() - started;
+      tokens += Math.floor(jitter(40, 80));
+      const verb = VERBS[Math.min(VERBS.length - 1, Math.floor(elapsed / (THINK_MS / VERBS.length)))];
+      lead!.textContent = GLYPHS[frame++ % GLYPHS.length];
+      status.innerHTML = `${verb}… <span class="meta">(${Math.floor(elapsed / 1000)}s · ↓ ${(tokens / 1000).toFixed(1)}k tokens · thinking)</span>`;
+    };
+    render();
+    const timer = setInterval(render, 120);
+    await wait(THINK_MS);
+    clearInterval(timer);
+    lead!.classList.remove("spinning");
+  };
+
+  const typeAnswer = async (pieces: Piece[]) => {
+    answer!.setAttribute("aria-label", plain(pieces));
+    const out = document.createElement("span");
+    out.setAttribute("aria-hidden", "true");
+    answer!.replaceChildren(out);
+    lead!.textContent = "●";
+    let hlBox: HTMLElement | null = null;
+    for (const { ch, hl } of pieces) {
+      if (ch === "\n") {
+        out.append(document.createElement("br"));
+        hlBox = null;
+      } else if (hl) {
+        if (!hlBox) {
+          hlBox = document.createElement("em");
+          hlBox.className = "hl";
+          out.append(hlBox);
+        }
+        hlBox.append(ch);
+      } else {
+        hlBox = null;
+        out.append(ch);
+      }
+      await wait(ch === "\n" ? 260 : jitter(28, 30));
+    }
+  };
+
+  // 마무리 줄: 질문을 보낸 뒤 답변이 끝날 때까지 걸린 시간과 지금 시각(보는 사람 기기 기준)
+  const finish = (started: number) => {
+    const sec = Math.max(1, Math.round((performance.now() - started) / 1000));
+    const took = sec >= 60 ? `${Math.floor(sec / 60)}m ${sec % 60}s` : `${sec}s`;
+    const at = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    done!.innerHTML = `<span class="done-sign">✻</span><span>Crunched for ${took} · done ${at}</span>`;
+  };
+
+  const round = async (question: string, pieces: Piece[]) => {
+    await typeAsk(question);
+    const started = performance.now();
+    await think(started);
+    await typeAnswer(pieces);
+    finish(started);
+  };
+
+  if (ask && answer && lead && done && !reduce) {
+    const first = { question: ask.textContent!.trim(), pieces: toPieces(answer) };
+    const second = next && { question: next.dataset.ask ?? "", pieces: toPieces(next.content) };
+
+    // 워드마크 등장 애니메이션이 끝날 때까지 질문 줄은 커서만, 답변 자리는 비워 둠
+    ask.replaceChildren(makeCursor());
+    answer.replaceChildren();
+    lead.textContent = "";
+
+    (async () => {
+      await wait(900);
+      await round(first.question, first.pieces);
+      if (!second) return;
+      await wait(10000);
+      answer.replaceChildren();
+      lead.textContent = "";
+      done.replaceChildren();
+      await eraseAsk();
+      await round(second.question, second.pieces);
+    })();
+  }
+</script>
 
 <style>
   .intro {
@@ -137,69 +279,115 @@ const doors = [
     .ch { opacity: 1; animation: none; }
     .caret { opacity: 1; animation: none; }
   }
-  .about p { margin: 0 0 var(--s-4); color: var(--ink-2); line-height: 1.75; }
-
-  /* 진입점: 뚝딱뚝딱 | 차곡차곡 | 끄적끄적 */
-  .doors { display: grid; grid-template-columns: repeat(3, 1fr); }
-  .door {
+  /* 소개는 질문에 AI가 답하는 터미널처럼 보이게. 테마와 상관없이 어두운 창 */
+  .term {
+    padding: var(--s-4) var(--s-5);
+    background: #111214;
+    color: #e6e6e9;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    font-size: var(--t-sm);
+    line-height: 1.75;
+  }
+  .term p { margin: 0; }
+  /* macOS 창 타이틀바: 창 안쪽 여백을 넘어 창 폭 전체에 깔고, 가운데 제목을 둠 */
+  .titlebar {
     position: relative;
+    display: flex;
+    align-items: center;
+    height: 28px;
+    margin: calc(var(--s-4) * -1) calc(var(--s-5) * -1) var(--s-4);
+    padding-inline: 12px;
+    border-bottom: 1px solid #2a2b30;
+    background: #1c1d21;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .lights { display: flex; gap: 8px; }
+  .lights i { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; }
+  .lights i:nth-child(2) { background: #febc2e; }
+  .lights i:nth-child(3) { background: #28c840; }
+  .title {
+    position: absolute;
+    inset-inline: 0;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #6c6e75;
+    pointer-events: none;
+  }
+  /* 질문 줄은 Claude Code 입력창처럼 위아래 가로선 사이에 둠 */
+  /* ❯ 기호, 생각 중 기호, 답변 동그라미가 같은 왼쪽 열(--lead-w)에 놓임 */
+  .term { --lead-w: 1.5em; }
+  .prompt {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--s-3) !important;
+    padding-block: var(--s-1);
+    border-block: 1px solid #3a3b41;
+    color: #c9cacf;
+  }
+  /* 기호와 한글은 글꼴이 달라 기준선이 어긋나므로 줄 높이를 없애고 flex 가운데 정렬에 맡김 */
+  .sign { flex: 0 0 var(--lead-w); font-family: var(--font-mono); line-height: 1; color: #ffffff; }
+  .reply { display: flex; }
+  .lead { flex: 0 0 var(--lead-w); font-family: var(--font-mono); color: #ffffff; }
+  .lead.spinning { color: #ff8a5c; }
+  .answer { flex: 1; min-width: 0; min-height: calc(1.75em * 3); }
+  /* 마무리 줄 자리는 미리 잡아 두어 마지막에 줄이 생길 때 아래 카드가 밀리지 않게 함 */
+  .done { display: flex; min-height: 1.75em; margin-top: var(--s-2) !important; color: #6c6e75; font-size: var(--t-xs); }
+  .done :global(.done-sign) { flex: 0 0 var(--lead-w); font-family: var(--font-mono); }
+  .answer :global(.status) { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #8d9099; }
+  .answer :global(.meta) { font-family: var(--font-mono); font-size: var(--t-xs); color: #6c6e75; }
+  /* Claude Code 다크 테마의 인라인 코드 색(rgb 177 185 249) */
+  .answer :global(.hl) { font-style: normal; color: #b1b9f9; }
+  /* 질문 줄 커서는 스크립트가 만들어 범위 스타일이 안 붙으므로 전역 선택자로 지정. 답변에는 커서를 두지 않음 */
+  .term :global(.cursor) {
+    display: inline-block;
+    width: 0.55em;
+    height: 1.1em;
+    margin-left: 2px;
+    vertical-align: -0.2em;
+    background: currentColor;
+    animation: blink 1s steps(1) infinite;
+  }
+
+  /* 진입점 카드 4개: 데스크톱은 한 줄, 좁은 화면은 2열. 모두 정사각형이고 간격 없이 붙임 */
+  .doors {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-bottom: var(--s-9);
+  }
+  /* 배경이 테마와 상관없이 고정색이라 글자색도 테마 토큰 대신 카드마다 정한 --card-ink를 씀 */
+  .door {
+    aspect-ratio: 1 / 1;
     display: flex;
     flex-direction: column;
     gap: var(--s-2);
-    padding: var(--s-5) var(--s-6) var(--s-5) 0;
-    border-top: 1px solid var(--line-strong);
-    border-bottom: 1px solid var(--line);
+    padding: var(--s-5);
+    background: var(--card);
+    color: var(--card-ink);
+    transition: background 0.15s;
   }
-  .door + .door { padding-left: var(--s-5); border-left: 1px solid var(--line); }
-  .door-label { display: flex; align-items: baseline; gap: var(--s-2); font-size: var(--t-xl); font-weight: 700; letter-spacing: -0.03em; }
-  .door-caption { font-size: var(--t-xs); color: var(--muted); }
-  .arrow { position: absolute; right: var(--s-4); top: var(--s-5); color: var(--faint); transition: transform 0.15s; }
-  .door:hover .arrow { color: var(--ink); transform: translateX(4px); }
+  .door:hover { background: color-mix(in srgb, var(--card) 85%, #000); }
+  /* 오프화이트 카드는 라이트 모드의 흰 페이지와 경계가 흐려 안쪽 선을 둠 */
+  .door.outlined { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--card) 88%, #000); }
+  .door.outlined:hover { background: color-mix(in srgb, var(--card) 94%, #000); }
+  .door-label { font-size: var(--t-xl); font-weight: 700; letter-spacing: -0.03em; }
+  .door-caption { font-size: var(--t-sm); color: color-mix(in srgb, var(--card-ink) 85%, transparent); line-height: 1.5; }
+  .door-foot { margin-top: auto; display: flex; justify-content: space-between; align-items: baseline; }
+  .n { font-size: var(--t-sm); }
+  .arrow { transition: transform 0.15s; }
+  .door:hover .arrow { transform: translateX(4px); }
   .door:hover .door-label { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
 
-  /* 단계 브레드크럼: 아이디어 › 진행중 › 완성 */
-  .pipeline {
-    list-style: none;
-    margin: 0;
-    padding: var(--s-4) 0;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    row-gap: var(--s-2);
-    border-block: 1px solid var(--line);
+  @media (max-width: 960px) {
+    .doors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
-  .pipeline li { display: inline-flex; align-items: center; }
-  .pipeline li + li::before {
-    content: "";
-    width: 8px;
-    height: 8px;
-    border-top: 1px solid var(--faint);
-    border-right: 1px solid var(--faint);
-    transform: rotate(45deg);
-    margin: 0 var(--s-5) 0 var(--s-4);
-  }
-  .pipeline a { display: inline-flex; align-items: baseline; gap: var(--s-2); }
-  .name { font-size: var(--t-lg); font-weight: 700; letter-spacing: -0.02em; }
-  .n { font-family: var(--font-mono); font-size: var(--t-sm); color: var(--muted); }
-  .empty .name, .empty .n { color: var(--faint); }
-  .pipeline a:hover .name { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
-
-  .recent { margin-top: var(--s-8); }
-  .recent .pipeline { border-top: 0; }
-  .recent-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: var(--s-3);
-  }
-  .recent-title { font-size: var(--t-lg); font-weight: 700; letter-spacing: -0.02em; margin: 0; }
-
   @media (max-width: 720px) {
     .intro { grid-template-columns: 1fr; gap: var(--s-5); padding-block: var(--s-7) var(--s-5); }
     .wordmark { font-size: 44px; }
-    .name { font-size: var(--t-md); }
-    .pipeline li + li::before { margin: 0 var(--s-3) 0 var(--s-2); }
-    .doors { grid-template-columns: 1fr; }
-    .door + .door { padding-left: 0; border-left: 0; border-top-color: var(--line); }
+    .doors { margin-bottom: var(--s-8); }
+    .door { padding: var(--s-4); }
+    .door-label { font-size: var(--t-lg); }
+    .door-caption { font-size: var(--t-xs); }
   }
 </style>
