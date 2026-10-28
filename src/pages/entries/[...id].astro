@@ -1,5 +1,6 @@
 ---
 import Base from "@/layouts/Base.astro";
+import Tag from "@/components/Tag.astro";
 import { SECTIONS, url } from "@/lib/site";
 import StatusLabel from "@/components/StatusLabel.astro";
 import { getEntries, formatDate, pad2, renderMarkdown, splitSections, TYPE_LABEL, type Entry } from "@/lib/entries";
@@ -39,7 +40,7 @@ const doneCount = d.milestones.filter((m) => m.done).length;
 const progress = d.milestones.length ? Math.round((doneCount / d.milestones.length) * 100) : 0;
 ---
 
-<Base title={d.title} description={d.summary}>
+<Base title={d.title} description={d.summary} section="entries">
   <article class="container">
     <header class="entry-head">
       <nav class="crumb mono" aria-label="경로">
@@ -57,7 +58,7 @@ const progress = d.milestones.length ? Math.round((doneCount / d.milestones.leng
           <div>
             <dt class="label">태그</dt>
             <dd class="tags">
-              {d.tags.map((t) => <a href={url(`/tags/${t}`)} class="text-link">#{t}</a>)}
+              {d.tags.map((t) => <Tag href={url(`/tags/${t}`)}>#{t}</Tag>)}
             </dd>
           </div>
         )}
@@ -181,7 +182,7 @@ const progress = d.milestones.length ? Math.round((doneCount / d.milestones.leng
     font-size: var(--t-sm);
   }
   .meta dd { margin: 2px 0 0; }
-  .tags { display: flex; gap: var(--s-2); }
+  .tags { display: flex; flex-wrap: wrap; gap: var(--s-2); }
 
 
   /* ── Summary: 강조색 세로선 하나로만 구분 ── */

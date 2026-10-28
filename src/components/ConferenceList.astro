@@ -1,5 +1,6 @@
 ---
 import { url } from "@/lib/site";
+import Tag from "@/components/Tag.astro";
 import { formatDate } from "@/lib/entries";
 import type { Conference } from "@/lib/conferences";
 interface Props {
@@ -12,43 +13,31 @@ const { conferences, sessionCounts } = Astro.props;
 <ul class="conference-list">
   {conferences.map((c) => (
     <li>
-      <a href={url(`/conferences/${c.id}`)} class="row">
-        <span class="mono date">{formatDate(c.data.date)}</span>
-        <span class="main">
-          <span class="title">{c.data.title}</span>
-          {c.data.summary && <span class="summary">{c.data.summary}</span>}
+      <a href={url(`/conferences/${c.id}`)} class="item">
+        <span class="title">{c.data.title}</span>
+        {c.data.summary && <span class="summary">{c.data.summary}</span>}
+        <span class="meta">
+          <Tag>세션 {sessionCounts.get(c.id) ?? 0}</Tag>
+          <span class="mono">{formatDate(c.data.date)}</span>
+          {c.data.place && <span>{c.data.place}</span>}
         </span>
-        <span class="mono count">세션 {sessionCounts.get(c.id) ?? 0}</span>
       </a>
     </li>
   ))}
 </ul>
 
 <style>
-  ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line-strong); }
+  /* 한 열 목록. 제목·요약 한 줄·메타 순으로 촘촘하게 쌓고 항목 사이는 얇은 선 */
+  ul { list-style: none; margin: 0; padding: 0; max-width: 760px; }
   li { border-bottom: 1px solid var(--line); }
-  .row {
-    display: grid;
-    grid-template-columns: 88px minmax(0, 1fr) 80px;
-    gap: var(--s-5);
-    align-items: baseline;
-    padding: var(--s-4) 0;
-  }
-  a.row:hover { background: var(--surface); }
-  .date, .count { color: var(--muted); }
-  .count { text-align: right; }
-  .main { display: flex; flex-direction: column; gap: 2px; }
-  .title { font-size: var(--t-md); font-weight: 600; color: var(--ink); }
-  .summary { font-size: var(--t-sm); color: var(--muted); }
+  .item { display: flex; flex-direction: column; gap: 4px; padding: var(--s-4) 0; }
+  .title { font-size: var(--t-lg); font-weight: 600; line-height: 1.4; letter-spacing: -0.02em; color: var(--ink); transition: color 0.15s; }
+  .item:hover .title { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+  .summary { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: var(--t-sm); color: var(--muted); }
+  .meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); margin-top: 2px; font-size: var(--t-xs); color: var(--faint); }
 
   @media (max-width: 720px) {
-    .row {
-      grid-template-columns: 1fr auto;
-      grid-template-areas: "main main" "date count";
-      gap: var(--s-1) var(--s-3);
-    }
-    .main { grid-area: main; }
-    .date { grid-area: date; }
-    .count { grid-area: count; }
+    .title { font-size: var(--t-md); }
+    .summary { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
   }
 </style>

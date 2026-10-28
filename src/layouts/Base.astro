@@ -2,24 +2,36 @@
 import "@/styles/global.css";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
-import { SITE, url } from "@/lib/site";
+import { SECTIONS, SITE, url, type SectionKey } from "@/lib/site";
 
 interface Props {
   title?: string;
   description?: string;
+  /** 지정하면 헤더 메뉴·경로·목차의 강조색이 이 섹션 색이 됨 */
+  section?: SectionKey;
 }
-const { title, description = SITE.description } = Astro.props;
+const { title, description = SITE.description, section } = Astro.props;
+const sectionVars = section
+  ? `--section-color:${SECTIONS[section].color};--section-ink:${SECTIONS[section].ink};--section-mark:${SECTIONS[section].mark}`
+  : undefined;
 const pageTitle = title ? `${title} — ${SITE.name}` : SITE.title;
 ---
 
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-section={section} style={sectionVars}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href={url("/favicon.svg")} />
+    <!-- 첫 페인트 전에 저장된 테마를 적용해 깜빡임을 막는다 -->
+    <script is:inline>
+      try {
+        const theme = localStorage.getItem("labs:theme");
+        if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+      } catch {}
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -39,3 +51,51 @@ const pageTitle = title ? `${title} — ${SITE.name}` : SITE.title;
     <Footer />
   </body>
 </html>
+
+<script>
+  // 지금 읽고 있는 구간의 목차 항목을 aria-current 로 표시합니다.
+  const toc = document.querySelector<HTMLElement>(".toc");
+  const links = [...document.querySelectorAll<HTMLAnchorElement>(".toc a[href^='#']")];
+  const sections = links
+    .map((a) => ({ a, el: document.getElementById(decodeURIComponent(a.hash.slice(1))) }))
+    .filter((s): s is { a: HTMLAnchorElement; el: HTMLElement } => s.el !== null);
+
+  if (toc && sections.length > 0) {
+    let current: HTMLAnchorElement | null = null;
+    let queued = false;
+
+    const update = () => {
+      queued = false;
+      const line = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) + 8;
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      // 마지막 구간은 짧아서 기준선에 닿기 전에 스크롤이 끝날 수 있다
+      let next = atBottom ? sections[sections.length - 1].a : null;
+      if (!next) {
+        for (const s of sections) {
+          if (s.el.getBoundingClientRect().top <= line) next = s.a;
+          else break;
+        }
+      }
+      if (next === current) return;
+      current?.removeAttribute("aria-current");
+      next?.setAttribute("aria-current", "location");
+      current = next;
+      // 목차 자체가 길어 스크롤될 때 활성 항목이 보이도록 목차만 움직인다
+      if (next) {
+        const box = toc.getBoundingClientRect();
+        const item = next.getBoundingClientRect();
+        if (item.top < box.top || item.bottom > box.bottom) {
+          toc.scrollTop += item.top - box.top - box.height / 2;
+        }
+      }
+    };
+    const schedule = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    update();
+  }
+</script>

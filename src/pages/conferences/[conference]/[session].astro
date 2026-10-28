@@ -1,5 +1,6 @@
 ---
 import Base from "@/layouts/Base.astro";
+import Tag from "@/components/Tag.astro";
 import { SECTIONS, url } from "@/lib/site";
 import { formatDate, pad2, renderWithToc } from "@/lib/entries";
 import { getConferences, getSessionsByConference, sessionSlug, type Conference, type Session } from "@/lib/conferences";
@@ -29,7 +30,7 @@ let n = 0;
 const items = toc.map((h) => ({ ...h, num: h.depth === 2 ? pad2(++n) : "" }));
 ---
 
-<Base title={d.title} description={d.summary || conference.data.title}>
+<Base title={d.title} description={d.summary || conference.data.title} section="conferences">
   <article class="container post">
     <header class="post-head">
       <nav class="crumb mono" aria-label="경로">
@@ -44,7 +45,7 @@ const items = toc.map((h) => ({ ...h, num: h.depth === 2 ? pad2(++n) : "" }));
         {d.track && <><dt>트랙</dt><dd>{d.track}</dd></>}
         {d.speakers.length > 0 && <><dt>연사</dt><dd>{d.speakers.join(", ")}</dd></>}
       </dl>
-      {d.tags.length > 0 && <p class="tags">{d.tags.map((t) => <span>#{t}</span>)}</p>}
+      {d.tags.length > 0 && <p class="tags">{d.tags.map((t) => <Tag>#{t}</Tag>)}</p>}
     </header>
     <div class="doc-grid">
       {items.length > 0 && <aside class="toc" aria-label="목차">
@@ -88,7 +89,7 @@ const items = toc.map((h) => ({ ...h, num: h.depth === 2 ? pad2(++n) : "" }));
   .meta dt { font-family: var(--font-mono); font-size: var(--t-xs); color: var(--muted); }
   .meta dd { margin: 0; }
   .meta dd.mono { font-size: var(--t-sm); }
-  .tags { display: flex; flex-wrap: wrap; gap: var(--s-1) var(--s-3); margin: var(--s-3) 0 0; font-size: var(--t-sm); color: var(--muted); }
+  .tags { display: flex; flex-wrap: wrap; gap: var(--s-2); margin: var(--s-3) 0 0; }
   .post .prose { padding-bottom: var(--s-7); }
 
   .pager {

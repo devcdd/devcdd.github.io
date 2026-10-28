@@ -1,5 +1,6 @@
 ---
 import Base from "@/layouts/Base.astro";
+import Tag from "@/components/Tag.astro";
 import { SECTIONS, url } from "@/lib/site";
 import { formatDate, pad2, renderWithToc } from "@/lib/entries";
 import { CATEGORY_LABEL, getPosts, type Post } from "@/lib/posts";
@@ -17,7 +18,7 @@ let n = 0;
 const items = toc.map((h) => ({ ...h, num: h.depth === 2 ? pad2(++n) : "" }));
 ---
 
-<Base title={d.title} description={d.summary}>
+<Base title={d.title} description={d.summary} section={post.collection}>
   <article class="container post">
     <header class="post-head">
       <nav class="crumb mono" aria-label="경로">
@@ -28,7 +29,7 @@ const items = toc.map((h) => ({ ...h, num: h.depth === 2 ? pad2(++n) : "" }));
       <h1 class="post-title">{d.title}</h1>
       <p class="meta">
         <span class="mono">{formatDate(d.date)}</span>
-        {d.tags.map((t) => <span>#{t}</span>)}
+        {d.tags.map((t) => <Tag>#{t}</Tag>)}
         {import.meta.env.DEV && post.collection === "posts" && <a href={`/__editor#${post.id}`} class="text-link">수정</a>}
       </p>
     </header>
@@ -58,7 +59,7 @@ const items = toc.map((h) => ({ ...h, num: h.depth === 2 ? pad2(++n) : "" }));
     line-height: 1.25;
     margin: var(--s-3) 0 var(--s-3);
   }
-  .meta { display: flex; flex-wrap: wrap; gap: var(--s-1) var(--s-3); margin: 0; font-size: var(--t-sm); color: var(--muted); }
+  .meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-1) var(--s-3); margin: 0; font-size: var(--t-sm); color: var(--muted); }
   .post .prose { padding-bottom: var(--s-8); }
 
   @media (max-width: 720px) {

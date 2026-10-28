@@ -2,6 +2,7 @@
 import Base from "@/layouts/Base.astro";
 import EntryList from "@/components/EntryList.astro";
 import { SECTIONS } from "@/lib/site";
+import SectionHead from "@/components/SectionHead.astro";
 import { countBy, getEntries, STATUS_META, TYPE_LABEL } from "@/lib/entries";
 import { ENTRY_STATUSES, ENTRY_TYPES } from "@/content.config";
 
@@ -22,15 +23,9 @@ const groups = [
 ] as const;
 ---
 
-<Base title={SECTIONS.entries.label} description={SECTIONS.entries.caption}>
+<Base title={SECTIONS.entries.label} description={SECTIONS.entries.caption} section="entries">
   <div class="container">
-    <header class="page-head">
-      <div>
-        <h1 class="page-title">{SECTIONS.entries.label}</h1>
-        <p class="caption">{SECTIONS.entries.caption}</p>
-      </div>
-      <span class="mono count"><span data-visible>{entries.length}</span> / {entries.length}</span>
-    </header>
+    <SectionHead section="entries"><span data-visible>{entries.length}</span> / {entries.length}</SectionHead>
 
     <div class="filters" data-filters>
       {groups.map((g) => (
@@ -102,8 +97,6 @@ const groups = [
 </script>
 
 <style>
-  .caption { margin: var(--s-2) 0 0; font-size: var(--t-sm); color: var(--muted); }
-  .count { color: var(--muted); }
   .filters {
     display: grid;
     gap: var(--s-2);

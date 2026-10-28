@@ -66,6 +66,21 @@
     color-scheme: dark;
   }
 }
+/* 헤더 토글로 고른 다크 모드 — 위 시스템 다크 블록과 값을 맞춰 둔다 */
+:root[data-theme="dark"] {
+  --ink: #ececee;
+  --ink-2: #c9cacf;
+  --muted: #9a9ca3;
+  --faint: #6c6e75;
+  --bg: #0f1012;
+  --surface: #18191c;
+  --line: #2a2b30;
+  --line-strong: #ececee;
+  --accent: #a4cbc5;
+  --accent-text: #a4cbc5;
+  --ok: #4cc27a;
+  color-scheme: dark;
+}
 
 /* ───────── Base ───────── */
 *,
@@ -112,6 +127,16 @@ img { max-width: 100%; display: block; }
 .text-link { color: var(--muted); }
 .text-link:hover { color: var(--ink); }
 
+/* ───────── 섹션 색 ───────── */
+/* 상세 글 경로의 첫 링크(섹션 이름)를 섹션 색 칩으로 표시 */
+[data-section] .crumb > a:first-child {
+  padding: 1px 6px;
+  background: var(--section-color);
+  color: var(--section-ink);
+}
+[data-section="posts"] .crumb > a:first-child { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--section-color) 88%, #000); }
+[data-section] .crumb > a:first-child:hover { color: var(--section-ink); text-decoration: underline; }
+
 /* 목록 페이지 공통 머리말 */
 .page-head {
   padding-block: var(--s-8) var(--s-5);
@@ -153,9 +178,13 @@ img { max-width: 100%; display: block; }
   padding: 3px 0;
   font-size: var(--t-sm);
   color: var(--muted);
+  transition: color 0.35s ease, transform 0.35s ease;
 }
 .toc a:hover { color: var(--ink); }
-.toc .mono { color: var(--faint); padding-top: 2px; }
+.toc .mono { color: var(--faint); padding-top: 2px; transition: color 0.35s ease; }
+.toc a[aria-current="location"] { color: var(--ink); transform: translateX(4px); }
+.toc a[aria-current="location"] .mono { color: var(--accent-text); }
+.toc a[aria-current="location"] { box-shadow: -2px 0 0 var(--section-mark, var(--accent)); }
 /* 목차로 이동한 제목을 잠깐 밝혀서 어디에 도착했는지 보여줌 */
 .block, .summary, .prose :is(h2, h3) { scroll-margin-top: calc(var(--header-h) + var(--s-5)); }
 .block:target > .block-title,
@@ -180,6 +209,7 @@ img { max-width: 100%; display: block; }
   .block:target > .block-title,
   .summary:target > .label,
   .prose :is(h2, h3):target { animation: none; }
+  .toc a, .toc .mono { transition: none; }
 }
 .toc .sub a { padding-left: var(--s-6); font-size: var(--t-xs); }
 @media (max-width: 960px) {

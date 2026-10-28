@@ -1,0 +1,35 @@
+---
+interface Props {
+  /** 지정하면 링크로, 없으면 글자 칩으로 그림 */
+  href?: string;
+}
+const { href } = Astro.props;
+const Tag = href ? "a" : "span";
+---
+
+<Tag href={href} class="tag"><slot /></Tag>
+
+<style>
+  /* 사이트 공통 태그 칩. 현재 섹션 색을 옅게 섞고, 섹션이 없는 페이지에서는 회색 */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    /* 한글 글꼴은 줄 상자 안에서 글자가 살짝 위에 그려져, 높이를 홀수(21px)로 두어야 위아래 여백이 맞음(4배 확대 측정) */
+    height: 21px;
+    padding: 0 6px;
+    line-height: 1;
+    font-size: var(--t-xs);
+    font-weight: 400;
+    white-space: nowrap;
+    background: color-mix(in srgb, var(--section-color, var(--faint)) 28%, var(--bg));
+    color: var(--ink-2);
+    /* 칩의 y 좌표에 소수점이 끼면 글자가 정수 픽셀로 반올림돼 1px 위로 붙음. 별도 레이어로 그려 칩 기준으로 맞춤 */
+    will-change: transform;
+  }
+  /* 끄적끄적 섹션 색(오프화이트)은 흰 배경에 섞으면 안 보여 회색 면과 선으로 대신함 */
+  :global([data-section="posts"]) .tag {
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  a.tag:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+</style>

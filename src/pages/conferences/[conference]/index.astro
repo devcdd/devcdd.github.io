@@ -1,5 +1,6 @@
 ---
 import Base from "@/layouts/Base.astro";
+import Tag from "@/components/Tag.astro";
 import ConferenceTimetable from "@/components/ConferenceTimetable.astro";
 import { SECTIONS, url } from "@/lib/site";
 import { formatDate, renderMarkdown } from "@/lib/entries";
@@ -19,7 +20,7 @@ const d = conference.data;
 const html = renderMarkdown(conference.body ?? "");
 ---
 
-<Base title={d.title} description={d.summary || undefined}>
+<Base title={d.title} description={d.summary || undefined} section="conferences">
   <article class="container conference">
     <header class="head">
       <nav class="crumb mono" aria-label="경로">
@@ -32,7 +33,7 @@ const html = renderMarkdown(conference.body ?? "");
         <dd class="mono">{formatDate(d.date)}</dd>
         {d.place && <><dt>장소</dt><dd>{d.place}</dd></>}
       </dl>
-      {d.tags.length > 0 && <p class="tags">{d.tags.map((t) => <span>#{t}</span>)}</p>}
+      {d.tags.length > 0 && <p class="tags">{d.tags.map((t) => <Tag>#{t}</Tag>)}</p>}
       {d.summary && <p class="lede">{d.summary}</p>}
       {d.links.length > 0 && (
         <p class="links">
@@ -88,7 +89,8 @@ const html = renderMarkdown(conference.body ?? "");
   .meta dt { font-family: var(--font-mono); font-size: var(--t-xs); color: var(--muted); }
   .meta dd { margin: 0; }
   .meta dd.mono { font-size: var(--t-sm); }
-  .tags, .links { display: flex; flex-wrap: wrap; gap: var(--s-1) var(--s-3); margin: var(--s-3) 0 0; font-size: var(--t-sm); color: var(--muted); }
+  .tags { display: flex; flex-wrap: wrap; gap: var(--s-2); margin: var(--s-3) 0 0; }
+  .links { display: flex; flex-wrap: wrap; gap: var(--s-1) var(--s-3); margin: var(--s-3) 0 0; font-size: var(--t-sm); color: var(--muted); }
   .lede { margin: var(--s-4) 0 0; color: var(--ink-2); line-height: 1.75; }
 
   .sessions .label { padding-bottom: var(--s-2); }
