@@ -1,0 +1,30 @@
+---
+import Base from "@/layouts/Base.astro";
+import ConferenceList from "@/components/ConferenceList.astro";
+import { SECTIONS } from "@/lib/site";
+import { getConferences, getSessionsByConference } from "@/lib/conferences";
+
+const section = SECTIONS.conferences;
+const conferences = await getConferences();
+const sessions = await getSessionsByConference();
+const counts = new Map([...sessions].map(([id, list]) => [id, list.length]));
+---
+
+<Base title={section.label} description={section.caption}>
+  <div class="container">
+    <header class="page-head">
+      <div>
+        <h1 class="page-title">{section.label}</h1>
+        <p class="caption">{section.caption}</p>
+      </div>
+      <span class="mono count">{conferences.length}</span>
+    </header>
+    <ConferenceList conferences={conferences} sessionCounts={counts} />
+  </div>
+</Base>
+
+<style>
+  .page-head { border-bottom: 0; }
+  .caption { margin: var(--s-2) 0 0; font-size: var(--t-sm); color: var(--muted); }
+  .count { color: var(--muted); }
+</style>

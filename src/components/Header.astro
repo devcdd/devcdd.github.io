@@ -37,6 +37,12 @@ const isActive = (href: string) => path === url(href) || path.startsWith(url(hre
     letter-spacing: -0.02em;
   }
   nav { display: flex; gap: var(--s-5); }
+  /* 메뉴가 화면 폭을 넘으면 줄바꿈 대신 가로로 밀어 본다 */
+  @media (max-width: 720px) {
+    .bar { gap: var(--s-4); }
+    .wordmark { flex-shrink: 0; }
+    nav { gap: var(--s-4); min-width: 0; overflow-x: auto; scrollbar-width: none; white-space: nowrap; }
+  }
   nav a {
     font-size: var(--t-sm);
     color: var(--muted);

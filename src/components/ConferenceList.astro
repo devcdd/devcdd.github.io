@@ -1,0 +1,54 @@
+---
+import { url } from "@/lib/site";
+import { formatDate } from "@/lib/entries";
+import type { Conference } from "@/lib/conferences";
+interface Props {
+  conferences: Conference[];
+  sessionCounts: Map<string, number>;
+}
+const { conferences, sessionCounts } = Astro.props;
+---
+
+<ul class="conference-list">
+  {conferences.map((c) => (
+    <li>
+      <a href={url(`/conferences/${c.id}`)} class="row">
+        <span class="mono date">{formatDate(c.data.date)}</span>
+        <span class="main">
+          <span class="title">{c.data.title}</span>
+          {c.data.summary && <span class="summary">{c.data.summary}</span>}
+        </span>
+        <span class="mono count">세션 {sessionCounts.get(c.id) ?? 0}</span>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line-strong); }
+  li { border-bottom: 1px solid var(--line); }
+  .row {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr) 80px;
+    gap: var(--s-5);
+    align-items: baseline;
+    padding: var(--s-4) 0;
+  }
+  a.row:hover { background: var(--surface); }
+  .date, .count { color: var(--muted); }
+  .count { text-align: right; }
+  .main { display: flex; flex-direction: column; gap: 2px; }
+  .title { font-size: var(--t-md); font-weight: 600; color: var(--ink); }
+  .summary { font-size: var(--t-sm); color: var(--muted); }
+
+  @media (max-width: 720px) {
+    .row {
+      grid-template-columns: 1fr auto;
+      grid-template-areas: "main main" "date count";
+      gap: var(--s-1) var(--s-3);
+    }
+    .main { grid-area: main; }
+    .date { grid-area: date; }
+    .count { grid-area: count; }
+  }
+</style>

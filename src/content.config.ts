@@ -63,4 +63,43 @@ const notes = defineCollection({
   schema: postSchema,
 });
 
-export const collections = { entries, posts, notes };
+// content/conferences/<행사>.md 는 행사 소개, 같은 이름 폴더 안의 .md 는 그 행사의 세션 글
+const conferences = defineCollection({
+  loader: glob({ pattern: "*.md", base: "./content/conferences" }),
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    place: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+    summary: z.string().default(""),
+    links: z.array(z.object({ label: z.string(), url: z.url() })).default([]),
+    // 행사 전체 시간표. 들은 세션은 time·track 이 같은 세션 글과 짝지어 강조됨
+    timetable: z
+      .array(
+        z.object({
+          time: z.string(),
+          track: z.string().optional(), // 비우면 키노트처럼 모든 트랙에 걸친 칸
+          title: z.string(),
+          speakers: z.array(z.string()).default([]),
+        }),
+      )
+      .default([]),
+    draft: z.boolean().default(false),
+  }),
+});
+
+const sessions = defineCollection({
+  loader: glob({ pattern: "*/[^_]*.md", base: "./content/conferences" }),
+  schema: z.object({
+    title: z.string(),
+    time: z.string(), // 예: 10:50-11:30, 세션 순서도 이 값으로 정함
+    track: z.string().optional(),
+    speakers: z.array(z.string()).default([]),
+    tags: z.array(z.string()).default([]),
+    // 듣기 전에 틀만 만들어 두는 경우가 있어 비워 둘 수 있음
+    summary: z.string().default(""),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { entries, posts, notes, conferences, sessions };

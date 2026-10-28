@@ -1,0 +1,112 @@
+---
+import Base from "@/layouts/Base.astro";
+import { SECTIONS, url } from "@/lib/site";
+import { formatDate, pad2, renderWithToc } from "@/lib/entries";
+import { getConferences, getSessionsByConference, sessionSlug, type Conference, type Session } from "@/lib/conferences";
+
+export async function getStaticPaths() {
+  const sessions = await getSessionsByConference();
+  return (await getConferences()).flatMap((conference) => {
+    const list = sessions.get(conference.id) ?? [];
+    return list.map((session, i) => ({
+      params: { conference: conference.id, session: sessionSlug(session) },
+      props: { conference, session, prev: list[i - 1], next: list[i + 1] },
+    }));
+  });
+}
+
+const { conference, session, prev, next } = Astro.props as {
+  conference: Conference;
+  session: Session;
+  prev?: Session;
+  next?: Session;
+};
+const section = SECTIONS.conferences;
+const d = session.data;
+const href = (s: Session) => url(`/conferences/${conference.id}/${sessionSlug(s)}`);
+const { html, toc } = renderWithToc(session.body ?? "");
+let n = 0;
+const items = toc.map((h) => ({ ...h, num: h.depth === 2 ? pad2(++n) : "" }));
+---
+
+<Base title={d.title} description={d.summary || conference.data.title}>
+  <article class="container post">
+    <header class="post-head">
+      <nav class="crumb mono" aria-label="경로">
+        <a href={url(section.href)} class="text-link">{section.label}</a>
+        <span aria-hidden="true">/</span>
+        <a href={url(`/conferences/${conference.id}`)} class="text-link">{conference.data.title}</a>
+      </nav>
+      <h1 class="post-title">{d.title}</h1>
+      <dl class="meta">
+        <dt>일시</dt>
+        <dd class="mono">{formatDate(conference.data.date)} {d.time}</dd>
+        {d.track && <><dt>트랙</dt><dd>{d.track}</dd></>}
+        {d.speakers.length > 0 && <><dt>연사</dt><dd>{d.speakers.join(", ")}</dd></>}
+      </dl>
+      {d.tags.length > 0 && <p class="tags">{d.tags.map((t) => <span>#{t}</span>)}</p>}
+    </header>
+    <div class="doc-grid">
+      {items.length > 0 && <aside class="toc" aria-label="목차">
+        <p class="label toc-label">목차</p>
+        <ol>
+          {items.map((h) => (
+            <li class:list={{ sub: h.depth === 3 }}>
+              <a href={`#${h.id}`}>{h.num && <span class="mono">{h.num}</span>}{h.text}</a>
+            </li>
+          ))}
+        </ol>
+      </aside>}
+      <div class="prose" set:html={html} />
+    </div>
+    <nav class="pager" aria-label="세션 이동">
+      {prev ? <a href={href(prev)} class="prev"><span class="mono">← 이전 세션</span>{prev.data.title}</a> : <span />}
+      {next && <a href={href(next)} class="next"><span class="mono">다음 세션 →</span>{next.data.title}</a>}
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .post-head { padding-top: var(--s-7); padding-bottom: var(--s-4); border-bottom: 1px solid var(--line-strong); }
+  .crumb { display: flex; flex-wrap: wrap; gap: var(--s-2); color: var(--muted); }
+  .post-title {
+    font-size: var(--t-2xl);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.25;
+    margin: var(--s-3) 0 var(--s-3);
+  }
+  .meta {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: var(--s-1) var(--s-4);
+    align-items: baseline;
+    margin: 0;
+    font-size: var(--t-sm);
+    color: var(--ink-2);
+  }
+  .meta dt { font-family: var(--font-mono); font-size: var(--t-xs); color: var(--muted); }
+  .meta dd { margin: 0; }
+  .meta dd.mono { font-size: var(--t-sm); }
+  .tags { display: flex; flex-wrap: wrap; gap: var(--s-1) var(--s-3); margin: var(--s-3) 0 0; font-size: var(--t-sm); color: var(--muted); }
+  .post .prose { padding-bottom: var(--s-7); }
+
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-5);
+    padding-block: var(--s-5) var(--s-8);
+    border-top: 1px solid var(--line-strong);
+  }
+  .pager a { display: flex; flex-direction: column; gap: var(--s-1); font-weight: 600; }
+  .pager .mono { color: var(--muted); font-weight: 400; }
+  .pager a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+  .next { text-align: right; align-items: flex-end; }
+
+  @media (max-width: 720px) {
+    .post-head { padding-top: var(--s-6); }
+    .post-title { font-size: 26px; }
+    .pager { grid-template-columns: 1fr; }
+    .next { text-align: left; align-items: flex-start; }
+  }
+</style>

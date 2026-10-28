@@ -1,0 +1,248 @@
+---
+import { url } from "@/lib/site";
+import { sessionSlug, type Conference, type Session } from "@/lib/conferences";
+interface Props {
+  conference: Conference;
+  sessions: Session[];
+}
+const { conference, sessions } = Astro.props;
+const timetable = conference.data.timetable;
+
+const tracks = [...new Set(timetable.flatMap((t) => (t.track ? [t.track] : [])))].sort();
+const times = [...new Set(timetable.map((t) => t.time))].sort();
+const slots = times.map((time) => {
+  const items = timetable.filter((t) => t.time === time);
+  return { time, items, spanning: items.find((t) => !t.track) };
+});
+const picked = (time: string, track?: string) =>
+  sessions.find((s) => s.data.time === time && s.data.track === track);
+const href = (s: Session) => url(`/conferences/${conference.id}/${sessionSlug(s)}`);
+const shortTrack = (track: string) => track.replace(/^트랙\s*/, "");
+---
+
+{timetable.length > 0 && (
+  <section class="timetable folded" aria-labelledby="timetable-title">
+    <div class="caption">
+      <h2 id="timetable-title" class="label">
+        <button type="button" class="fold" aria-expanded="false" aria-controls="timetable-body">
+          시간표 <span class="chevron" aria-hidden="true"></span>
+        </button>
+      </h2>
+      <button type="button" class="only-toggle label" aria-pressed="false">
+        <span class="switch" aria-hidden="true"></span>
+        들은 세션만
+      </button>
+    </div>
+    <div id="timetable-body" class="scroll" hidden>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col" class="time"><span class="visually-hidden">시간</span></th>
+            {tracks.map((t) => <th scope="col">{shortTrack(t)}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {slots.map(({ time, items, spanning }) => (
+            <tr>
+              <th scope="row" class="mono time">
+                <span class="start">{time.split("-")[0]}</span>
+                <span class="end"><span class="visually-hidden">–</span>{time.split("-")[1]}</span>
+              </th>
+              {spanning ? (
+                <td colspan={tracks.length} class="cell spanning">
+                  <span class="title">{spanning.title}</span>
+                  <span class="speakers">{spanning.speakers.join(", ")}</span>
+                </td>
+              ) : (
+                tracks.map((track) => {
+                  const item = items.find((t) => t.track === track);
+                  const mine = picked(time, track);
+                  if (!item) return <td class="cell" />;
+                  return mine ? (
+                    <td class="cell mine">
+                      <a href={href(mine)}>
+                        <span class="title">{item.title}</span>
+                        <span class="speakers">{item.speakers.join(", ")}</span>
+                      </a>
+                    </td>
+                  ) : (
+                    <td class="cell">
+                      <span class="title" title={item.title}>{item.title}</span>
+                    </td>
+                  );
+                })
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+)}
+
+<style>
+  .timetable { padding-bottom: var(--s-6); }
+  .caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--s-2);
+    border-bottom: 1px solid var(--line-strong);
+  }
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-1) 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  button:hover, .only-toggle[aria-pressed="true"] { color: var(--ink); }
+  button:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 2px; }
+
+  .chevron {
+    width: 6px;
+    height: 6px;
+    border-right: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 0.15s;
+  }
+  [aria-expanded="false"] .chevron { transform: rotate(-45deg); }
+
+  .switch {
+    position: relative;
+    width: 22px;
+    height: 12px;
+    border-radius: 6px;
+    background: var(--line);
+    transition: background 0.15s;
+  }
+  .switch::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--bg);
+    transition: transform 0.15s;
+  }
+  [aria-pressed="true"] .switch { background: var(--accent-text); }
+  [aria-pressed="true"] .switch::after { transform: translateX(10px); }
+
+  .timetable.folded .only-toggle { visibility: hidden; }
+  .timetable.folded .caption { border-bottom-color: var(--line); }
+
+  /* 트랙이 7개라 좁은 화면에서는 표 전체를 가로로 밀어 봄 */
+  .scroll { overflow-x: auto; }
+  table {
+    width: 100%;
+    min-width: 840px;
+    border-collapse: separate;
+    border-spacing: 2px;
+    table-layout: fixed;
+    word-break: keep-all;
+  }
+  th {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    font-weight: 400;
+    color: var(--faint);
+    text-align: left;
+    padding: var(--s-2) var(--s-2) var(--s-1);
+  }
+  th.time { width: 52px; padding-left: 0; vertical-align: top; position: sticky; left: 0; z-index: 1; background: var(--bg); }
+  tbody th.time { color: var(--muted); padding-top: var(--s-2); line-height: 1.4; }
+  .time .start, .time .end { display: block; }
+  .time .end { color: var(--faint); font-size: 11px; }
+
+  .cell {
+    vertical-align: top;
+    padding: var(--s-2);
+    font-size: var(--t-xs);
+    line-height: 1.4;
+    border-radius: var(--radius);
+  }
+  .cell .title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    color: var(--faint);
+  }
+  .speakers { display: block; margin-top: 2px; font-size: 11px; color: var(--muted); }
+
+  .spanning { background: var(--surface); }
+  .spanning .title, .spanning .speakers { display: inline; margin: 0; }
+  .spanning .title { color: var(--ink-2); margin-right: var(--s-2); }
+
+  .mine { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+  .mine:hover { background: color-mix(in srgb, var(--accent) 45%, transparent); }
+  .mine a { display: block; color: inherit; }
+  .mine .title { display: block; color: var(--ink); font-weight: 600; }
+  .mine .speakers { color: var(--ink-2); }
+
+  /* 칸 자리는 남겨 두어 들은 세션의 트랙·시간 위치가 그대로 보이게 함 */
+  .timetable.only .cell:not(.mine) > * { visibility: hidden; }
+  .timetable.only .spanning { background: none; }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  const read = (key: string, fallback: boolean) => {
+    try {
+      const v = localStorage.getItem(key);
+      return v === null ? fallback : v === "1";
+    } catch {
+      return fallback;
+    }
+  };
+  const write = (key: string, on: boolean) => {
+    try {
+      localStorage.setItem(key, on ? "1" : "0");
+    } catch {}
+  };
+
+  for (const section of document.querySelectorAll<HTMLElement>(".timetable")) {
+    const fold = section.querySelector<HTMLButtonElement>(".fold");
+    const only = section.querySelector<HTMLButtonElement>(".only-toggle");
+    const body = section.querySelector<HTMLElement>(".scroll");
+    if (!fold || !only || !body) continue;
+
+    const setOpen = (open: boolean) => {
+      body.hidden = !open;
+      section.classList.toggle("folded", !open);
+      fold.setAttribute("aria-expanded", String(open));
+    };
+    const setOnly = (on: boolean) => {
+      section.classList.toggle("only", on);
+      only.setAttribute("aria-pressed", String(on));
+    };
+    setOpen(read("labs:timetable-open", false));
+    setOnly(read("labs:timetable-only", false));
+
+    fold.addEventListener("click", () => {
+      const open = fold.getAttribute("aria-expanded") !== "true";
+      setOpen(open);
+      write("labs:timetable-open", open);
+    });
+    only.addEventListener("click", () => {
+      const on = only.getAttribute("aria-pressed") !== "true";
+      setOnly(on);
+      write("labs:timetable-only", on);
+    });
+  }
+</script>

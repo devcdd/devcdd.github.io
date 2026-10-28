@@ -1,0 +1,125 @@
+---
+import Base from "@/layouts/Base.astro";
+import ConferenceTimetable from "@/components/ConferenceTimetable.astro";
+import { SECTIONS, url } from "@/lib/site";
+import { formatDate, renderMarkdown } from "@/lib/entries";
+import { getConferences, getSessionsByConference, sessionSlug, type Conference, type Session } from "@/lib/conferences";
+
+export async function getStaticPaths() {
+  const sessions = await getSessionsByConference();
+  return (await getConferences()).map((conference) => ({
+    params: { conference: conference.id },
+    props: { conference, sessions: sessions.get(conference.id) ?? [] },
+  }));
+}
+
+const { conference, sessions } = Astro.props as { conference: Conference; sessions: Session[] };
+const section = SECTIONS.conferences;
+const d = conference.data;
+const html = renderMarkdown(conference.body ?? "");
+---
+
+<Base title={d.title} description={d.summary || undefined}>
+  <article class="container conference">
+    <header class="head">
+      <nav class="crumb mono" aria-label="경로">
+        <a href={url(section.href)} class="text-link">{section.label}</a>
+        <span aria-hidden="true">/</span>
+      </nav>
+      <h1 class="title">{d.title}</h1>
+      <dl class="meta">
+        <dt>일시</dt>
+        <dd class="mono">{formatDate(d.date)}</dd>
+        {d.place && <><dt>장소</dt><dd>{d.place}</dd></>}
+      </dl>
+      {d.tags.length > 0 && <p class="tags">{d.tags.map((t) => <span>#{t}</span>)}</p>}
+      {d.summary && <p class="lede">{d.summary}</p>}
+      {d.links.length > 0 && (
+        <p class="links">
+          {d.links.map((l) => <a href={l.url} target="_blank" rel="noopener" class="text-link">{l.label} ↗</a>)}
+        </p>
+      )}
+    </header>
+
+    <ConferenceTimetable conference={conference} sessions={sessions} />
+
+    <section class="sessions" aria-labelledby="sessions-title">
+      <h2 id="sessions-title" class="label">들은 세션 {sessions.length}</h2>
+      <ol>
+        {sessions.map((s) => (
+          <li>
+            <a href={url(`/conferences/${conference.id}/${sessionSlug(s)}`)} class="row">
+              <span class="mono time">{s.data.time}</span>
+              <span class="main">
+                <span class="session-title">{s.data.title}</span>
+                <span class="speakers">{s.data.speakers.join(", ")}</span>
+                {s.data.summary && <span class="summary">{s.data.summary}</span>}
+              </span>
+              <span class="mono track">{s.data.track}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    {html.trim() && <div class="prose body" set:html={html} />}
+  </article>
+</Base>
+
+<style>
+  .head { padding-top: var(--s-7); padding-bottom: var(--s-5); }
+  .crumb { display: flex; gap: var(--s-2); color: var(--muted); }
+  .title {
+    font-size: var(--t-2xl);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.25;
+    margin: var(--s-3) 0;
+  }
+  .meta {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: var(--s-1) var(--s-4);
+    align-items: baseline;
+    margin: 0;
+    font-size: var(--t-sm);
+    color: var(--ink-2);
+  }
+  .meta dt { font-family: var(--font-mono); font-size: var(--t-xs); color: var(--muted); }
+  .meta dd { margin: 0; }
+  .meta dd.mono { font-size: var(--t-sm); }
+  .tags, .links { display: flex; flex-wrap: wrap; gap: var(--s-1) var(--s-3); margin: var(--s-3) 0 0; font-size: var(--t-sm); color: var(--muted); }
+  .lede { margin: var(--s-4) 0 0; color: var(--ink-2); line-height: 1.75; }
+
+  .sessions .label { padding-bottom: var(--s-2); }
+  ol { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line-strong); }
+  li { border-bottom: 1px solid var(--line); }
+  .row {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr) 64px;
+    gap: var(--s-5);
+    align-items: baseline;
+    padding: var(--s-4) 0;
+  }
+  a.row:hover { background: var(--surface); }
+  .time, .track { color: var(--muted); }
+  .track { text-align: right; }
+  .main { display: flex; flex-direction: column; gap: 2px; }
+  .session-title { font-size: var(--t-md); font-weight: 600; color: var(--ink); }
+  .speakers, .summary { font-size: var(--t-sm); color: var(--muted); }
+
+  .body { padding-block: var(--s-7) var(--s-8); }
+
+  @media (max-width: 720px) {
+    .head { padding-top: var(--s-6); }
+    .title { font-size: 26px; }
+    .row {
+      grid-template-columns: 1fr auto;
+      grid-template-areas: "main main" "time track";
+      gap: var(--s-1) var(--s-3);
+    }
+    .main { grid-area: main; }
+    .time { grid-area: time; }
+    .track { grid-area: track; }
+  }
+</style>

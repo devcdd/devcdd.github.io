@@ -10,6 +10,7 @@ export const SITE = {
     { label: "끄적끄적", href: "/posts" },
     { label: "뚝딱뚝딱", href: "/entries" },
     { label: "차곡차곡", href: "/notes" },
+    { label: "기웃기웃", href: "/conferences" },
     { label: "태그", href: "/tags" },
     { label: "소개", href: "/about" },
   ],
@@ -20,4 +21,5 @@ export const SECTIONS = {
   posts: { label: "끄적끄적", href: "/posts", caption: "잡념, 푸념, 공상, 상상, 망상까지 블로그스러운 글 모음" },
   entries: { label: "뚝딱뚝딱", href: "/entries", caption: "생산적인 무언가를 위한 스케치 혹은 기록" },
   notes: { label: "차곡차곡", href: "/notes", caption: "지식은 티끌모아 태산이거든여" },
+  conferences: { label: "기웃기웃", href: "/conferences", caption: "남의 집 개발 이야기를 받아 적은 컨퍼런스 기록" },
 } as const;
