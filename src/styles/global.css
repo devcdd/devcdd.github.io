@@ -229,6 +229,14 @@ img { max-width: 100%; display: block; }
   border-left: 2px solid var(--line);
   color: var(--muted);
 }
+.prose details {
+  margin: 0 0 var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--s-3) var(--s-4);
+}
+.prose summary { cursor: pointer; color: var(--ink); font-weight: 600; }
+.prose details[open] > summary { margin-bottom: var(--s-3); }
 .prose table {
   width: 100%;
   border-collapse: collapse;
@@ -251,6 +259,8 @@ img { max-width: 100%; display: block; }
   border-bottom-color: var(--line-strong);
 }
 .prose td:first-child { color: var(--ink); white-space: nowrap; }
+/* 첫 칸을 비운 행은 윗행과 같은 묶음: 묶음 안 구분선을 지워 묶음 단위로 읽히게 함 */
+.prose tr:has(+ tr > td:first-child:empty) > td { border-bottom-color: transparent; padding-bottom: 0; }
 .prose table { word-break: keep-all; }
 .prose td { overflow-wrap: anywhere; }
 /* 가격 칸처럼 <br>로 줄을 직접 나눈 마지막 칸만 자동 줄바꿈을 막음. 긴 문장 칸까지 막으면 표가 본문 밖으로 넘침 */
@@ -287,4 +297,9 @@ img { max-width: 100%; display: block; }
   .prose td:first-child { display: block; font-weight: 600; padding-bottom: var(--s-1); white-space: normal; }
   .prose td:first-child::before { content: none; }
   .prose td:empty { display: none; }
+  .prose tr:has(+ tr > td:first-child:empty) { border-bottom: 0; padding-bottom: 0; }
+  .prose tr:has(> td:first-child:empty) { padding-top: var(--s-1); }
+  /* 묶음형 표는 카드 제목이 곧 구분이라 줄마다 열 제목을 반복하지 않음 */
+  .prose tbody:has(> tr > td:first-child:empty) td { grid-template-columns: minmax(0, 1fr); }
+  .prose tbody:has(> tr > td:first-child:empty) td::before { content: none; }
 }
