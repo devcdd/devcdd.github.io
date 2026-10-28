@@ -17,7 +17,7 @@ const posts = await getPosts(collection);
 <Base title={section.label} description={section.caption} section={collection}>
   <div class="container">
     <SectionHead section={collection}>
-      {import.meta.env.DEV && collection === "posts" && <a href="/__editor">편집기</a>} {posts.length}
+      {import.meta.env.DEV && collection === "posts" && <a href="/__editor">편집기</a>} <span>글 {posts.length}개 있음</span>
     </SectionHead>
     <PostList posts={posts} />
   </div>

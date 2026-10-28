@@ -13,7 +13,7 @@ const counts = new Map([...sessions].map(([id, list]) => [id, list.length]));
 
 <Base title={section.label} description={section.caption} section="conferences">
   <div class="container">
-    <SectionHead section="conferences">{conferences.length}</SectionHead>
+    <SectionHead section="conferences">글 {conferences.length}개 있음</SectionHead>
     <ConferenceList conferences={conferences} sessionCounts={counts} />
   </div>
 </Base>

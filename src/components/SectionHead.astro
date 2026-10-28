@@ -13,7 +13,7 @@ const s = SECTIONS[section];
     <h1 class="page-title">{s.label}</h1>
     <p class="caption">{s.caption}</p>
   </div>
-  <span class="mono count"><slot /></span>
+  <span class="count"><slot /></span>
 </header>
 
 <style>
@@ -30,7 +30,7 @@ const s = SECTIONS[section];
   /* 오프화이트는 라이트 모드의 흰 페이지와 경계가 흐려 안쪽 선을 둠 */
   .outlined { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--card) 88%, #000); }
   .caption { margin: var(--s-2) 0 0; font-size: var(--t-sm); color: color-mix(in srgb, var(--card-ink) 85%, transparent); }
-  .count { display: flex; gap: var(--s-2); flex-shrink: 0; color: inherit; }
+  .count { display: flex; gap: var(--s-2); flex-shrink: 0; font-size: var(--t-sm); color: inherit; }
   .count :global(a) { color: inherit; opacity: 0.8; }
   @media (max-width: 720px) {
     .section-head { margin: var(--s-4) 0 var(--s-5); padding: var(--s-6) var(--s-4) var(--s-5); }
