@@ -210,6 +210,7 @@ img { max-width: 100%; display: block; }
   background: var(--surface);
   border-radius: var(--radius);
   padding: 0.1em 0.35em;
+  overflow-wrap: anywhere;
 }
 .prose pre {
   margin: 0 0 var(--s-4);
@@ -249,10 +250,11 @@ img { max-width: 100%; display: block; }
   color: var(--muted);
   border-bottom-color: var(--line-strong);
 }
-.prose td:first-child { color: var(--ink); }
+.prose td:first-child { color: var(--ink); white-space: nowrap; }
 .prose table { word-break: keep-all; }
-/* 마지막 열(가격 등 짧은 값)은 줄바꿈 없이 */
-.prose td:last-child { white-space: nowrap; }
+.prose td { overflow-wrap: anywhere; }
+/* 가격 칸처럼 <br>로 줄을 직접 나눈 마지막 칸만 자동 줄바꿈을 막음. 긴 문장 칸까지 막으면 표가 본문 밖으로 넘침 */
+.prose td:last-child:has(br) { white-space: nowrap; }
 .prose input[type="checkbox"] { margin: 0 var(--s-2) 0 0; vertical-align: -1px; }
 .prose li:has(> input[type="checkbox"]) { list-style: none; margin-left: -1.25em; }
 
@@ -264,7 +266,8 @@ img { max-width: 100%; display: block; }
   .prose thead { display: none; }
   .prose tbody { border-top: 1px solid var(--line-strong); }
   .prose tr { padding: var(--s-3) 0; border-bottom: 1px solid var(--line); }
-  .prose td {
+  .prose td,
+  .prose td:last-child:has(br) {
     display: grid;
     grid-template-columns: 48px minmax(0, 1fr);
     gap: var(--s-3);
@@ -281,7 +284,7 @@ img { max-width: 100%; display: block; }
     padding-top: 2px;
   }
   /* 첫 칸은 카드 제목 */
-  .prose td:first-child { display: block; font-weight: 600; padding-bottom: var(--s-1); }
+  .prose td:first-child { display: block; font-weight: 600; padding-bottom: var(--s-1); white-space: normal; }
   .prose td:first-child::before { content: none; }
   .prose td:empty { display: none; }
 }
