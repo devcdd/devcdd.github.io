@@ -73,7 +73,8 @@ const { entries } = Astro.props;
     .code { grid-area: code; }
     .main { grid-area: main; padding-block: var(--s-1); }
     .type { grid-area: type; }
-    .status { grid-area: status; }
+    /* 상태는 번호와 같은 줄 오른쪽 끝, 번호와 같은 글자 크기로 줄 높이를 맞춤 */
+    .status { grid-area: status; justify-self: end; font-size: var(--t-xs); }
     .date { grid-area: date; }
   }
 </style>

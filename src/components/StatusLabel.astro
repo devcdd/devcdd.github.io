@@ -10,8 +10,9 @@ const { status } = Astro.props;
 <span class="status" data-status={status}>{STATUS_META[status].label}</span>
 
 <style>
+  /* 아이디어는 회색, 진행중 파랑, 완성 초록, 중단 빨강 */
   .status { white-space: nowrap; font-weight: 600; color: var(--muted); }
-  /* 강조색은 진행중일 때만 */
-  [data-status="building"] { color: var(--accent-text); }
-  [data-status="done"] { color: var(--ink); }
+  [data-status="building"] { color: var(--st-building); }
+  [data-status="done"] { color: var(--st-done); }
+  [data-status="dropped"] { color: var(--st-dropped); }
 </style>

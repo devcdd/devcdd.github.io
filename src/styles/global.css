@@ -12,6 +12,10 @@
   --accent: #a4cbc5;       /* 선·면 */
   --accent-text: #497a73;  /* 같은 색조, 흰 배경에서 읽히는 글자색 */
   --ok: #2f9e57;           /* 완료 체크 */
+  /* 뚝딱뚝딱 단계 글자색: 작은 굵은 글씨라 배경과 대비 4.5:1 이상 */
+  --st-building: #2563eb;
+  --st-done: #15803d;
+  --st-dropped: #dc2626;
 
   /* Type */
   --font-display: "Archivo", "Pretendard Variable", sans-serif;
@@ -63,6 +67,9 @@
     --accent: #a4cbc5;
     --accent-text: #a4cbc5;
     --ok: #4cc27a;
+    --st-building: #60a5fa;
+    --st-done: #4ade80;
+    --st-dropped: #f87171;
     color-scheme: dark;
   }
 }
@@ -79,6 +86,9 @@
   --accent: #a4cbc5;
   --accent-text: #a4cbc5;
   --ok: #4cc27a;
+  --st-building: #60a5fa;
+  --st-done: #4ade80;
+  --st-dropped: #f87171;
   color-scheme: dark;
 }
 
