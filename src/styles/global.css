@@ -293,6 +293,10 @@ img { max-width: 100%; display: block; }
 .prose tr:has(+ tr > td:first-child:empty) > td { border-bottom-color: transparent; padding-bottom: 0; }
 .prose table { word-break: keep-all; }
 .prose td { overflow-wrap: anywhere; }
+/* 표 안 인라인 코드(예: `loops/`)가 중간에서 끊기면 열이 지나치게 좁아짐. 데스크톱 표에서는 통째로 둠 */
+@media (min-width: 721px) {
+  .prose td code { overflow-wrap: normal; white-space: nowrap; }
+}
 /* 가격 칸처럼 <br>로 줄을 직접 나눈 마지막 칸만 자동 줄바꿈을 막음. 긴 문장 칸까지 막으면 표가 본문 밖으로 넘침 */
 .prose td:last-child:has(br) { white-space: nowrap; }
 .prose input[type="checkbox"] { margin: 0 var(--s-2) 0 0; vertical-align: -1px; }
