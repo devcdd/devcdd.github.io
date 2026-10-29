@@ -64,7 +64,10 @@ const doors = [
   <nav class="container doors" aria-label="진입점">
     {doors.map((d) => (
       <a href={url(d.href)} class:list={["door", { outlined: d.outlined }]} style={sectionStyle(d.key as SectionKey)}>
-        <span class="door-label">{d.label}</span>
+        <span class="door-label" data-motion={d.key}>
+          <span class="visually-hidden">{d.label}</span>
+          {[...d.label].map((ch, i) => <span class="lch" aria-hidden="true" style={`--i:${i}`}>{ch}</span>)}
+        </span>
         <span class="door-caption">{d.caption}</span>
         <span class="door-foot">
           <span class="n">글 {d.count}개 있음</span>
@@ -317,7 +320,7 @@ const doors = [
     --term-hl: #5769f7;
     /* grid 아이템 기본 min-width:auto면 nowrap인 생각 중 줄 길이만큼 창이 늘었다 줄었다 함 */
     min-width: 0;
-    padding: var(--s-4) var(--s-5);
+    padding: var(--s-4) var(--term-px);
     background: var(--term-bg);
     color: var(--term-fg);
     border: 1px solid var(--line);
@@ -361,7 +364,7 @@ const doors = [
     display: flex;
     align-items: center;
     height: 28px;
-    margin: calc(var(--s-4) * -1) calc(var(--s-5) * -1) var(--s-4);
+    margin: calc(var(--s-4) * -1) calc(var(--term-px) * -1) var(--s-4);
     padding-inline: 12px;
     border-bottom: 1px solid var(--term-bar-line);
     background: var(--term-bar);
@@ -382,7 +385,7 @@ const doors = [
   }
   /* 질문 줄은 Claude Code 입력창처럼 위아래 가로선 사이에 둠 */
   /* ❯ 기호, 생각 중 기호, 답변 동그라미가 같은 왼쪽 열(--lead-w)에 놓임 */
-  .term { --lead-w: 1.5em; }
+  .term { --lead-w: 1.5em; --term-px: var(--s-5); }
   .prompt {
     display: flex;
     align-items: center;
@@ -441,13 +444,69 @@ const doors = [
   .n { font-size: var(--t-sm); }
   .arrow { transition: transform 0.15s; }
   .door:hover .arrow { transform: translateX(4px); }
-  .door:hover .door-label { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 
+  /* 카드 제목은 호버하면 섹션 이름에 맞춰 글자마다 움직임. 글자가 inline-block이라 밑줄은 쓰지 않음 */
+  .lch { display: inline-block; }
+  .door:is(:hover, :focus-visible) [data-motion="entries"] .lch {
+    transform-origin: 50% 100%;
+    animation: tumble 0.5s steps(1, end) infinite;
+  }
+  .door:is(:hover, :focus-visible) [data-motion="notes"] .lch {
+    /* 길이와 글자 간 지연을 같게 해서 앞 글자가 다 떨어진 순간 다음 글자가 출발함 */
+    animation: stack 0.18s cubic-bezier(0.55, 0, 1, 0.45) calc(var(--i) * 0.18s) both;
+  }
+  .door:is(:hover, :focus-visible) [data-motion="posts"] .lch {
+    animation: scrawl 0.5s steps(1, end) calc(var(--i) * -0.13s) infinite;
+  }
+  .door:is(:hover, :focus-visible) [data-motion="conferences"] .lch {
+    transform-origin: 50% 100%;
+    animation: peek 1.6s ease-in-out calc(var(--i) * 0.08s) infinite;
+  }
+  /* 오뚜기: 글자마다 바닥을 축으로 두 자세 사이를 끊어 오감. 이웃 글자가 반대로 기울면 윗부분이 겹쳐서 모두 같은 쪽으로 기울임 */
+  @keyframes tumble {
+    0%, 100% { transform: rotate(-10deg); }
+    50% { transform: rotate(10deg); }
+  }
+  /* 쌓기: 한 글자씩 중력처럼 가속하며 떨어져 그대로 멈춤. 차례 전에는 숨김 */
+  @keyframes stack {
+    0% { opacity: 0; transform: translateY(-1.2em); }
+    1% { opacity: 1; transform: translateY(-1.2em); }
+    100% { opacity: 1; transform: none; }
+  }
+  /* 끄적임: 손그림 애니메이션의 선 떨림처럼 살짝 다른 획 모양 사이를 끊어 오감. 음수 지연으로 글자마다 박자를 엇갈림 */
+  @keyframes scrawl {
+    0%, 100% { transform: translate(-0.03em, 0.02em) rotate(-4deg); }
+    20% { transform: translate(0.04em, -0.02em) rotate(3deg) skewX(-8deg); }
+    40% { transform: translate(-0.02em, -0.04em) rotate(-2deg) scaleX(0.94); }
+    60% { transform: translate(0.03em, 0.03em) rotate(5deg) skewX(6deg); }
+    80% { transform: translate(-0.04em, 0) rotate(-3deg) scaleY(0.95); }
+  }
+  /* 기웃: 고개를 내밀어 오른쪽, 왼쪽을 차례로 살핌 */
+  @keyframes peek {
+    0%, 100% { transform: none; }
+    20%, 35% { transform: translate(0.12em, -0.1em) rotate(10deg); }
+    55%, 70% { transform: translate(-0.12em, -0.1em) rotate(-10deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .door .lch { animation: none !important; }
+  }
+
+  /* 두 칸이면 터미널이 너무 좁아져 답변이 자주 줄바꿈되므로 카드가 2열이 되는 폭부터 워드마크 아래로 내림 */
   @media (max-width: 960px) {
+    .intro { grid-template-columns: 1fr; gap: var(--s-5); }
     .doors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 720px) {
-    .intro { grid-template-columns: 1fr; gap: var(--s-5); padding-block: var(--s-7) var(--s-5); }
+    .intro { padding-block: var(--s-7) var(--s-5); }
+    .term { --term-px: var(--s-3); --lead-w: 1.25em; }
     .wordmark { font-size: 44px; }
     .doors { margin-bottom: var(--s-8); }
     .door { padding: var(--s-4); }
