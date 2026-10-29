@@ -1,6 +1,6 @@
 ---
 import Base from "@/layouts/Base.astro";
-import { SECTIONS, sectionStyle, url, type SectionKey } from "@/lib/site";
+import { SECTIONS, SITE, sectionStyle, url, type SectionKey } from "@/lib/site";
 import { getEntries } from "@/lib/entries";
 import { getPosts } from "@/lib/posts";
 import { getConferences } from "@/lib/conferences";
@@ -27,7 +27,7 @@ const doors = [
 <Base>
   <section class="container intro">
     <div class="lead">
-      <p class="tagline">디디의 아이디어 보관소</p>
+      <p class="tagline">{SITE.tagline}</p>
       <h1 class="wordmark" aria-label="CDD LABS">
         {wordmark.map((line, li) => (
           <span class="line" aria-hidden="true">

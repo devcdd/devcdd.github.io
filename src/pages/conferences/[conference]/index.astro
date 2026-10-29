@@ -20,7 +20,7 @@ const d = conference.data;
 const html = renderMarkdown(conference.body ?? "");
 ---
 
-<Base title={d.title} description={d.summary || undefined} section="conferences">
+<Base title={d.title} description={d.summary || undefined} section="conferences" published={d.date}>
   <article class="container conference">
     <header class="head">
       <nav class="crumb mono" aria-label="경로">

@@ -30,7 +30,7 @@ let n = 0;
 const items = toc.map((h) => ({ ...h, num: h.depth === 2 ? pad2(++n) : "" }));
 ---
 
-<Base title={d.title} description={d.summary || conference.data.title} section="conferences">
+<Base title={d.title} description={d.summary || conference.data.title} section="conferences" published={conference.data.date}>
   <article class="container post">
     <header class="post-head">
       <nav class="crumb mono" aria-label="경로">

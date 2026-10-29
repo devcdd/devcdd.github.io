@@ -9,7 +9,7 @@ const isActive = (href: string) => path === url(href) || path.startsWith(url(hre
 <header class="site-header">
   <div class="container bar">
     <a href={url("/")} class="wordmark" aria-label={SITE.name} data-flicker>
-      {[...SITE.name].map((ch) => <span class="ch" aria-hidden="true">{ch}</span>)}
+      {[...SITE.logo].map((ch) => <span class="ch" aria-hidden="true">{ch}</span>)}
     </a>
     <div class="end">
       <nav data-nav>

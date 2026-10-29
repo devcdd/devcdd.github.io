@@ -40,7 +40,7 @@ const doneCount = d.milestones.filter((m) => m.done).length;
 const progress = d.milestones.length ? Math.round((doneCount / d.milestones.length) * 100) : 0;
 ---
 
-<Base title={d.title} description={d.summary} section="entries">
+<Base title={d.title} description={d.summary} section="entries" published={d.created} modified={d.updated}>
   <article class="container">
     <header class="entry-head">
       <nav class="crumb mono" aria-label="경로">

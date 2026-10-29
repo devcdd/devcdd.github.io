@@ -9,12 +9,41 @@ interface Props {
   description?: string;
   /** 지정하면 헤더 메뉴·경로·목차의 강조색이 이 섹션 색이 됨 */
   section?: SectionKey;
+  /** 지정하면 글 페이지로 보고 og:type article과 BlogPosting 구조화 데이터를 붙임 */
+  published?: Date;
+  modified?: Date;
+  noindex?: boolean;
 }
-const { title, description = SITE.description, section } = Astro.props;
+const { title, description = SITE.description, section, published, modified, noindex = false } = Astro.props;
 const sectionVars = section
   ? `--section-color:${SECTIONS[section].color};--section-ink:${SECTIONS[section].ink}`
   : undefined;
 const pageTitle = title ? `${title} — ${SITE.name}` : SITE.title;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const jsonLd = published
+  ? {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: title,
+      description,
+      url: canonical,
+      datePublished: published.toISOString(),
+      dateModified: (modified ?? published).toISOString(),
+      inLanguage: "ko-KR",
+      author: { "@type": "Person", name: SITE.author, url: new URL(url("/about/"), Astro.site).href },
+      publisher: { "@type": "Organization", name: SITE.name },
+    }
+  : Astro.url.pathname === url("/")
+    ? {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: SITE.name,
+        alternateName: SITE.logo,
+        description,
+        url: canonical,
+        inLanguage: "ko-KR",
+      }
+    : undefined;
 ---
 
 <!doctype html>
@@ -24,6 +53,19 @@ const pageTitle = title ? `${title} — ${SITE.name}` : SITE.title;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href={url("/sitemap-index.xml")} />
+    <meta property="og:type" content={published ? "article" : "website"} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:title" content={title ?? SITE.title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    {published && <meta property="article:published_time" content={published.toISOString()} />}
+    {modified && <meta property="article:modified_time" content={modified.toISOString()} />}
+    {jsonLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
     <link rel="icon" type="image/svg+xml" href={url("/favicon.svg")} />
     <!-- 첫 페인트 전에 저장된 테마를 적용해 깜빡임을 막는다 -->
     <script is:inline>

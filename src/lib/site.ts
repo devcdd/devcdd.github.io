@@ -3,8 +3,12 @@ const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 export const url = (path = "/") => `${BASE}${path.startsWith("/") ? path : `/${path}`}`;
 
 export const SITE = {
-  name: "LABS",
-  title: "LABS — 개인 연구소",
+  name: "디디랩스",
+  tagline: "디디의 아이디어 보관소",
+  title: "디디랩스 — 디디의 아이디어 보관소",
+  // 헤더 워드마크로 그리는 글자. 검색·공유에 쓰는 이름은 name
+  logo: "LABS",
+  author: "디디",
   description: "계획과 기획, 실험을 기록하고 관리하는 개인 연구소.",
   nav: [
     { label: "끄적끄적", href: "/posts" },
