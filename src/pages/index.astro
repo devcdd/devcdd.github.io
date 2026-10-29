@@ -283,6 +283,8 @@ const doors = [
   }
   /* 소개는 질문에 AI가 답하는 터미널처럼 보이게. 테마와 상관없이 어두운 창 */
   .term {
+    /* grid 아이템 기본 min-width:auto면 nowrap인 생각 중 줄 길이만큼 창이 늘었다 줄었다 함 */
+    min-width: 0;
     padding: var(--s-4) var(--s-5);
     background: #111214;
     color: #e6e6e9;
