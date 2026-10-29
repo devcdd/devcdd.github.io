@@ -284,7 +284,8 @@ const doors = [
     width: 0.1em;
     height: 0.78em;
     margin-left: 0.06em;
-    background: var(--accent);
+    /* --accent는 흰 배경에서 대비가 낮아 라이트 모드에선 진한 같은 색조를 씀(다크에선 두 값이 같음) */
+    background: var(--accent-text);
     opacity: 0;
     animation: blink 1s steps(1) 0.8s infinite;
   }
@@ -300,17 +301,58 @@ const doors = [
     .ch { opacity: 1; animation: none; }
     .caret { opacity: 1; animation: none; }
   }
-  /* 소개는 질문에 AI가 답하는 터미널처럼 보이게. 테마와 상관없이 어두운 창 */
+  /* 소개는 질문에 AI가 답하는 터미널처럼 보이게. 라이트 모드는 Claude Code 라이트 테마, 다크 모드는 다크 테마 색 */
   .term {
+    --term-bg: #fafafa;
+    --term-fg: #2b2c31;
+    --term-bar: #efeff1;
+    --term-bar-line: #e4e4e7;
+    --term-rule: #d4d4d8;
+    --term-ask: #3b3c40;
+    --term-strong: #151515;
+    --term-spin: #d77757;
+    --term-status: #6c6e75;
+    --term-dim: #8a8c93;
+    /* Claude Code 라이트 테마의 인라인 코드 색(rgb 87 105 247) */
+    --term-hl: #5769f7;
     /* grid 아이템 기본 min-width:auto면 nowrap인 생각 중 줄 길이만큼 창이 늘었다 줄었다 함 */
     min-width: 0;
     padding: var(--s-4) var(--s-5);
-    background: #111214;
-    color: #e6e6e9;
+    background: var(--term-bg);
+    color: var(--term-fg);
     border: 1px solid var(--line);
     border-radius: var(--radius);
     font-size: var(--t-sm);
     line-height: 1.75;
+  }
+  /* 시스템 다크와 토글 다크 두 곳에 같은 값을 둠. --term-hl은 Claude Code 다크 테마의 인라인 코드 색(rgb 177 185 249) */
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme="light"])) .term {
+      --term-bg: #111214;
+      --term-fg: #e6e6e9;
+      --term-bar: #1c1d21;
+      --term-bar-line: #2a2b30;
+      --term-rule: #3a3b41;
+      --term-ask: #c9cacf;
+      --term-strong: #ffffff;
+      --term-spin: #ff8a5c;
+      --term-status: #8d9099;
+      --term-dim: #6c6e75;
+      --term-hl: #b1b9f9;
+    }
+  }
+  :global(:root[data-theme="dark"]) .term {
+    --term-bg: #111214;
+    --term-fg: #e6e6e9;
+    --term-bar: #1c1d21;
+    --term-bar-line: #2a2b30;
+    --term-rule: #3a3b41;
+    --term-ask: #c9cacf;
+    --term-strong: #ffffff;
+    --term-spin: #ff8a5c;
+    --term-status: #8d9099;
+    --term-dim: #6c6e75;
+    --term-hl: #b1b9f9;
   }
   .term p { margin: 0; }
   /* macOS 창 타이틀바: 창 안쪽 여백을 넘어 창 폭 전체에 깔고, 가운데 제목을 둠 */
@@ -321,8 +363,8 @@ const doors = [
     height: 28px;
     margin: calc(var(--s-4) * -1) calc(var(--s-5) * -1) var(--s-4);
     padding-inline: 12px;
-    border-bottom: 1px solid #2a2b30;
-    background: #1c1d21;
+    border-bottom: 1px solid var(--term-bar-line);
+    background: var(--term-bar);
     border-radius: var(--radius) var(--radius) 0 0;
   }
   .lights { display: flex; gap: 8px; }
@@ -335,7 +377,7 @@ const doors = [
     text-align: center;
     font-family: var(--font-mono);
     font-size: 11px;
-    color: #6c6e75;
+    color: var(--term-dim);
     pointer-events: none;
   }
   /* 질문 줄은 Claude Code 입력창처럼 위아래 가로선 사이에 둠 */
@@ -346,22 +388,21 @@ const doors = [
     align-items: center;
     margin-bottom: var(--s-3) !important;
     padding-block: var(--s-1);
-    border-block: 1px solid #3a3b41;
-    color: #c9cacf;
+    border-block: 1px solid var(--term-rule);
+    color: var(--term-ask);
   }
   /* 기호와 한글은 글꼴이 달라 기준선이 어긋나므로 줄 높이를 없애고 flex 가운데 정렬에 맡김 */
-  .sign { flex: 0 0 var(--lead-w); font-family: var(--font-mono); line-height: 1; color: #ffffff; }
+  .sign { flex: 0 0 var(--lead-w); font-family: var(--font-mono); line-height: 1; color: var(--term-strong); }
   .reply { display: flex; }
-  .lead { flex: 0 0 var(--lead-w); font-family: var(--font-mono); color: #ffffff; }
-  .lead.spinning { color: #ff8a5c; }
+  .lead { flex: 0 0 var(--lead-w); font-family: var(--font-mono); color: var(--term-strong); }
+  .lead.spinning { color: var(--term-spin); }
   .answer { flex: 1; min-width: 0; min-height: calc(1.75em * 3); }
   /* 마무리 줄 자리는 미리 잡아 두어 마지막에 줄이 생길 때 아래 카드가 밀리지 않게 함 */
-  .done { display: flex; min-height: 1.75em; margin-top: var(--s-2) !important; color: #6c6e75; font-size: var(--t-xs); }
+  .done { display: flex; min-height: 1.75em; margin-top: var(--s-2) !important; color: var(--term-dim); font-size: var(--t-xs); }
   .done :global(.done-sign) { flex: 0 0 var(--lead-w); font-family: var(--font-mono); }
-  .answer :global(.status) { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #8d9099; }
-  .answer :global(.meta) { font-family: var(--font-mono); font-size: var(--t-xs); color: #6c6e75; }
-  /* Claude Code 다크 테마의 인라인 코드 색(rgb 177 185 249) */
-  .answer :global(.hl) { font-style: normal; color: #b1b9f9; }
+  .answer :global(.status) { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--term-status); }
+  .answer :global(.meta) { font-family: var(--font-mono); font-size: var(--t-xs); color: var(--term-dim); }
+  .answer :global(.hl) { font-style: normal; color: var(--term-hl); }
   /* 질문 줄 커서는 스크립트가 만들어 범위 스타일이 안 붙으므로 전역 선택자로 지정. 답변에는 커서를 두지 않음 */
   .term :global(.cursor) {
     display: inline-block;
