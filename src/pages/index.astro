@@ -89,6 +89,15 @@ const doors = [
   type Piece = { ch: string; hl: boolean };
   const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const jitter = (min: number, range: number) => min + Math.random() * range;
+  const pick = <T,>(list: readonly T[]) => list[Math.floor(Math.random() * list.length)];
+  const sample = <T,>(list: readonly T[], n: number) => {
+    const pool = [...list];
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    return pool.slice(0, n);
+  };
 
   // 강조(em.hl) 구간을 유지하도록 글자를 [문자, 강조 여부]로 펼침. "\n"은 줄바꿈, HTML 들여쓰기 공백은 제거
   const toPieces = (root: ParentNode): Piece[] => {
@@ -144,9 +153,19 @@ const doors = [
 
   // 생각 중: 왼쪽 열 기호가 돌고 초·토큰 수가 올라감
   const GLYPHS = ["·", "✢", "✳", "✶", "✻", "✽", "✻", "✶", "✳", "✢"];
-  const VERBS = ["Moseying", "Pondering", "Sketching", "Brewing"];
+  const VERBS = [
+    "Moseying", "Pondering", "Sketching", "Brewing", "Noodling", "Tinkering", "Mulling", "Percolating",
+    "Simmering", "Doodling", "Musing", "Conjuring", "Whittling", "Puttering", "Ruminating", "Marinating",
+    "Scribbling", "Cogitating", "Fiddling", "Wrangling", "Hatching", "Spelunking", "Finagling", "Kneading",
+    "Untangling", "Combobulating", "Daydreaming", "Rummaging",
+  ];
+  const DONE_VERBS = [
+    "Baked", "Brewed", "Cooked", "Crunched", "Churned", "Simmered", "Sautéed", "Stewed", "Toasted",
+    "Whisked", "Kneaded", "Noodled", "Tinkered", "Mulled", "Cogitated", "Pondered", "Whittled", "Conjured",
+  ];
   const THINK_MS = 1800;
   const think = async (started: number) => {
+    const verbs = sample(VERBS, 3 + Math.floor(Math.random() * 2));
     const status = document.createElement("span");
     status.className = "status";
     status.setAttribute("aria-hidden", "true");
@@ -157,7 +176,7 @@ const doors = [
     const render = () => {
       const elapsed = performance.now() - started;
       tokens += Math.floor(jitter(40, 80));
-      const verb = VERBS[Math.min(VERBS.length - 1, Math.floor(elapsed / (THINK_MS / VERBS.length)))];
+      const verb = verbs[Math.min(verbs.length - 1, Math.floor(elapsed / (THINK_MS / verbs.length)))];
       lead!.textContent = GLYPHS[frame++ % GLYPHS.length];
       status.innerHTML = `${verb}… <span class="meta">(${Math.floor(elapsed / 1000)}s · ↓ ${(tokens / 1000).toFixed(1)}k tokens · thinking)</span>`;
     };
@@ -199,7 +218,7 @@ const doors = [
     const sec = Math.max(1, Math.round((performance.now() - started) / 1000));
     const took = sec >= 60 ? `${Math.floor(sec / 60)}m ${sec % 60}s` : `${sec}s`;
     const at = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-    done!.innerHTML = `<span class="done-sign">✻</span><span>Crunched for ${took} · done ${at}</span>`;
+    done!.innerHTML = `<span class="done-sign">✻</span><span>${pick(DONE_VERBS)} for ${took} · done ${at}</span>`;
   };
 
   const round = async (question: string, pieces: Piece[]) => {
