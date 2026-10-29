@@ -187,14 +187,16 @@ img { max-width: 100%; display: block; }
   gap: var(--s-3);
   padding: 3px 0;
   font-size: var(--t-sm);
+  /* 강조 시 scale(1.04)로 커져도 .toc에 가로 스크롤이 생기지 않게 폭을 남겨 둠 */
+  max-width: 96%;
   color: var(--muted);
+  transform-origin: left center;
   transition: color 0.35s ease, transform 0.35s ease;
 }
 .toc a:hover { color: var(--ink); }
 .toc .mono { color: var(--faint); padding-top: 2px; transition: color 0.35s ease; }
-.toc a[aria-current="location"] { color: var(--ink); transform: translateX(4px); }
+.toc a[aria-current="location"] { color: var(--ink); transform: scale(1.04); }
 .toc a[aria-current="location"] .mono { color: var(--accent-text); }
-.toc a[aria-current="location"] { box-shadow: -2px 0 0 var(--section-mark, var(--accent)); }
 /* 목차로 이동한 제목을 잠깐 밝혀서 어디에 도착했는지 보여줌 */
 .block, .summary, .prose :is(h2, h3) { scroll-margin-top: calc(var(--header-h) + var(--s-5)); }
 .block:target > .block-title,

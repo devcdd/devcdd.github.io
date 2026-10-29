@@ -12,7 +12,7 @@ interface Props {
 }
 const { title, description = SITE.description, section } = Astro.props;
 const sectionVars = section
-  ? `--section-color:${SECTIONS[section].color};--section-ink:${SECTIONS[section].ink};--section-mark:${SECTIONS[section].mark}`
+  ? `--section-color:${SECTIONS[section].color};--section-ink:${SECTIONS[section].ink}`
   : undefined;
 const pageTitle = title ? `${title} — ${SITE.name}` : SITE.title;
 ---
